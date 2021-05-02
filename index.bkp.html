@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Scattering Problem Solver</title>
+		<link href="styles/index.css" rel="stylesheet" type="text/css" />
+	</head>	
+	<body>
+		<div class="container">
+			<section class="container__head">
+				<h1>Scattering Problem Solver</h1>
+				<h2>Electrical & Computer Engineering</h2>
+			</section>
+			
+			<section style="margin-top: 20px;">
+				<form name="form_job" action="server/execute-job.php" method="POST" enctype="multipart/form-data">
+					<label>New Job</label>
+					<input name="job_file" type="file" required />
+					
+					<input type="submit" name="geofile" value="Submit Job" />
+				</form>
+				
+				<div id="output-screen"></div>
+			</section>
+		</div>
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="scripts/index.js"></script>
+	</body>
+	
+</html>
