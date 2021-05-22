@@ -55,6 +55,12 @@ Installation on a Local Machine
 	```bash 
     $ composer install
     ```
+    
+  * Now, set up the database schema by running the migrations using the following command
+	```bash 
+    $ php artisan migrate
+    ```
+    and this will set up the database with default tables
   
   * Now, start your local server<br />
     Run the installed Ampps server by searching for it (Windows) or by navigating to `Applications` directory and find Ampps (Mac) and (double) clicking it.<br /><br />
