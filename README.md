@@ -49,12 +49,19 @@ Installation on a Local Machine
 	```bash 
     $ npm run dev 
     ```
-	# NOTE: This command and others are included in `package.json` file
+	**NOTE:** This command and others are included in `package.json` file
 	
   * Next, install PHP packages included in `composer.json` file by running the following command
 	```bash 
     $ composer install
     ```
+    
+  * Setup a database and user for the project by opening your [phpMyAdmin](http://localhost/phpmyadmin/server_privileges.php?viewing_mode=server) and 
+    create a database and a user. Make sure the user is assigned to the database and granted all privileges.<br /><br />
+  
+  * Create a local configuration file `.env` by copying `.env.example` and rename it to `.env`.
+    Open this `.env` file and set up the database section of the file by adding the database, username, and password.
+    **NOTE:** At a point you will be asked to set up `APP KEY`.<br /><br />
     
   * Now, set up the database schema by running the migrations using the following command
 	```bash 
