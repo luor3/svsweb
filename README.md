@@ -5,6 +5,13 @@ This web application is developed to provide access to Surface-Volume-Surface El
 It is a web application that encapsules interaction and job submission to the solver. 
 
 
+Programming Languages & Frameworks
+-----------------------------------
+ * [PHP (Laravel 8.41.0)](https://laravel.com/docs/8.x/)
+ * [Laravel Jetstream](https://jetstream.laravel.com/2.x/introduction.html)
+ * [Alpine JS](https://laravel-livewire.com/docs/2.x/alpine-js)
+ * [Tailwind CSS](https://tailwindcss.com/docs)
+
 
 System Requirements
 -------------------
@@ -13,7 +20,8 @@ Install the following softwares on your machine:
 
  * [LAMP Stack & Local Server (Ampps)](https://ampps.com/download)
  * [Git](https://git-scm.com/downloads)
- * `[SKIP]` [npm via Node.js](https://www.npmjs.com/get-npm) 
+ * [npm via Node.js](https://www.npmjs.com/get-npm)
+ * [Composer](https://getcomposer.org/download/) (Download and install the executable)
  
 
 
@@ -31,11 +39,22 @@ Installation on a Local Machine
     ```
     In order to use command `git`, [Git](https://git-scm.com/downloads) must first be installed on your machine.
     
-  * `[SKIP]` Navigate to the cloned directory, then run the command 
+  * Navigate to the cloned directory, then run the command 
     ```bash 
     $ npm install 
     ```
-    to install the API dependencies. [More details on this command..](https://docs.npmjs.com/cli/install) After several   installation steps, directory `node_modules` is created in the cloned directory.
+    to install the javascript dependencies. [More details on this command..](https://docs.npmjs.com/cli/install) After several   installation steps, directory `node_modules` is created in the cloned directory.
+	
+  * In the same directory/path, build your javascript resources by running the following command
+	```bash 
+    $ npm run dev 
+    ```
+	#NOTE: This command and others are included in `package.json` file
+	
+  * Next, install PHP packages included in `composer.json` file by running the following command
+	```bash 
+    $ composer install
+    ```
   
   * Now, start your local server<br />
     Run the installed Ampps server by searching for it (Windows) or by navigating to `Applications` directory and find Ampps (Mac) and (double) clicking it.<br /><br />
