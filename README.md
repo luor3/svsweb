@@ -49,7 +49,7 @@ Installation on a Local Machine
 	```bash 
     $ npm run dev 
     ```
-	#NOTE: This command and others are included in `package.json` file
+	# NOTE: This command and others are included in `package.json` file
 	
   * Next, install PHP packages included in `composer.json` file by running the following command
 	```bash 
@@ -58,8 +58,16 @@ Installation on a Local Machine
   
   * Now, start your local server<br />
     Run the installed Ampps server by searching for it (Windows) or by navigating to `Applications` directory and find Ampps (Mac) and (double) clicking it.<br /><br />
+    
+  * Laravel has inbuilt server that needs to be started, thus, run the following artisan command
+	```bash 
+    $ php artisan serve
+    ```
+    and this will start the local server in the window and generate a local URL to access the app in the browser. <br /> <br />
+    Usually, it starts the server at the default port `8000` thus the url will look like [http://localhost:8000/](http://localhost:8000/). However, there is no guarantee
+    that this port will be free so Laravel can pick any available port.
   
-  * Once the server has started running, the web app can be tested by visiting [http://localhost/svsweb/](http://localhost/svsweb/).
+  * Once the server has started running, the web app can be tested by visiting [http://localhost:8000/](http://localhost:8000/) or whatever link `php artisan serve` generates.
 
 Usage
 -----
