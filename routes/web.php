@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\DynamicPagesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,8 +21,19 @@ use App\Http\Controllers\HomeController;
     return view('welcome');
 }); */
 
-Route::get('/', HomeController::class);
+Route::get('/', HomeController::class)->name('homepage');
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------//
+//-------------------------------- FIND DYNAMIC PAGES --------------------------//
+//------------------------------------------------------------------------------//
+Route::get('/{page}/', [DynamicPagesController::class, 'show']);
