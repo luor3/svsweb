@@ -31,6 +31,21 @@
                         </ul>
                     </div>
                 </div>
+                
+                <div class="custom-dropdown hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-jet-nav-link href="{{ route('pages') }}" :active="request()->routeIs('pages') || request()->routeIs('pages.create')">
+                        {{ __('Pages') }}
+                    </x-jet-nav-link>
+                    <div class="dropdown-menu absolute hidden h-auto flex pt-4 mt-14">
+                        <ul class="block w-full bg-white shadow">
+                            <li class="py-2 px-5">
+                                <x-jet-nav-link href="{{ route('pages.create') }}">
+                                    Add Page
+                                </x-jet-nav-link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">

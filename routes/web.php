@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PagesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\DynamicPagesController;
@@ -33,9 +34,10 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/settings')->group
     Route::get('/create', [SettingsController::class, 'showCreate'])->name('settings.create');
 });
 
-
-
-
+Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/pages')->group(function () {
+    Route::get('/', [PagesController::class, 'show'])->name('pages');
+    Route::get('/create', [PagesController::class, 'showCreate'])->name('pages.create');
+});
 
 
 //------------------------------------------------------------------------------//
