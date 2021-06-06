@@ -38,15 +38,8 @@
 
         <div class="col-span-6 sm:col-span-6">
             <x-jet-label for="content" value="{{ __('Content') }}" />
-            {{-- <editor 
-                name="content"
-                class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
-                rows="6" 
-                wire:model.defer="content"
-                :api-key="tinyMCEKey" 
-                :init="tinyMCEConfig"></editor> --}}
             <textarea
-                class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
+                class="tinymce mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
                 rows="6" 
                 id="content" 
                 wire:model.defer="content"></textarea>
@@ -56,6 +49,7 @@
         <div class="col-span-6 sm:col-span-6">
             <x-jet-label for="fld-status" value="{{ __('Display') }}" />
             <select id="fld-status" wire:model.defer="status" class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg">
+                <option value="">Select display status</option>
                 <option value="1">Yes</option>
                 <option value="0">No</option>
             </select>
@@ -65,7 +59,7 @@
     </x-slot>
 
     <x-slot name="actions">
-        <x-jet-button>
+        <x-jet-button class="btn-submit-form-has-tinymce">
             {{ __('Create') }}
         </x-jet-button>
     </x-slot>

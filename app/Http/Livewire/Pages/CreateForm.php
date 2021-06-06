@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Pages;
 
+use Illuminate\Http\Request;
 use Livewire\Component;
 use App\Models\Page;
 
@@ -83,7 +84,7 @@ class CreateForm extends Component
      * 
      * @return view Pages section
      */
-    public function add()
+    public function add(Request $request)
     {
         $data = $this->validate();
         

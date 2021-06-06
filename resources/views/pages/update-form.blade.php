@@ -7,46 +7,46 @@
 
     <x-slot name="form">
         <div class="col-span-6">
-            <x-jet-label value="{{ __('New Page') }}" />
+            <x-jet-label>
+                    <x-jet-nav-link 
+                        href="{{ $page->link }}" 
+                        target="_blank"
+                        class="text-2xl text-indigo-500">
+                        {{ $page->title }}
+                    </x-jet-nav-link>
+                </x-jet-label>
         </div>
 
         <div class="col-span-6 sm:col-span-3">
-            <x-jet-label for="link" value="{{ __('Link') }}" />
-            <x-jet-input id="link" type="text" class="mt-1 block w-full" wire:model.defer="link" />
+            <x-jet-label for="link{{ $pid }}" value="{{ __('Link') }}" />
+            <x-jet-input id="link{{ $pid }}" type="text" class="mt-1 block w-full" wire:model.defer="link" />
             <x-jet-input-error for="link" class="mt-2" />
         </div>
 
         <div class="col-span-6 sm:col-span-3">
-            <x-jet-label for="title" value="{{ __('Title') }}" />
-            <x-jet-input id="title" type="text" class="mt-1 block w-full" wire:model.defer="title" />
+            <x-jet-label for="title{{ $pid }}" value="{{ __('Title') }}" />
+            <x-jet-input id="title{{ $pid }}" type="text" class="mt-1 block w-full" wire:model.defer="title" />
             <x-jet-input-error for="title" class="mt-2" />
         </div>
 
         <div class="col-span-6 sm:col-span-3">
-            <x-jet-label for="description" value="{{ __('Description') }}" />
-            <x-jet-input id="description" type="text" class="mt-1 block w-full" wire:model.defer="description" />
+            <x-jet-label for="description{{ $pid }}" value="{{ __('Description') }}" />
+            <x-jet-input id="description{{ $pid }}" type="text" class="mt-1 block w-full" wire:model.defer="description" />
             <x-jet-input-error for="description" class="mt-2" />
         </div>
 
         <div class="col-span-6 sm:col-span-3">
-            <x-jet-label for="keywords" value="{{ __('Keywords') }}" />
-            <x-jet-input id="keywords" type="text" class="mt-1 block w-full" wire:model.defer="keywords" />
+            <x-jet-label for="keywords{{ $pid }}" value="{{ __('Keywords') }}" />
+            <x-jet-input id="keywords{{ $pid }}" type="text" class="mt-1 block w-full" wire:model.defer="keywords" />
             <x-jet-input-error for="keywords" class="mt-2" />
         </div>
 
         <div class="col-span-6 sm:col-span-6">
-            <x-jet-label for="content" value="{{ __('Content') }}" />
-            {{-- <editor 
-                name="content"
-                class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
-                rows="6" 
-                wire:model.defer="content"
-                :api-key="tinyMCEKey" 
-                :init="tinyMCEConfig"></editor> --}}
+            <x-jet-label for="content{{ $pid }}" value="{{ __('Content') }}" />
             <textarea
-                class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
-                rows="6" 
-                id="content" 
+                name="content"
+                class="tinymce mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
+                rows="6"
                 wire:model.defer="content"></textarea>
             <x-jet-input-error for="content" class="mt-2" />
         </div>
@@ -90,7 +90,7 @@
             {{ __('Saved.') }}
         </x-jet-action-message>
 
-        <x-jet-button>
+        <x-jet-button class="btn-submit-form-has-tinymce">
             <svg 
                 viewBox="0 0 20 20" 
                 fill="currentColor" 
