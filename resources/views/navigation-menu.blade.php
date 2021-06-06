@@ -16,6 +16,21 @@
                         {{ __('Dashboard') }}
                     </x-jet-nav-link>
                 </div>
+                
+                <div class="custom-dropdown hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-jet-nav-link href="{{ route('settings') }}" :active="request()->routeIs('settings') || request()->routeIs('settings.create')">
+                        {{ __('Settings') }}
+                    </x-jet-nav-link>
+                    <div class="dropdown-menu absolute hidden h-auto flex pt-4 mt-14">
+                        <ul class="block w-full bg-white shadow">
+                            <li class="py-2 px-5">
+                                <x-jet-nav-link href="{{ route('settings.create') }}">
+                                    Add Settings
+                                </x-jet-nav-link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">

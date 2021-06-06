@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\DynamicPagesController;
 
@@ -27,6 +28,10 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
+Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/settings')->group(function () {
+    Route::get('/', [SettingsController::class, 'show'])->name('settings');
+    Route::get('/create', [SettingsController::class, 'showCreate'])->name('settings.create');
+});
 
 
 

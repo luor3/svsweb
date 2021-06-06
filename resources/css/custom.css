@@ -1,1 +1,5 @@
 /* custom css*/
+.custom-dropdown:hover .dropdown-menu {
+  display: block;
+  margin-left: -40px!important;
+}
