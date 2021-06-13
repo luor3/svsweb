@@ -115,7 +115,7 @@ class App extends Model
      * Class constructor
      * 
      */
-    public function __construct() {
+    public function __construct() { 
         parent::__construct();
         
         $settings = Settings::selectRaw('`name`, `value`')

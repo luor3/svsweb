@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\DynamicPagesController;
 
@@ -38,6 +39,16 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/pages')->group(fu
     Route::get('/', [PagesController::class, 'show'])->name('pages');
     Route::get('/create', [PagesController::class, 'showCreate'])->name('pages.create');
 });
+
+Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/users')->group(function () {
+    Route::get('/', [UsersController::class, 'show'])->name('users');
+    Route::get('/create', [UsersController::class, 'showCreate'])->name('users.create');
+});
+
+
+
+Route::post('/submit/{formType}', [SubmitController::class, 'submit']);
+
 
 
 //------------------------------------------------------------------------------//

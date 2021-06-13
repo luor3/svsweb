@@ -6,7 +6,7 @@
     <div class="min-h-screen flex flex-col">
         @include('partials.site-navigation')
 
-        <div class="flex-grow p-8 text-1xl">
+        <div class="flex-grow p-8 text-1xl">          
             {!! $page['content'] !!}
         </div>
         <div class="bg-indigo-900 text-gray-400 px-4 py-4 font-normal">
