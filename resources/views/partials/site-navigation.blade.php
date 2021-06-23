@@ -13,11 +13,11 @@
 
 
         <div :class="{ 'hidden': !open }" class="hidden lg:block">
-            <x-site-link href="{{ url('/demos') }}" :active="request()->routeIs('homepage') || request()->getPathInfo() == '/demos'">
-                Get Started
+            <x-site-link href="{{ url('/demos') }}" :active="request()->routeIs('demos') || request()->getPathInfo() == '/demos'">
+                Demos
             </x-site-link>
-            <x-site-link href="{{ url('/submit-job') }}" :active="request()->routeIs('submit-job') || request()->getPathInfo() == '/submit-job'">
-                Submit a Job
+            <x-site-link href="{{ url('/input-generator') }}" :active="request()->routeIs('input-generator')">
+                Input Generator
             </x-site-link>
             <x-site-link href="{{ url('/about') }}" :active="request()->getPathInfo() == '/about'">
                 About

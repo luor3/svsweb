@@ -6,6 +6,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\DynamicPagesController;
+use App\Http\Controllers\Frontend\InputGeneratorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,8 @@ use App\Http\Controllers\Frontend\DynamicPagesController;
 }); */
 
 Route::get('/', HomeController::class)->name('homepage');
+
+Route::get('/input-generator', [InputGeneratorController::class, 'show'])->name("input-generator");
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
