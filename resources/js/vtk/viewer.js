@@ -5,6 +5,9 @@ import vtkCubeAxesActor from 'vtk.js/Sources/Rendering/Core/CubeAxesActor';
 // ----------------------------------------------------------------------------
 // Standard rendering code setup
 // ----------------------------------------------------------------------------
+const container = document.getElementById('view-container');
+const controllerContainer = document.querySelector('#main-controller');
+
 const renderWindow = vtk.Rendering.Core.vtkRenderWindow.newInstance();
 const renderer = vtk.Rendering.Core.vtkRenderer.newInstance({background: [0.2, 0.3, 0.4]});
 renderWindow.addRenderer(renderer);
@@ -17,11 +20,11 @@ fpsElm.style.top = '10px';
 fpsElm.style.background = 'rgba(255,255,255,0.5)';
 fpsElm.style.borderRadius = '5px';
 
-fpsMonitor.setContainer(document.querySelector('#controller-container'));
+fpsMonitor.setContainer(controllerContainer);
 fpsMonitor.setRenderWindow(renderWindow);
 
 
-function createConePipeline() {
+function createConePipeline(render) {
     const modelSource = vtk.Filters.Sources.vtkSphereSource.newInstance(); // vtkConeSource, vtkPlaneSource, vtkSphereSource
     const actor = vtk.Rendering.Core.vtkActor.newInstance();
     const mapper = vtk.Rendering.Core.vtkMapper.newInstance();
@@ -53,12 +56,12 @@ function createConePipeline() {
     // ----------------------------------------------------------------------------
     // Add the actor to the renderer and set the camera based on it
     // ----------------------------------------------------------------------------
-    renderer.addActor(actor);
+    if (render) renderer.addActor(actor);
 
     return {modelSource, mapper, actor};
 }
 
-const pipelines = [createConePipeline(), createConePipeline()];
+const pipelines = [createConePipeline(), createConePipeline(true)];
 
 // Create red wireframe baseline
 pipelines[0].actor.getProperty().setRepresentation(1);
@@ -86,7 +89,6 @@ renderWindow.addView(openglRenderWindow);
 // ----------------------------------------------------------------------------
 // Create a div section to put this into
 // ----------------------------------------------------------------------------
-const container = document.getElementById('viewContainer');
 openglRenderWindow.setContainer(container);
 
 // ----------------------------------------------------------------------------
@@ -161,6 +163,11 @@ document.querySelector('.edgeVisibility').addEventListener('change', (e) => {
 
 document.querySelector('.visibility').addEventListener('change', (e) => {
     pipelines[1].actor.setVisibility(!!e.target.checked);
+    renderWindow.render();
+});
+
+document.querySelector('.pipeline').addEventListener('change', (e) => {
+    !!e.target.checked ? renderer.addActor(pipelines[0].actor) : renderer.removeActor(pipelines[0].actor);
     renderWindow.render();
 });
 
