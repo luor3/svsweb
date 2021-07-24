@@ -1,0 +1,218 @@
+{
+   "name": "Input file configurator",
+    "properties": {
+        
+        "materialFile": {
+            "title": "Name of the material file:",
+            "type": "file",
+            "path":"_INPUT/materials/",
+            "required": true
+        },
+        
+        "meshFile": {
+            "title": "Name of *.mesh file(mesh file, Scale[x y z], Translate[x y z]):",
+            "type": "file",
+            "required": true,
+            "path":"_INPUT/meshes/",
+            "children": {
+                "scale": {
+                    "title": "Scaling Factor",
+                    "type": "Point",
+                    "required": false,
+                    "default": [1.0,  1.0, 10.0]
+                },
+                "stretch": {
+                    "title": "Stretch",
+                    "type": "Point",
+                    "default": [0.0,  0.0,  0.0],
+                    "required": false
+                }
+            }
+        },
+        
+        "waveFile": {
+            "title": "Name of file with incident field information:",
+            "type": "file",
+            "path":"_INPUT/waves/",
+            "required": true
+        },
+        
+        "integrationType": {
+            "title": "Integration Type:",
+            "type": "Select",
+            "default": "Galerkin",
+            "options": [
+                {"title": "Galerkin", "value": "Galerkin"},
+                {"title": "Collocation", "value": "Collocation"}
+            ]
+        },
+        
+        "preconditioner": {
+            "title": "Preconditioner Type",
+            "type": "Select",
+            "default": "No",
+            "options": [
+                {"title": "Right", "value": "Right"},
+                {"title": "Left", "value": "Left"},
+                {"title": "CMP", "value": "CMP"},
+                {"title": "No", "value": "No"}
+            ]
+        },
+        
+        "matrixSolver": {
+            "title": "Matrix Solver",
+            "type": "Select",
+            "default": "LU",
+            "options": [
+                {"title": "LU", "value": "LU"},
+                {"title": "H-Matrix LU", "value": "HLU"},
+                {"title": "GMRES", "value": "GMRES"},
+                {"title": "H-Matrix GMRES", "value": "HGMRES"}
+            ]
+        },
+        
+        "lossModelType": {
+            "title": "LossModel Type",
+            "type": "Select",
+            "default": "NOLOSS",
+            "options": [
+                {"title": "Leontovich", "value": "Leontovich"},
+                {"title": "sigmaT", "value": "sigmaT"},
+                {"title": "NOLOSS", "value": "NOLOSS"}
+            ]
+        },
+        
+        "excitation": {
+            "title": "Excitation",
+            "type": "Select",
+            "options": [
+                {"title": "PlaneWave", "value": "PlaneWave"},
+                {"title": "Dipole", "value": "Dipole"},
+                {"title": "PortS", "value": "PortS"},
+                {"title": "KnownJ", "value": "KnownJ"},
+                {"title": "DipoleViaRWG", "value": "DipoleViaRWG"}
+            ]
+        },
+        
+        "planeWavePolarization": {
+            "title": "Plane wave polarization",
+            "type": "Select",
+            "default": "1",
+            "options": [
+                {"title": "Theta", "value": "1"},
+                {"title": "Phi", "value": "2"}
+            ]
+        },
+        
+        "dipoleLocation": {
+            "title": "Dipole Location",
+            "type": "Select",
+            "_enabled": {"property": "excitation", "value": "Dipole"},
+            "default": "2",
+            "options": [
+                {"title": "[x y z] in meters", "value": "1"},
+                {"title": "[Theta Phi r] in angle and multiple of Wavelength", "value": "2"}
+            ],
+            "children": {
+                "coordinate": {
+                    "title": "X Y Z",
+                    "type": "Point",
+                    "_enabled": {"property": "dipoleLocation", "value": "1"},
+                    "default": [0, 0, 0]
+                },
+                "angle": {
+                    "title": "Theta Phi r",
+                    "type": "Point",
+                    "_enabled": {"property": "dipoleLocation", "value": "2"},
+                    "default": [30,  180,  1000000]
+                }
+            }
+        },
+        
+        "dipoleOrientation": {
+            "title": "Dipole orientation ([x y z] in meters):",
+            "type": "Point",
+            "_enabled": {"property": "excitation", "value": "Dipole"},
+            "default": [0.866,  0.0,  0.5]
+        },
+        
+        "noOfSurfacePorts": {
+            "title": "Number of surface ports:",
+            "_enabled": {"property": "excitation", "value": "PortS"},
+            "type": "Multiple",
+            "children": {
+                "noOfPorts": {
+                    "title": "Number of Ports",
+                    "type": "Number",
+                    "default": 1
+                },
+                "mode": {
+                    "title": "Mode",
+                    "type": "Select",
+                    "default": "point",
+                    "options": [
+                        {"title": "[x y z] in meters", "value": "meters"},
+                        {"title": "Points", "value": "points"}
+                    ]
+                }
+            }
+        },
+        
+        "surfacePort": {
+            "title": "Surface port polylines ([x y z] in meters)",
+            "_enabled": {"property": "excitation", "value": "PortS"},
+            "_numChildren": "noOfSurfacePorts.noOfPorts-0",
+            "type": "Multiple",
+            "children": {
+                "polylines": {
+                    "title": "Poly lines",
+                    "type": "Number",
+                    "default": 1
+                },
+                "flag": {
+                    "title": "Flag",
+                    "type": "Text",
+                    "default": 1
+                },
+                "indexes": {
+                    "title": "Index",
+                    "type": "Number",
+                    "required": true,
+                    "default": 1,
+                    "_repeat": "surfacePort.polylines"
+                }
+            }
+        },
+        
+        "rwgCoefficientsFile": {
+            "title": "Name of file with RWG coefficients:",
+            "type": "file",
+            "path": "_INPUT/KnownJ/",
+            "_enabled": {
+                "property": "excitation", 
+                "value": ["KnownJ", "DipoleViaRWG"]
+            },
+            "default": "None",
+            "required": false
+        },
+        
+        "kernel": {
+            "title": "Kernel",
+            "type": "Select",
+            "default": "FreeSpace",
+            "options": [
+                {"title": "FreeSpace", "value": "FreeSpace"},
+                {"title": "MultiLayer", "value": "MultiLayer"},
+                {"title": "HalfSpace", "value": "HalfSpace"}
+            ],
+            "children": {
+                "elevation": {
+                    "_enabled": {"property": "kernel", "value": "HalfSpace"},
+                    "title": "Elevation",
+                    "type": "Number",
+                    "default": "0.000"
+                }
+            }
+        }
+    }
+}

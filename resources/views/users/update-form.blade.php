@@ -35,7 +35,7 @@
                                     <div class="flex-shrink-0 w-10 h-10">
                                         @if($user->profile_photo_path)
                                         <img class="w-full h-full rounded-full"
-                                            src="{{asset(Storage::disk('local')->url($user->profile_photo_path))}}"
+                                            src="{{ asset(Storage::disk('local')->url($user->profile_photo_path)) }}"
                                             alt="">
                                         @else
                                         <img class="w-full h-full rounded-full" src="https://ui-avatars.com/api/?name={{$user->name}}&color=7F9CF5&background=EBF4FF" alt="{{$user->name}}">
