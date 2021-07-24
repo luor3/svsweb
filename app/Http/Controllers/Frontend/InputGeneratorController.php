@@ -14,7 +14,13 @@ class InputGeneratorController extends Controller
      * 
      * @var array Page info
      */
-    const PAGE_INFO = [];
+    const PAGE_INFO = [
+        'title'         => "Input Generator: SVS-EFIE Solver",
+        'description'   => "SVS-EFIE Solver's Input Generating Feature",
+        'keywords'      => "input, svs, svs-efie, generator, input generator",
+        'content'       => '',
+    ];
+
     
     /**
      * @var string

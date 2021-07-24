@@ -1,4 +1,7 @@
 const mix = require('laravel-mix');
+var path = require('path');
+var vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core.rules;
+var entry = path.join(__dirname, './resources/js/app.js');
 
 /*
  |--------------------------------------------------------------------------
@@ -25,6 +28,41 @@ mix.js('resources/js/app.js', 'public/js')
     mix.copy('node_modules/tinymce/jquery.tinymce.min.js', 'public/node_modules/tinymce/jquery.tinymce.min.js');
     mix.copy('node_modules/tinymce/tinymce.js', 'public/node_modules/tinymce/tinymce.js');
     mix.copy('node_modules/tinymce/tinymce.min.js', 'public/node_modules/tinymce/tinymce.min.js');
+
+
+mix.webpackConfig({
+     module: {
+        rules: [
+            { 
+                test: entry, 
+                loader: 'expose-loader',
+                options: {
+                  exposes: {
+                    globalName: 'MyWebApp',
+                    override: true
+                  },
+                }
+            },
+            { 
+                test: /\.html$/, 
+                use: ['html-loader']
+            },
+            { 
+                test: /\.glsl$/i, 
+                use: ['shader-loader']
+            },
+            { 
+                test: /\.jsx?$/, 
+                use: ['babel-loader'], 
+            },
+            {
+                test: /\.worker\.js$/,
+                use: { loader: "worker-loader" },
+              },
+        ].concat(vtkRules),
+    },
+});
+
 
 if (mix.inProduction()) {
     mix.version();
