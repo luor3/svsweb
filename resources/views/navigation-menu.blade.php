@@ -48,19 +48,42 @@
                 </div>
 
                 <div class="custom-dropdown hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-jet-nav-link href="{{ route('users') }}" :active="request()->routeIs('users') || request()->routeIs('users.create')">
+                    <x-jet-nav-link href="{{ route('users') }}" :active="request()->routeIs('users')">
                         {{ __('Users') }}
+                    </x-jet-nav-link>
+                </div>
+
+
+                <div class="custom-dropdown hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-jet-nav-link href="{{ route('demos') }}" :active="request()->routeIs('demos') || request()->routeIs('demos.create')">
+                        {{ __('Demos') }}
                     </x-jet-nav-link>
                     <div class="dropdown-menu absolute hidden h-auto flex pt-4 mt-14">
                         <ul class="block w-full bg-white shadow">
                             <li class="py-2 px-5">
-                                <x-jet-nav-link href="{{ route('users.create') }}">
-                                    Add User
+                                <x-jet-nav-link href="{{ route('demos.create') }}">
+                                    Add Demo
                                 </x-jet-nav-link>
                             </li>
                         </ul>
                     </div>
                 </div>
+
+                <div class="custom-dropdown hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-jet-nav-link href="{{ route('categories') }}" :active="request()->routeIs('categories') || request()->routeIs('categories.create')">
+                        {{ __('Categories') }}
+                    </x-jet-nav-link>
+                    <div class="dropdown-menu absolute hidden h-auto flex pt-4 mt-14">
+                        <ul class="block w-full bg-white shadow">
+                            <li class="py-2 px-5">
+                                <x-jet-nav-link href="{{ route('categories.create') }}">
+                                    Add Category
+                                </x-jet-nav-link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">

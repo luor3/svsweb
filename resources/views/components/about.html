@@ -1,0 +1,271 @@
+<div class="col-span-6 sm:col-span-full">
+    <x-jet-label class="mt-5" for="output_files" value="{{ __('Output Files (select multiple files)') }}" />
+    <x-jet-input id="output_files" type="file" class="mt-1 block w-full" wire:model="output_files" enctype='multipart/form-data' multiple/>
+    <div class="text-black-500" wire:loading wire:target="output_files">Uploading Multiple Files...</div>
+    <x-jet-input-error for="output_files.*" class="mt-2" />
+</div>
+
+<div class="col-span-6 sm:col-span-full">
+    @foreach($output_file_names as $output_file_name)
+        <x-jet-label value="{{ $output_file_name }}" /> 
+    @endforeach
+</div>
+
+
+
+
+<div class="w-11/12 mx-auto rounded-xl shadow-inner overflow-hidden bg-gray-100">
+    <div class="md:flex">
+        <div class="flex-shrink-1 p-8">
+            <a href="https://umanitoba.ca/" target="_blank">
+                <img class="w-full h-full" src="https://umanitoba.ca//themes/custom/umanitoba/images/logo.svg"
+                    alt="University of Manitoba">
+            </a>
+        </div>
+        <div class="p-8 text-center">
+            <div class="mb-10 uppercase tracking-wide text-sm text-indigo-500 font-semibold">About Solver</div>
+            <p class="mb-10 block text-lg leading-tight font-medium text-black">SVS Solver is developed by Dr
+                Okhmatovski's group of the Department of Electrical & Computer Engineering. The solver can slove
+                different electromagnetic problems given with input files, click 'get start' to obtain more information
+            </p>
+            <p class="text-red-500"><a target="_blank" class="text-primary hover:underline"
+                    href="https://engadvisorsprofiles.cc.umanitoba.ca/user/vladimir_okhmatovski/">Visit Dr Okhmatovski's
+                    website</a>.</p>
+        </div>
+    </div>
+</div>
+
+<div class='mt-20 mx-auto w-11/12'>
+    <h1 class="text-3xl">Members</h1>
+    <div style="border-left: 120px solid #081ee9;" class="border-l-8 border-blue-700 bg-blue-200 w-full h-3 rounded-xl">
+    </div>
+</div>
+
+<div class='w-11/12 mx-auto mt-10'>
+    <div class="flex flex-wrap justify-center md:justify-between">
+        <div class='mb-10 w-11/12 rounded-2xl shadow-2xl overflow-hidden md:w-1/4'>
+            <div class=''>
+                <img class="h-full w-full object-cover transition duration-150 ease-in-out transform hover:scale-125"
+                    src="https://mymodernmet.com/wp/wp-content/uploads/2020/11/International-Landscape-Photographer-Year-PhotographER-1st-KelvinYuen-2.jpg"
+                    alt="University of Manitoba">
+            </div>
+            <div class='relative bg-blue-50 text-center pt-2 text-base'>
+                <h2>Person</h2>
+                <p class='pb-5'>Computer Engineering Student</p>
+                <p>something to say...</p>
+            </div>
+        </div>
+        <div class='mb-10 w-11/12 rounded-2xl shadow-2xl overflow-hidden md:w-1/4'>
+            <div class=''>
+                <img class="h-full w-full object-cover transition duration-150 ease-in-out transform hover:scale-125"
+                    src="https://mymodernmet.com/wp/wp-content/uploads/2020/11/International-Landscape-Photographer-Year-PhotographER-1st-KelvinYuen-2.jpg"
+                    alt="University of Manitoba">
+            </div>
+            <div class='relative bg-blue-50 text-center pt-2 text-base'>
+                <h2>Person</h2>
+                <p class='pb-5'>Computer Engineering Student</p>
+                <p>something to say...</p>
+            </div>
+        </div>
+        <div class='mb-10 w-11/12 rounded-2xl shadow-2xl overflow-hidden md:w-1/4'>
+            <div class=''>
+                <img class="h-full w-full object-cover transition duration-150 ease-in-out transform hover:scale-125"
+                    src="https://mymodernmet.com/wp/wp-content/uploads/2020/11/International-Landscape-Photographer-Year-PhotographER-1st-KelvinYuen-2.jpg"
+                    alt="University of Manitoba">
+            </div>
+            <div class='relative bg-blue-50 text-center pt-2 text-base'>
+                <h2>Person</h2>
+                <p class='pb-5'>Computer Engineering Student</p>
+                <p>something to say...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="w-11/12 mx-auto rounded-xl shadow-md overflow-hidden bg-blue-100 mt-20 text-base">
+    <form action="/submit/contact" method='POST' class='flex flex-col p-8' id="about-form">
+        <div class="text-center text-3xl text-blue-800">Contact Information</div>
+
+        <input id="csrf_purpose" type="hidden" name="_token" />
+
+        <label class='mb-2 uppercase font-bold text-lg text-gray-600'>*Email Address</label>
+        <input
+            class='bg-white text-gray-700 placeholder-gray-400 shadow-md rounded-lg text-base appearance-none mb-10 py-2 px-3 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent'
+            type="text" placeholder="Your Email" name='email' id='contact-email'>
+
+        <label class='mb-2 uppercase font-bold text-lg text-gray-600'>*Contact Name</label>
+        <input
+            class='bg-white text-gray-700 placeholder-gray-400 shadow-md rounded-lg text-base appearance-none mb-10 py-2 px-3 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent'
+            type="text" placeholder="Your Name" name='name' id='contact-name'>
+
+        <label class='mb-2 uppercase font-bold text-lg text-gray-600'>*Text Message</label>
+        <textarea
+            class='bg-white text-gray-700 placeholder-gray-400 shadow-md rounded-lg appearance-none py-2 px-3 mb-10 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent'
+            rows="9" placeholder="Your Text Message" name="message" id="contact-message"></textarea>
+
+        <input type="button" value='submit' onclick="submit_about_form()"
+            class='transition duration-150 ease-in-out bg-blue-600 hover:bg-red-600 transform hover:-translate-y-1 hover:scale-110 mx-auto mt-10 p-4 text-white rounded' />
+    </form>
+</div>
+
+
+<div class="hidden flex flex-col overflow-hidden justify-between inset-0 m-auto h-3/5 w-full fixed bg-red-100 text-red-700 rounded-lg z-50 md:w-1/4 md:h-1/4"
+    id="contact-fail-alert">
+    <strong class="text-center font-bold pt-4">Notice!</strong>
+    <span class="px-2 text-center"></span>
+    <button onclick="popupClose()"
+        class="items-center py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none"
+        title="Close">Close</button>
+</div>
+
+
+<script>
+    function popupClose() {
+        document.getElementById("contact-fail-alert").setAttribute("class", "hidden");
+    }
+
+    function popupShow(isFail) {
+        if (!isFail) {
+            document.querySelector('#contact-fail-alert > span').innerHTML='The contact information has been successfully uploaded into our website!';
+            document.getElementById("contact-fail-alert").setAttribute("class", "flex flex-col overflow-hidden justify-between inset-0 m-auto h-3/5 w-full fixed bg-green-100 text-green-700 rounded-lg z-50 md:w-1/4 md:h-1/4");
+            
+        }
+        else {
+            document.querySelector('#contact-fail-alert > span').innerHTML = 'The contact information cannot be uploaded into our website right now, maybe try it later.';
+            document.getElementById("contact-fail-alert").setAttribute("class", "flex flex-col overflow-hidden justify-between inset-0 m-auto h-3/5 w-full fixed bg-red-100 text-red-700 rounded-lg z-50 md:w-1/4 md:h-1/4");
+        }
+    }
+
+
+    function submit_about_form() {
+        var checkPass = true;
+
+        if (!emailCheck(document.getElementById("contact-email").value)) {
+            setAlertBox("contact-email", "Email Address cannot be empty or the email address format is incrroect!");
+            document.getElementById("contact-email").value = '';
+            checkPass = false;
+        } else
+            setBack("contact-email");
+
+        if (document.getElementById("contact-message").value.trim() == '') {
+            setAlertBox("contact-message", "Text Message Cannot be Empty!");
+            checkPass = false;
+        } else
+            setBack("contact-message");
+
+        if (document.getElementById("contact-name").value.trim() == '') {
+            setAlertBox("contact-name", "Name Cannot be Empty!");
+            checkPass = false;
+        } else
+            setBack("contact-name");
+
+        if (checkPass) {
+            var csrf_purpose = document.getElementById("csrf_purpose");
+            var att = document.createAttribute("value");
+            att.value = document.querySelector('meta[name="csrf-token"]').content;
+            csrf_purpose.setAttributeNode(att);
+            ajaxSubmit();
+        }
+
+        function emailCheck(email) {
+            const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+            return emailPattern.test(String(email).toLowerCase());
+        }
+
+        function setAlertBox(eID, message) {
+            document.getElementById(eID).setAttribute("placeholder", message);
+            document.getElementById(eID).setAttribute("class", "appearance-none text-gray-700 shadow-md appearance-none placeholder-red-300 border border-red-400 rounded-md text-base mb-10 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-transparent");
+        }
+
+        function setBack(eID) {
+            document.getElementById(eID).setAttribute("class", "bg-white text-gray-700 placeholder-gray-400 shadow-md rounded-lg text-base appearance-none mb-10 py-2 px-3 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent");
+        }
+
+        function ajaxSubmit() {
+            const toSend = {
+                _token: document.querySelector('meta[name="csrf-token"]').content,
+                email: document.getElementById("contact-email").value,
+                name: document.getElementById("contact-name").value,
+                message: document.getElementById("contact-message").value
+            };
+            const jsonToSend = JSON.stringify(toSend);
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.onload = function () {
+                statusResponse = JSON.parse(xhr.response);
+                if (statusResponse.submitType === 'contact' && statusResponse.success){
+                    popupShow(false);
+                    resetForm();
+                }                 
+                else
+                    popupShow(true);
+            }
+
+            xhr.open("POST", "/submit/contact");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(jsonToSend);
+
+
+            <!-- document.getElementById("about-form").submit(); -->
+        }
+
+        function resetForm(){
+            document.getElementById("contact-email").value = '';
+            document.getElementById("contact-name").value = '';
+            document.getElementById("contact-message").value = '';
+        }
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+    <div class="p-5 mt-10 mb-32 w-11/12 bg-blue-50 mx-auto rounded-2xl shadow-2xl overflow-hidden md:w-3/4">
+        <h1 class="font-bold text-2xl mb-4">Input Generator</h1>
+        @foreach($inputInfo['properties'] as $property)
+        <div class="">
+            <x-jet-label class="mt-5 mb-2 text-gray-700" for="{{$property}}" value="{{ $property }}" />
+            @if(isset($inputInfo['selectable'][$property]))
+                <select
+                    class="form-select block w-full mt-1 rounded-lg" id="searchCategory"
+                    wire:model="inputValue.{{$property}}">
+                    <option value="0">Select the Value</option>
+                    @foreach($inputInfo['selectable'][$property] as $selection)
+                        <option value="{{$selection}}">{{$selection}}</option>
+                    @endforeach
+                </select> 
+            @else
+                @for ($i = 0; $i < $inputInfo['appendNum'][$property]; $i++)
+                <input
+                    class='bg-white text-gray-700 placeholder-gray-400 shadow-md rounded-lg text-base appearance-none mb-10 py-2 px-3 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent'
+                    type="text" placeholder="{{ isset($inputInfo['hint'][$property]) ? $inputInfo['hint'][$property][$i] :$property }}" id="{{$property.'-'.$i}}" wire:model.lazy="inputValue.{{$property}}.{{$i}}">
+                @endfor
+            @endif
+        </div>
+        @endforeach
+        <button class="mt-5 mb-5 py-2 px-4 bg-blue-300 text-white font-semibold rounded-lg shadow-md hover:bg-red-500 focus:outline-none" wire:click="generateFile" wire:loading.attr="disabled">
+            Generate File
+        </button>
+
+        <button class="mt-5 mb-5 py-2 px-4 bg-blue-300 text-white font-semibold rounded-lg shadow-md hover:bg-red-500 focus:outline-none" wire:click="generateFile" wire:loading.attr="disabled">
+            Generate XML File
+        </button>
+    </div>
+</div>

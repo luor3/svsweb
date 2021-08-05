@@ -19,6 +19,9 @@
             <x-site-link href="{{ url('/input-generator') }}" :active="request()->routeIs('input-generator')">
                 Input Generator
             </x-site-link>
+            <x-site-link href="{{ url('/input-generator') }}" :active="request()->routeIs('input-generator') || request()->getPathInfo() == '/input-generator'">
+                Generate Input File
+            </x-site-link>
             <x-site-link href="{{ url('/about') }}" :active="request()->getPathInfo() == '/about'">
                 About
             </x-site-link>

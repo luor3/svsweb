@@ -4,7 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\DemosController;
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\GetstartedController;
 use App\Http\Controllers\Frontend\DynamicPagesController;
 use App\Http\Controllers\Frontend\InputGeneratorController;
 
@@ -27,7 +30,10 @@ use App\Http\Controllers\Frontend\InputGeneratorController;
 
 Route::get('/', HomeController::class)->name('homepage');
 
-Route::get('/input-generator', [InputGeneratorController::class, 'show'])->name("input-generator");
+Route::get('/demos', GetstartedController::class)->name('demopage');
+
+Route::get('/input-generator', InputGeneratorController::class)->name('input-generator');
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
@@ -45,7 +51,16 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/pages')->group(fu
 
 Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/users')->group(function () {
     Route::get('/', [UsersController::class, 'show'])->name('users');
-    Route::get('/create', [UsersController::class, 'showCreate'])->name('users.create');
+});
+
+Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/demos')->group(function () {
+    Route::get('/', [DemosController::class, 'show'])->name('demos');
+    Route::get('/create', [DemosController::class, 'showCreate'])->name('demos.create');
+});
+
+Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/categories')->group(function () {
+    Route::get('/', [CategoriesController::class, 'show'])->name('categories');
+    Route::get('/create', [CategoriesController::class, 'showCreate'])->name('categories.create');
 });
 
 

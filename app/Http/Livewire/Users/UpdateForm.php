@@ -101,13 +101,6 @@ class UpdateForm extends Component
     ];
 
 
-    public function mount(Request $request)
-    {
-        //$this->searchTerm = $request->input('searchTerm');
-        //$this->role = $request->input('role');
-        //$this->pageNum = $request->input('pageNum');
-    }
-
     /**
      * 
      * @return array

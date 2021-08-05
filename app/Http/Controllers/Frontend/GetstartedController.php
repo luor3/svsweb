@@ -6,26 +6,21 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Page;
 use App\Models\App;
+use App\Models\Demo;
 
-
-class InputGeneratorController extends Controller
+class GetstartedController extends Controller
 {
+
     /**
      * 
      * @var array Page info
      */
-    const PAGE_INFO = [
-        'title'         => "Input Generator: SVS-EFIE Solver",
-        'description'   => "SVS-EFIE Solver's Input Generating Feature",
-        'keywords'      => "input, svs, svs-efie, generator, input generator",
-        'content'       => '',
-    ];
-
+    const PAGE_INFO = [];
     
     /**
      * @var string
      */
-    const TEMPLATE_FILE = 'frontinputgenerator';
+    const TEMPLATE_FILE = 'frontdemo';
 
 
     /**
