@@ -1,0 +1,101 @@
+# This is a sample build configuration for PHP.
+# Check our guides at https://confluence.atlassian.com/x/e8YWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: php:7.2-fpm
+
+pipelines:
+    branches:
+        develop:
+            - step:
+                name: Build & Test
+                caches:
+                  - composer
+                  - node
+                script:
+                  - apt-get update && apt-get install -qy git curl libmcrypt-dev default-mysql-client
+                  - yes | pecl install mcrypt-1.0.1
+                  - apt-get install -y libgmp-dev re2c libmhash-dev file
+                  - ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
+                  - docker-php-ext-configure gmp 
+                  - docker-php-ext-install gmp
+                  - docker-php-ext-install pdo_mysql
+                  - docker-php-ext-enable sodium
+                  - docker-php-ext-enable gmp
+                  - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+                  - composer install
+                  - curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh
+                  - bash nodesource_setup.sh
+                  - apt-get install nodejs -y
+                  - npm install
+                  - npm run prod
+                  - ln -f -s .env.pipelines .env
+                  - php artisan migrate
+                  - php artisan serve &
+                  - sleep 5
+                  - ./vendor/bin/phpunit
+                  - curl -vk http://localhost:8000
+                  - apt-get update
+                  - apt-get -qq install git-ftp
+                  - git status -uno --porcelain
+                  - git checkout package-lock.json
+                services:
+                  - mysql
+#            - step:
+#                name: Deployment - deploy to master
+#                script:
+#                    - git checkout master
+#                    - git merge develop
+#                    - git push origin master
+                  
+        master:
+            - step:
+                name: Build & Test
+                caches:
+                  - composer
+                  - node
+                script:
+                  - apt-get update && apt-get install -qy git curl libmcrypt-dev default-mysql-client
+                  - yes | pecl install mcrypt-1.0.1
+                  - apt-get install -y libgmp-dev re2c libmhash-dev file
+                  - ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
+                  - docker-php-ext-configure gmp 
+                  - docker-php-ext-install gmp
+                  - docker-php-ext-install pdo_mysql
+                  - docker-php-ext-enable sodium
+                  - docker-php-ext-enable gmp
+                  - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+                  - composer install
+                  - curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh
+                  - bash nodesource_setup.sh
+                  - apt-get install nodejs -y
+                  - npm install
+                  - npm run prod
+                  - ln -f -s .env.pipelines .env
+                  - php artisan migrate
+                  - php artisan serve &
+                  - sleep 5
+                  - ./vendor/bin/phpunit
+                  - curl -vk http://localhost:8000
+                  - apt-get update
+                  - apt-get -qq install git-ftp
+                  - git status -uno --porcelain
+                  - git checkout package-lock.json
+                services:
+                  - mysql
+            - step:
+                name: Deployment - deploy to live
+                script:
+                  #- git ftp push --user $FTP_USERNAME --passwd $FTP_PASSWORD ftp://$FTP_HOST
+                  - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git HEAD
+
+definitions:
+  services:
+    mysql:
+      image: mysql:5.7
+      environment:
+        MYSQL_DATABASE: 'svsweb'
+        MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+        MYSQL_USER: 'svsweb'
+        MYSQL_PASSWORD: 'svsweb'
