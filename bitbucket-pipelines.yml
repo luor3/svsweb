@@ -57,7 +57,7 @@ pipelines:
                   - node
                 script:
                   - apt-get update && apt-get install -qy git curl libmcrypt-dev default-mysql-client
-                  - yes | pecl install mcrypt-1.0.1
+                  - yes | pecl install mcrypt-1.0.2
                   - apt-get install -y libgmp-dev re2c libmhash-dev file
                   - ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
                   - docker-php-ext-configure gmp 
@@ -85,7 +85,7 @@ pipelines:
                 services:
                   - mysql
             - step:
-                name: Deployment - deploy to live
+                name: deployment - deploy to live
                 script:
                   #- git ftp push --user $FTP_USERNAME --passwd $FTP_PASSWORD ftp://$FTP_HOST
                   - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git HEAD
