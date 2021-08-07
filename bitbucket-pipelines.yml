@@ -67,7 +67,7 @@ pipelines:
                   - docker-php-ext-enable gmp
                   - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
                   - composer install
-                  - curl -sL https://deb.nodesource.com/setup_10.x -o nodesource_setup.sh
+                  - curl -sL https://deb.nodesource.com/setup_14.x -o nodesource_setup.sh
                   - bash nodesource_setup.sh
                   - apt-get install nodejs -y
                   - npm install
