@@ -51,7 +51,7 @@ pipelines:
                   
         master:
             - step:
-                name: Build & Test
+                name: Build, Test and Deployment
                 caches:
                   - composer
                   - node
@@ -82,13 +82,10 @@ pipelines:
                   - apt-get -qq install git-ftp
                   - git status -uno --porcelain
                   - git checkout package-lock.json
-                services:
-                  - mysql
-            - step:
-                name: deployment - deploy to live
-                script:
                   #- git ftp push --user $FTP_USERNAME --passwd $FTP_PASSWORD ftp://$FTP_HOST
                   - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git HEAD
+                services:
+                  - mysql
 
 definitions:
   services:
