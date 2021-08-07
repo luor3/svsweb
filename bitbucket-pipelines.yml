@@ -3,7 +3,7 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: php:7.2-fpm
+image: php:7.3-fpm
 
 pipelines:
     branches:
@@ -15,7 +15,7 @@ pipelines:
                   - node
                 script:
                   - apt-get update && apt-get install -qy git curl libmcrypt-dev default-mysql-client
-                  - yes | pecl install mcrypt-1.0.1
+                  - yes | pecl install mcrypt-1.0.2
                   - apt-get install -y libgmp-dev re2c libmhash-dev file
                   - ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/
                   - docker-php-ext-configure gmp 
