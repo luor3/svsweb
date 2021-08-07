@@ -8,22 +8,59 @@ use Illuminate\Support\Facades\Storage;
 class InputGenerator extends Component
 {
 
+    /**
+     * 
+     * @return array
+     */
     public $inputInfo;
 
+
+    /**
+     * 
+     * @return array
+     */
     public $inputValue;
 
+
+    /**
+     * 
+     * @return array
+     */
     public $enableSeq;
 
-    public $childrenNum;
 
-    public $tempChildren;
+    /**
+     * 
+     * @return array
+     */
+    public $repeatNum;
 
 
+    /**
+     * 
+     * @return array
+     */
+    public $validationRules;
+
+    /**
+     * 
+     * @return array
+     */
+    protected function rules()
+    {
+        return $this->validationRules;
+    }
+
+
+    /**
+     * initialize 
+     * @return void
+     */
     public function mount()
     {
         $this->loadInputInfo();
         $this->initSys();
-        //dd($this->childrenNum);
+        //dd($this->validationRules);
     }
 
 
@@ -50,143 +87,297 @@ class InputGenerator extends Component
         {
             foreach($this->inputInfo['properties'] as $key => $property)
             {                        
-                $this->inputValue[$key]['value'] = (isset($property['default'])) ? $property['default'] : null;
-                $this->enableSeq[$key]['main'] = (isset($property['_enabled']))? false : true;  
-                $this->childrenNum[$key] = (isset($property['children']))? 1 : 0;        
+                $this->inputValue[$key]['main'] = (isset($property['default'])) ? $property['default'] : null;
+                $this->validationRules["inputValue.".$key.".main"] = $this->validationHelper($property['type']);
+
+
+                if(isset($property['_enabled']))
+                {
+                   $this->enableSeq[$key]['main'] = false;   
+                }
+                
+                if(isset($property['_repeat']))
+                {
+                    $this->repeatNum[$key]['main'] = 0;
+                }
+                        
 
                 if(isset($property['children']))
                 {
-                    for($i = 0 ; $i < $this->childrenNum[$key] ; $i++)
-                    {
-                        foreach($property['children'] as $cKey => $cProperty)
-                        {                    
-                            $this->inputValue[$key][$cKey.'-'.$i] = (isset($cProperty['default'])) ? $cProperty['default'] : null;
-                            $this->enableSeq[$key][$cKey.'-'.$i] = (isset($cProperty['_enabled']))? false : true;
-                        } 
+                    $this->inputValue[$key]['children'] = [];
+                    $childSet = [];
+
+                    foreach($property['children'] as $cKey => $cProperty)
+                    {                    
+                                    
+                        if(!isset($property['_repeat']))
+                        {
+                            $childSet[$cKey] = (isset($cProperty['default'])) ? $cProperty['default'] : null;
+                            $this->validationRules["inputValue.".$key.".children.0.".$cKey] = $this->validationHelper($cProperty['type']);
+                        }
+                        
+                        if(isset($cProperty['_enabled']))
+                        {
+                            $this->enableSeq[$key][$cKey] = false; 
+                        }
+
+                        if(isset($cProperty['_repeat']))
+                        {
+                            $this->repeatNum[$key]['children'] = [];
+                        }
+       
                     }
-                    
-                }
+                    if(!isset($property['_repeat']))
+                    {
+                        array_push($this->inputValue[$key]['children'], $childSet);
+                    }           
+                }               
             }
             $this->updatedInputValue();
-            $this->refreshCNum();
         }
     }
 
     public function updatedInputValue()
     {
-        if(!(isset($this->enableSeq) && isset($this->inputValue) && isset($this->inputInfo)))
+        if(!(isset($this->enableSeq) && isset($this->inputValue) && isset($this->repeatNum)))
         {
             return;
         }
-            
+        $this->refreshRepeatNum();
+        $this->refreshESeq();
+    }
+
+
+    private function refreshESeq()
+    {
         foreach ($this->enableSeq as $key => &$property)
         {
             $inputProperty = $this->inputInfo['properties'][$key];
             foreach ($property as $cKey => &$enable)
             {                  
                 $enabledInfo = null;
-                if($cKey === "main" && isset($inputProperty['_enabled']))
-                    $enabledInfo = $inputProperty['_enabled'];
-                   
-                else if(isset($inputProperty['children']) && isset($inputProperty['children'][explode('-',$cKey)[0]]['_enabled']))
-                    $enabledInfo = $inputProperty['children'][explode('-',$cKey)[0]]['_enabled'];
+                if($cKey === "main")
+                    $enabledInfo = $inputProperty['_enabled'];          
+                else
+                    $enabledInfo = $inputProperty['children'][$cKey]['_enabled'];
 
                 if(isset($enabledInfo))
                 {
-                    if(is_array($enabledInfo['value']))
+                    $array_val = is_array($enabledInfo['value']) ? $enabledInfo['value'] : [$enabledInfo['value']];
+                    $enable = (in_array($this->inputValue[$enabledInfo['property']]['main'] , $array_val)) ? true : false;                       
+                }
+            }
+        }
+    }
+
+
+    private function refreshRepeatNum()
+    {
+        if(!isset($this->repeatNum)) return;
+
+        foreach ($this->repeatNum as $pName => &$repeatSet)
+        {
+            $oldChildrenNum = $repeatSet['main'];
+
+            //update new children num
+            if(isset($repeatSet['main']))
+            {
+                $valuePath = $this->inputInfo['properties'][$pName]['_repeat'];
+                $valuePath_array = explode(".",trim($valuePath," \r\n\t"));
+                $tempInt = null;
+                foreach ($valuePath_array as $index)
+                {
+                    if($tempInt)
+                        $tempInt = $tempInt[$index];
+                    else
+                        $tempInt = $this->inputValue[$index];
+                }
+                $repeatSet['main'] = ((int)$tempInt < 0) ? 0 : (int)$tempInt;
+            }
+                 
+             //children generation
+            if(isset($repeatSet['main']))
+            {
+                $newCNum = $repeatSet['main'];
+                
+
+                //add child
+                if($oldChildrenNum <= $newCNum)
+                {
+                    $childSet = [];
+                    $repeatChildSet = [];
+                    foreach ($this->inputInfo['properties'][$pName]['children'] as $key => $value)
                     {
-                        $enable = false;
-                        foreach ($enabledInfo['value'] as $value)
+                        if(!isset($value['_repeat']))
                         {
-                            if($value === $this->inputValue[$enabledInfo['property']]['value'])
+                            $childSet[$key] = (isset($value['default'])) ? $value['default'] : null;
+                        }
+                        else
+                        {
+                            $childSet[$key] = [];
+                            $repeatChildSet[$key] = 0;        
+                        } 
+                    }
+
+
+                    for($i = 0 ; $i < ($newCNum - $oldChildrenNum) ; $i++)
+                    {
+                        array_push($this->inputValue[$pName]['children'], $childSet);
+
+                        if(count($repeatChildSet) > 0)
+                        {
+                            array_push($this->repeatNum[$pName]['children'], $repeatChildSet);
+                        }
+                    }
+                }
+                //clear child
+                else
+                {
+                    for($i = 0 ; $i < ($oldChildrenNum - $newCNum) ; $i++)
+                    {
+                        array_pop($this->inputValue[$pName]['children']);
+                        if(isset($this->repeatNum[$pName]['children']) && count($this->repeatNum[$pName]['children']) > 0)
+                        {
+                            array_pop($this->repeatNum[$pName]['children']);
+                        }
+                    }
+                }
+            }
+            
+            //original _repeat operation
+            if(isset($repeatSet['children']))
+            {
+                for($i = 0 ; $i < count($repeatSet['children']) ; $i++ )
+                {
+                    $childRepeatNum = &$repeatSet['children'][$i];
+
+                    //update child repeat num
+                    foreach ($childRepeatNum as $cName => &$repeatValue)
+                    {
+                        $childrenInstance = $this->inputInfo['properties'][$pName]['children'][$cName];
+                        $cRepeatInfo = $childrenInstance['_repeat'];
+                        $oldCRepeatNum = $repeatValue;
+                        if($cRepeatInfo = preg_replace("/(cself.)/i", '' ,$cRepeatInfo))
+                        {
+                            $repeatValue = (int)$this->inputValue[$pName]['children'][$i][$cRepeatInfo];
+                            $repeatValue = ($repeatValue < 0) ? 0 : $repeatValue;
+                        }
+
+
+                        //add
+                        if($oldCRepeatNum <= $repeatValue)
+                        {
+                            for($j = 0 ; $j < ($repeatValue - $oldCRepeatNum) ; $j++)
                             {
-                                $enable = true;
-                                return;
+                                array_push($this->inputValue[$pName]['children'][$i][$cName], (isset($childrenInstance['default'])) ? $childrenInstance['default'] : null);
+                            }
+                        }
+
+                        //clear
+                        else
+                        {
+                            for($j = 0 ; $j < ($oldCRepeatNum - $repeatValue) ; $j++)
+                            {
+                                array_pop($this->inputValue[$pName]['children'][$i][$cName]);
                             }
                         }
                     }
-                    else
-                        $enable = ($enabledInfo['value'] === $this->inputValue[$enabledInfo['property']]['value'])? true : false;   
                 }
             }
         }
-
-        $this->refreshCNum();
     }
 
-    private function refreshCNum()
-    {
-        foreach($this->inputInfo['properties'] as $key => $property)
-        {                        
-            $oldChildrenNum = $this->childrenNum[$key];
-            if(isset($property['_numChildren']))
-            {
-                $nestedChild = $this->prasenumChildren($property['_numChildren']);
-                $nestedValue = $this->inputValue;
-                for ($i = 0; $i < count($nestedChild); $i++)
-                {
-                    $nestedValue = $nestedValue[$nestedChild[$i]];
-                }
-                $this->childrenNum[$key] = (int)$nestedValue;
-            }
 
-            if(isset($property['children']))
-            {
-                $start = ($oldChildrenNum <= $this->childrenNum[$key])? $oldChildrenNum : 0;
-                if($start == 0)
-                {
-                    $oldInputValue = $this->inputValue[$key]['value'];
-                    unset($this->inputValue[$key]);
-                    $this->inputValue[$key]['value'] = $oldInputValue;
-
-                    $oldEnableSeq = $this->enableSeq[$key]['main'];
-                    unset($this->enableSeq[$key]);
-                    $this->enableSeq[$key]['main'] = $oldEnableSeq;
-                }
-                    
-                for($i = $start ; $i < $this->childrenNum[$key] ; $i++)
-                {
-                    foreach($property['children'] as $cKey => $cProperty)
-                    {                    
-                        $this->inputValue[$key][$cKey.'-'.$i] = (isset($cProperty['default'])) ? $cProperty['default'] : null;
-                        $this->enableSeq[$key][$cKey.'-'.$i] = (isset($cProperty['_enabled']))? false : true;
-                    } 
-                }
-                
-            }
-        }
-    }
-
-    private function prasenumChildren($inputString)
-    {
-        return explode(".",trim($inputString," \r\n\t"));
-    }
-
-    public function generateChildren()
-    {
-
-    }
 
     public function generateFile()
     {
-        $filename = Storage::disk('public')->path('utils'. '/' . 'input.input');
+        $this->validate();
+        
+        $filename = Storage::disk('public')->path('input.input');
         $writeStr = '';
 
         foreach ($this->inputInfo['properties'] as $key => $property)
         {
             
-            $writeStr .= $property['title']."\r\n";
-            foreach ($this->inputValue[$key] as $cKey => $value)
+            $writeStr .= $property['title'].PHP_EOL;
+            foreach ($this->inputValue[$key] as $vKey => $value)
             {
                 if(is_null($value))
                 {
                     continue;
                 }
-                $val = is_array($value) ? $value : [$value];
-                $writeStr .= sprintf("%s\r\n", implode(' ', $val));
+
+                if($vKey === "main")
+                {
+                    $val = is_array($value) ? $value : [$value];
+                    $this->fileGenerationHelper($writeStr, $val, $key);                  
+                }
+                else if($vKey === "children")
+                {
+                    foreach ($value as $cIndex => $cValues)
+                    {
+                        foreach($cValues as $cName => $cValue)
+                        {
+                            $val = is_array($cValue) ? $cValue : [$cValue];
+                            $this->fileGenerationHelper($writeStr, $val, $key, $cName);                                                                          
+                        }                       
+                    }
+                }    
             }
             $writeStr .= "\r\n";
         }
         file_put_contents($filename,$writeStr);
+    }
+
+    private function fileGenerationHelper(&$writeStr, $val, $pName = null ,$cName = null)
+    {             
+        $property = $this->inputInfo['properties'][$pName];
+
+        if(isset($property['children'][$cName]['fileDisplay']) || isset($property['fileDisplay']))
+        {
+            $fileDisplayType = $cName ? $property['children'][$cName]['fileDisplay'] : $property['fileDisplay'];
+            switch ($fileDisplayType) {
+                case "NOEOL":
+                    $writeStr .= sprintf("%s ", implode(' ', $val));
+                    break;
+                case "VERTICAL":
+                    foreach($val as $v)
+                    {
+                        $writeStr .= $v.PHP_EOL;
+                    }
+                    break;    
+                case "ENABLED":
+                    if($cName && $pName && $this->enableSeq[$pName][$cName])
+                    {
+                        $writeStr .= sprintf("%s".PHP_EOL, implode(' ', $val));
+                    }
+                    break;   
+            }  
+        }
+        else
+        {
+            $writeStr .= sprintf("%s".PHP_EOL, implode(' ', $val));
+        }                       
+    }
+
+    private function validationHelper($type)
+    {   
+        $result = "Nullable|max:255";
+
+        switch ($type) {
+            case 'file':
+                $result = "required|max:255";
+                break;
+            
+            case 'point':
+                $result = "regex:/^([-+]?[0-9]*\.?[0-9]+)\s([-+]?[0-9]*\.?[0-9]+)\s([-+]?[0-9]*\.?[0-9]+)/|max:255";
+                break;
+
+            case 'number':
+                $result = "numeric";
+                break;
+        }
+
+        return $result;
     }
 }

@@ -2,10 +2,21 @@
    "name": "Input file configurator",
     "properties": {
         
+        "solverType": {
+            "title": "IE-Solver (EFIE || SVS-EFIE):",
+            "type": "select",
+            "default": "SVS-EFIE",
+            "options": [
+                {"title": "SVS-EFIE", "value": "SVS-EFIE"},
+                {"title": "EFIE", "value": "EFIE"}
+            ]
+        },
+
         "materialFile": {
             "title": "Name of the material file:",
             "type": "file",
-            "path":"_INPUT/materials/",
+            "htmlType": "text",
+            "default":"_INPUT/materials/",
             "required": true
         },
         
@@ -13,18 +24,21 @@
             "title": "Name of *.mesh file(mesh file, Scale[x y z], Translate[x y z]):",
             "type": "file",
             "required": true,
-            "path":"_INPUT/meshes/",
+            "default":"_INPUT/meshes/",
+            "htmlType": "text",
             "children": {
                 "scale": {
                     "title": "Scaling Factor",
-                    "type": "Point",
+                    "type": "point",
+                    "htmlType": "text",
                     "required": false,
-                    "default": [1.0,  1.0, 10.0]
+                    "default": "1.0 1.0 10.0"
                 },
                 "stretch": {
                     "title": "Stretch",
-                    "type": "Point",
-                    "default": [0.0,  0.0,  0.0],
+                    "type": "point",
+	                "htmlType": "text",
+                    "default": "0.0 0.0 0.0",
                     "required": false
                 }
             }
@@ -33,13 +47,14 @@
         "waveFile": {
             "title": "Name of file with incident field information:",
             "type": "file",
-            "path":"_INPUT/waves/",
+            "htmlType": "text",
+            "default":"_INPUT/waves/",
             "required": true
         },
         
         "integrationType": {
             "title": "Integration Type:",
-            "type": "Select",
+            "type": "select",
             "default": "Galerkin",
             "options": [
                 {"title": "Galerkin", "value": "Galerkin"},
@@ -49,7 +64,7 @@
         
         "preconditioner": {
             "title": "Preconditioner Type",
-            "type": "Select",
+            "type": "select",
             "default": "No",
             "options": [
                 {"title": "Right", "value": "Right"},
@@ -61,7 +76,7 @@
         
         "matrixSolver": {
             "title": "Matrix Solver",
-            "type": "Select",
+            "type": "select",
             "default": "LU",
             "options": [
                 {"title": "LU", "value": "LU"},
@@ -73,7 +88,7 @@
         
         "lossModelType": {
             "title": "LossModel Type",
-            "type": "Select",
+            "type": "select",
             "default": "NOLOSS",
             "options": [
                 {"title": "Leontovich", "value": "Leontovich"},
@@ -84,7 +99,7 @@
         
         "excitation": {
             "title": "Excitation",
-            "type": "Select",
+            "type": "select",
             "options": [
                 {"title": "PlaneWave", "value": "PlaneWave"},
                 {"title": "Dipole", "value": "Dipole"},
@@ -96,7 +111,7 @@
         
         "planeWavePolarization": {
             "title": "Plane wave polarization",
-            "type": "Select",
+            "type": "select",
             "default": "1",
             "options": [
                 {"title": "Theta", "value": "1"},
@@ -106,9 +121,10 @@
         
         "dipoleLocation": {
             "title": "Dipole Location",
-            "type": "Select",
+            "type": "select",
             "_enabled": {"property": "excitation", "value": "Dipole"},
             "default": "2",
+            "fileDisplay": "NOEOL",
             "options": [
                 {"title": "[x y z] in meters", "value": "1"},
                 {"title": "[Theta Phi r] in angle and multiple of Wavelength", "value": "2"}
@@ -116,40 +132,46 @@
             "children": {
                 "coordinate": {
                     "title": "X Y Z",
-                    "type": "Point",
+                    "type": "point",
+	                "htmlType": "text",
                     "_enabled": {"property": "dipoleLocation", "value": "1"},
-                    "default": [0, 0, 0]
+                    "fileDisplay": "ENABLED",
+                    "default": "0 0 0"
                 },
                 "angle": {
                     "title": "Theta Phi r",
-                    "type": "Point",
+                    "type": "point",
+	                "htmlType": "text",
                     "_enabled": {"property": "dipoleLocation", "value": "2"},
-                    "default": [30,  180,  1000000]
+	                "fileDisplay": "ENABLED",
+                    "default": "30 180 1000000"
                 }
             }
         },
         
         "dipoleOrientation": {
             "title": "Dipole orientation ([x y z] in meters):",
-            "type": "Point",
+            "type": "point",
+            "htmlType": "text",
             "_enabled": {"property": "excitation", "value": "Dipole"},
-            "default": [0.866,  0.0,  0.5]
+            "default": "0.866 0.0 0.5"
         },
         
         "noOfSurfacePorts": {
             "title": "Number of surface ports:",
             "_enabled": {"property": "excitation", "value": "PortS"},
-            "type": "Multiple",
+            "type": "multiple",
             "children": {
                 "noOfPorts": {
                     "title": "Number of Ports",
-                    "type": "Number",
-                    "default": 1
+                    "type": "number",
+	                "htmlType": "number",
+                    "default": 2
                 },
                 "mode": {
                     "title": "Mode",
-                    "type": "Select",
-                    "default": "point",
+                    "type": "select",
+                    "default": "points",
                     "options": [
                         {"title": "[x y z] in meters", "value": "meters"},
                         {"title": "Points", "value": "points"}
@@ -159,27 +181,34 @@
         },
         
         "surfacePort": {
-            "title": "Surface port polylines ([x y z] in meters)",
+            "title": "Surface port polylines ([x y z] in meters):",
             "_enabled": {"property": "excitation", "value": "PortS"},
-            "_numChildren": "noOfSurfacePorts.noOfPorts-0",
-            "type": "Multiple",
+            "_repeat": "noOfSurfacePorts.children.0.noOfPorts",
+            "type": "multiple",
             "children": {
                 "polylines": {
                     "title": "Poly lines",
-                    "type": "Number",
+                    "type": "number",
+	                "htmlType": "number",
+                    "display": "inline-block",
+                    "fileDisplay": "NOEOL",
                     "default": 1
                 },
                 "flag": {
                     "title": "Flag",
-                    "type": "Text",
+                    "type": "number",
+                    "display": "inline-block",
+	                "htmlType": "number",
                     "default": 1
                 },
                 "indexes": {
                     "title": "Index",
-                    "type": "Number",
+                    "type": "number",
+	                "htmlType": "number",
+                    "fileDisplay": "VERTICAL",
                     "required": true,
                     "default": 1,
-                    "_repeat": "surfacePort.polylines"
+                    "_repeat": "cself.polylines"
                 }
             }
         },
@@ -187,6 +216,7 @@
         "rwgCoefficientsFile": {
             "title": "Name of file with RWG coefficients:",
             "type": "file",
+            "htmlType": "text",
             "path": "_INPUT/KnownJ/",
             "_enabled": {
                 "property": "excitation", 
@@ -197,8 +227,8 @@
         },
         
         "kernel": {
-            "title": "Kernel",
-            "type": "Select",
+            "title": "Kernel:",
+            "type": "select",
             "default": "FreeSpace",
             "options": [
                 {"title": "FreeSpace", "value": "FreeSpace"},
@@ -208,11 +238,65 @@
             "children": {
                 "elevation": {
                     "_enabled": {"property": "kernel", "value": "HalfSpace"},
+                    "htmlType": "number",
                     "title": "Elevation",
-                    "type": "Number",
+                    "type": "number",
                     "default": "0.000"
                 }
             }
+        },
+
+        "multilayerDescription": {
+            "title": "Name of file with Multilayer description (Name || None):",
+            "type": "file",
+            "htmlType": "text",
+            "default":"None",
+            "required": false
+        },
+
+        "cubatureOrder": {
+            "title": "Cubature order to calculate interactions (-1 means orders will be chosen according to distance between src & obs):",
+            "type": "number",
+            "htmlType": "number",
+            "default":3,
+            "required": true
+        },
+
+        "extractionLimit": {
+            "title": "Singularity extraction limit (centre-to-centre distance of src-obs triangle pair is larger than N*largest_edge):",
+            "type": "number",
+            "htmlType": "number",
+            "default":4,
+            "required": true
+        },
+
+        "scatteredFieldRequired": {
+            "title": "Is computation of scattered field required (Yes || No):",
+            "type": "select",
+            "default": "No",
+            "options": [
+                {"title": "Yes", "value": "Yes"},
+                {"title": "No", "value": "No"}
+            ]
+        },
+
+        "atSurfacePoints": {
+            "title": "Is computation of current at surface points required (Yes || No):",
+            "type": "select",
+            "default": "No",
+            "options": [
+                {"title": "Yes", "value": "Yes"},
+                {"title": "No", "value": "No"}
+            ]
+        },
+
+        "observationPoints": {
+            "title": "Name of file with observation points (Name || None):",
+            "type": "file",
+            "htmlType": "text",
+            "default":"None",
+            "required": false
         }
+
     }
 }
