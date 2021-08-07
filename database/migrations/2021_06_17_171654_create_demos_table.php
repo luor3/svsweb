@@ -20,9 +20,9 @@ class CreateDemosTable extends Migration
             $table->text('description');
             $table->integer('category_id');            
 
-            $table->json('input_property_json');
-            $table->json('input_file_json');
-            $table->json('output_file_json');  
+            $table->text('input_property_json');
+            $table->text('input_file_json');
+            $table->text('output_file_json');  
             $table->text('plot_path')->nullable();
 
             $table->boolean('status')->default(0);
