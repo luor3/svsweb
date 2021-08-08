@@ -17,7 +17,7 @@ class ShowForm extends Component
      * 
      * @var array
      */
-    public $categories;
+    public $categories = [];
 
 
     /**

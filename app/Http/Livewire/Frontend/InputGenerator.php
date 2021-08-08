@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Frontend;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Routing\Redirector;
 
 class InputGenerator extends Component
 {
@@ -293,7 +294,7 @@ class InputGenerator extends Component
     {
         $this->validate();
         
-        $filename = Storage::disk('public')->path('input.input');
+        //$filename = Storage::disk('public')->path('input.input');
         $writeStr = '';
 
         foreach ($this->inputInfo['properties'] as $key => $property)
@@ -302,13 +303,20 @@ class InputGenerator extends Component
             $writeStr .= $property['title'].PHP_EOL;
             foreach ($this->inputValue[$key] as $vKey => $value)
             {
-                if(is_null($value))
-                {
-                    continue;
-                }
-
                 if($vKey === "main")
                 {
+                    if(is_null($value) || $value == "")
+                    {
+                        if(isset($property['default']))
+                        {
+                            $value = $property['default'];
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    
                     $val = is_array($value) ? $value : [$value];
                     $this->fileGenerationHelper($writeStr, $val, $key);                  
                 }
@@ -318,6 +326,18 @@ class InputGenerator extends Component
                     {
                         foreach($cValues as $cName => $cValue)
                         {
+                            if(is_null($cValue) || $cValue == "")
+                            {
+                                if(isset($property['children'][$cName]['default']))
+                                {
+                                    $cValue = $property['children'][$cName]['default'];
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            
                             $val = is_array($cValue) ? $cValue : [$cValue];
                             $this->fileGenerationHelper($writeStr, $val, $key, $cName);                                                                          
                         }                       
@@ -326,7 +346,11 @@ class InputGenerator extends Component
             }
             $writeStr .= "\r\n";
         }
-        file_put_contents($filename,$writeStr);
+
+
+        return response()->streamDownload(function () use($writeStr){
+            echo $writeStr;
+        }, 'input.input');
     }
 
     private function fileGenerationHelper(&$writeStr, $val, $pName = null ,$cName = null)

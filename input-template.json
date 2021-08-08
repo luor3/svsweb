@@ -31,15 +31,13 @@
                     "title": "Scaling Factor",
                     "type": "point",
                     "htmlType": "text",
-                    "required": false,
                     "default": "1.0 1.0 10.0"
                 },
                 "stretch": {
                     "title": "Stretch",
                     "type": "point",
 	                "htmlType": "text",
-                    "default": "0.0 0.0 0.0",
-                    "required": false
+                    "default": "0.0 0.0 0.0"
                 }
             }
         },
@@ -100,6 +98,7 @@
         "excitation": {
             "title": "Excitation",
             "type": "select",
+            "default": "PlaneWave",
             "options": [
                 {"title": "PlaneWave", "value": "PlaneWave"},
                 {"title": "Dipole", "value": "Dipole"},
@@ -222,8 +221,7 @@
                 "property": "excitation", 
                 "value": ["KnownJ", "DipoleViaRWG"]
             },
-            "default": "None",
-            "required": false
+            "default": "None"
         },
         
         "kernel": {
@@ -250,8 +248,7 @@
             "title": "Name of file with Multilayer description (Name || None):",
             "type": "file",
             "htmlType": "text",
-            "default":"None",
-            "required": false
+            "default":"None"
         },
 
         "cubatureOrder": {
@@ -274,6 +271,7 @@
             "title": "Is computation of scattered field required (Yes || No):",
             "type": "select",
             "default": "No",
+            "required": true,
             "options": [
                 {"title": "Yes", "value": "Yes"},
                 {"title": "No", "value": "No"}
@@ -284,6 +282,7 @@
             "title": "Is computation of current at surface points required (Yes || No):",
             "type": "select",
             "default": "No",
+            "required": true,
             "options": [
                 {"title": "Yes", "value": "Yes"},
                 {"title": "No", "value": "No"}
@@ -294,8 +293,286 @@
             "title": "Name of file with observation points (Name || None):",
             "type": "file",
             "htmlType": "text",
-            "default":"None",
-            "required": false
+            "default":"None"
+        },
+
+        "currentObservationPoints": {
+            "title": "Name of file with observation points for current at the surface (Name || None):",
+            "type": "file",
+            "htmlType": "text",
+            "default":"None"
+        },
+
+
+        "RWGDefinition": {
+            "title": "Name of file with RWG definitions (RWG_info || None):",
+            "type": "file",
+            "default": "None",
+            "htmlType": "text"
+        },
+
+        "MoMmatrix": {
+            "title": "Name of file with MoM matrix(MoM_matrix,matrix_mcd || None):",
+            "type": "file",
+            "default": "None",
+            "htmlType": "text"
+        },
+        
+        "RHSfile": {
+            "title": "Name of file with RHS(RHS_mcd,RHS, || None):",
+            "type": "file",
+            "default": "None",
+            "htmlType": "text"
+        },
+
+        "GMRES": {
+            "title": "GMRES tolerance:",
+            "type": "number",
+            "htmlType": "number",
+            "default":"1E-15"
+        },
+
+        "MaxGMRESLimit": {
+            "title": "Max # of GMRES Iterations:",
+            "type": "number",
+            "htmlType": "number",
+            "default": 1000
+        },
+
+        "GMRESRestart": {
+            "title": "GMRES restart:",
+            "type": "number",
+            "htmlType": "number",
+            "default": 20
+        },
+
+        "ASTolerance": {
+            "title": "ACA or SVD tolerance:",
+            "type": "number",
+            "htmlType": "number",
+            "default": "1E-2"
+        },
+
+        "HarithmTolerance ": {
+            "title": "H-arithm tolerance (RELATIVE || ABSOLUTE):",
+            "type": "select",
+            "default": "RELATIVE",
+            "required": true,
+            "options": [
+                {"title": "RELATIVE", "value": "RELATIVE"},
+                {"title": "ABSOLUTE", "value": "ABSOLUTE"}
+            ],
+            "children": {
+                "hatValue": {
+                    "htmlType": "number",
+                    "title": "Value",
+                    "type": "number",
+                    "default": "1E-3"
+                }
+            }
+        },
+        
+        "H-MatrixTreeLevel": {
+            "title": "Number of levels in H-Matrix Cluster Tree:",
+            "type": "number",
+            "htmlType": "number",
+            "default": 20
+        },
+
+        "minElePerLeaf": {
+            "title": "Minimum number of elements per leaf node:",
+            "type": "number",
+            "htmlType": "number",
+            "default": 5
+        },
+
+        "EtaAdmissibilityCondition": {
+            "title": "Eta admissibility condition:",
+            "type": "number",
+            "htmlType": "number",
+            "default": 2
+        },
+
+        "CompressionType": {
+            "title": "Compression type (ACA || GRID || SVD):",
+            "type": "select",
+            "default": "ACA",
+            "required": true,
+            "options": [
+                {"title": "ACA", "value": "ACA"},
+                {"title": "GRID", "value": "GRID"},
+                {"title": "SVD", "value": "SVD"}
+            ]
+        },
+
+
+        "GridType": {
+            "title": "Grid type (Fixed, Wavelength (dictated by Next parameter. min=3)):",
+            "type": "select",
+            "default": "Fixed",
+            "required": true,
+            "options": [
+                {"title": "Fixed", "value": "Fixed"},
+                {"title": "Wavelength", "value": "Wavelength"}
+            ]
+        },
+
+        "gridPoints": {
+            "title": "Number of grid points (X,Y,Z):",
+            "type": "multiple",
+            "children": {
+                "X": {
+                    "title": "X value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "default": 4
+                },
+                "Y": {
+                    "title": "Y value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "default": 4
+                },
+                "Z": {
+                    "title": "Z value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "default": 4
+                }
+            }
+        },
+
+        "outsideBoundingBox": {
+            "title": "Want one additional grid point outside the bounding box? (No):",
+            "type": "select",
+            "default": "No",
+            "required": true,
+            "options": [
+                {"title": "No", "value": "No"}
+            ]
+        },
+
+        "InterpolationType": {
+            "title": "Interpolation type (Lagrange):",
+            "type": "select",
+            "default": "Lagrange",
+            "required": true,
+            "options": [
+                {"title": "Lagrange", "value": "Lagrange"}
+            ]
+        },
+
+        "StencilSize": {
+            "title": "Stencil size (X,Y,Z or (-1 -1 -1) - means the same as Num grid points):",
+            "type": "multiple",
+            "children": {
+                "X": {
+                    "title": "X value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "default": -1
+                },
+                "Y": {
+                    "title": "Y value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "default": -1
+                },
+                "Z": {
+                    "title": "Z value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "default": -1
+                }
+            }
+        },
+
+        "OutputMatrices": {
+            "title": "Output Matrices (Yes || No):",
+            "type": "select",
+            "default": "No",
+            "required": true,
+            "options": [
+                {"title": "No", "value": "No"},
+                {"title": "Yes", "value": "Yes"}
+            ]
+        },
+
+        "ClusteringStrategy": {
+            "title": "Clustering Strategy (0 - Default, 1 - Geometrically balanced, 2 - Geometrically regular, 3 - Geom. regular, regular boxes, 4 - Cardinality based, 5 - Principal directions):",
+            "type": "select",
+            "default": "1",
+            "required": true,
+            "options": [
+                {"title": "Default", "value": "0"},
+                {"title": "Geometrically balanced", "value": "1"},
+                {"title": "Geometrically regular", "value": "2"},
+                {"title": "Geom. regular, regular boxes", "value": "3"},
+                {"title": "Cardinality based", "value": "4"},
+                {"title": "Principal directions", "value": "5"}
+            ]
+        },
+
+
+        "BlockAdmissibilityCriteria": {
+            "title": "Block Admissibility Criteria (0 - min adm criterion (default), 1 - weak adm, 2 - max adm):",
+            "type": "select",
+            "default": "0",
+            "required": true,
+            "options": [
+                {"title": "min adm criterion", "value": "0"},
+                {"title": "weak adm", "value": "1"},
+                {"title": "max adm", "value": "2"}
+            ]
+        },
+
+        "BlockHomogeneity": {
+            "title": "Block Homogeneity (0 - homogeneous (default), 1 - inhomogeneous):",
+            "type": "select",
+            "default": "0",
+            "required": true,
+            "options": [
+                {"title": "homogeneous", "value": "0"},
+                {"title": "inhomogeneous", "value": "1"}
+            ]
+        },
+
+
+        "MinRankSVDACA": {
+            "title": "MinRank SVD or ACA:",
+            "type": "number",
+            "htmlType": "number",
+            "default": 40
+        },
+
+        "HmatrixElementBoundingBox": {
+            "title": "Hmatrix element bounding box (TRI - push all 4 points of the triangle pair || RWG - push only RWG edge endpoints):",
+            "type": "select",
+            "default": "TRI",
+            "required": true,
+            "options": [
+                {"title": "push all 4 points of the triangle pair", "value": "TRI"},
+                {"title": "push only RWG edge endpoints", "value": "RWG"}
+            ]
+        },
+
+
+        "OutputCurrentFormat": {
+            "title": "OutputCurrent format (VTK || MATLAB || BOTH):",
+            "type": "select",
+            "default": "BOTH",
+            "required": true,
+            "options": [
+                {"title": "VTK", "value": "VTK"},
+                {"title": "MATLAB", "value": "MATLAB"},
+                {"title": "BOTH", "value": "BOTH"}
+            ]
         }
 
     }
