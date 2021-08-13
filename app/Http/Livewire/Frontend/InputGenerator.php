@@ -54,7 +54,7 @@ class InputGenerator extends Component
 
 
     /**
-     * initialize 
+     * initialize the page variables and system
      * @return void
      */
     public function mount()
@@ -65,31 +65,53 @@ class InputGenerator extends Component
     }
 
 
+    /**
+     * render the page
+     * @return void
+     */
     public function render()
     {
         //dd($this->inputValue);
         return view('frontend.input-generator');
     }
 
+
+    /**
+     * load the input-template.json file
+     * @return void
+     */
     private function loadInputInfo()
     {
         $content = '';
         if($stream = fopen(base_path('input-template.json'), "r"))
+        {
             while(($line=fgets($stream))!==false){
                 $content .= $line;
             }
+        }         
         else
+        {
             throw new \Exception('Cannot Load the Input Template File !');
+        }       
         $this->inputInfo = json_decode($content, true); 
     }
 
+
+    /**
+     * initialize the page
+     * @return void
+     */
     private function initSys(){
         if(isset($this->inputInfo['properties']))
         {
             foreach($this->inputInfo['properties'] as $key => $property)
             {                        
                 $this->inputValue[$key]['main'] = (isset($property['default'])) ? $property['default'] : null;
-                $this->validationRules["inputValue.".$key.".main"] = $this->validationHelper($property['type']);
+                if(isset($property['validationRule']))
+                {
+                    $this->validationRules["inputValue.".$key.".main"] = $property['validationRule'];
+                }
+               
 
 
                 if(isset($property['_enabled']))
@@ -114,7 +136,7 @@ class InputGenerator extends Component
                         if(!isset($property['_repeat']))
                         {
                             $childSet[$cKey] = (isset($cProperty['default'])) ? $cProperty['default'] : null;
-                            $this->validationRules["inputValue.".$key.".children.0.".$cKey] = $this->validationHelper($cProperty['type']);
+                            
                         }
                         
                         if(isset($cProperty['_enabled']))
@@ -125,6 +147,11 @@ class InputGenerator extends Component
                         if(isset($cProperty['_repeat']))
                         {
                             $this->repeatNum[$key]['children'] = [];
+                            $this->validationRules["inputValue".".".$key."."."children"."."."*".".".$cKey."."."*"] = $cProperty['validationRule'];
+                        }
+                        else
+                        {
+                            $this->validationRules["inputValue".".".$key."."."children"."."."*".".".$cKey] = $cProperty['validationRule'];
                         }
        
                     }
@@ -138,6 +165,12 @@ class InputGenerator extends Component
         }
     }
 
+
+    /**
+     * This function will be called automatically 
+     * once variable inputValue is changed
+     * @return void
+     */
     public function updatedInputValue()
     {
         if(!(isset($this->enableSeq) && isset($this->inputValue) && isset($this->repeatNum)))
@@ -149,6 +182,11 @@ class InputGenerator extends Component
     }
 
 
+
+    /**
+     * update the status of enabled properties
+     * @return void
+     */
     private function refreshESeq()
     {
         foreach ($this->enableSeq as $key => &$property)
@@ -172,6 +210,11 @@ class InputGenerator extends Component
     }
 
 
+
+    /**
+     * update the status of repeat numbers
+     * @return void
+     */
     private function refreshRepeatNum()
     {
         if(!isset($this->repeatNum)) return;
@@ -194,14 +237,10 @@ class InputGenerator extends Component
                         $tempInt = $this->inputValue[$index];
                 }
                 $repeatSet['main'] = ((int)$tempInt < 0) ? 0 : (int)$tempInt;
-            }
-                 
-             //children generation
-            if(isset($repeatSet['main']))
-            {
-                $newCNum = $repeatSet['main'];
-                
 
+
+
+                $newCNum = $repeatSet['main'];
                 //add child
                 if($oldChildrenNum <= $newCNum)
                 {
@@ -221,10 +260,9 @@ class InputGenerator extends Component
                     }
 
 
-                    for($i = 0 ; $i < ($newCNum - $oldChildrenNum) ; $i++)
+                    for($i = $oldChildrenNum ; $i < $newCNum  ; $i++)
                     {
                         array_push($this->inputValue[$pName]['children'], $childSet);
-
                         if(count($repeatChildSet) > 0)
                         {
                             array_push($this->repeatNum[$pName]['children'], $repeatChildSet);
@@ -234,7 +272,7 @@ class InputGenerator extends Component
                 //clear child
                 else
                 {
-                    for($i = 0 ; $i < ($oldChildrenNum - $newCNum) ; $i++)
+                    for($i = $oldChildrenNum - 1 ; $i >= $newCNum ; $i--)
                     {
                         array_pop($this->inputValue[$pName]['children']);
                         if(isset($this->repeatNum[$pName]['children']) && count($this->repeatNum[$pName]['children']) > 0)
@@ -243,7 +281,9 @@ class InputGenerator extends Component
                         }
                     }
                 }
+
             }
+                 
             
             //original _repeat operation
             if(isset($repeatSet['children']))
@@ -268,7 +308,7 @@ class InputGenerator extends Component
                         //add
                         if($oldCRepeatNum <= $repeatValue)
                         {
-                            for($j = 0 ; $j < ($repeatValue - $oldCRepeatNum) ; $j++)
+                            for($j = $oldCRepeatNum ; $j < $repeatValue  ; $j++)
                             {
                                 array_push($this->inputValue[$pName]['children'][$i][$cName], (isset($childrenInstance['default'])) ? $childrenInstance['default'] : null);
                             }
@@ -277,7 +317,7 @@ class InputGenerator extends Component
                         //clear
                         else
                         {
-                            for($j = 0 ; $j < ($oldCRepeatNum - $repeatValue) ; $j++)
+                            for($j = $oldCRepeatNum - 1 ; $j >= $repeatValue ; $j--)
                             {
                                 array_pop($this->inputValue[$pName]['children'][$i][$cName]);
                             }
@@ -289,17 +329,18 @@ class InputGenerator extends Component
     }
 
 
-
+    /**
+     * generate the input file and 
+     * response the streamed file to user
+     * @return File
+     */
     public function generateFile()
     {
         $this->validate();
         
-        //$filename = Storage::disk('public')->path('input.input');
         $writeStr = '';
-
         foreach ($this->inputInfo['properties'] as $key => $property)
         {
-            
             $writeStr .= $property['title'].PHP_EOL;
             foreach ($this->inputValue[$key] as $vKey => $value)
             {
@@ -346,21 +387,59 @@ class InputGenerator extends Component
             }
             $writeStr .= "\r\n";
         }
-
-
-        return response()->streamDownload(function () use($writeStr){
+        return response()->streamDownload(function () use($writeStr)
+        {
             echo $writeStr;
         }, 'input.input');
     }
 
-    private function fileGenerationHelper(&$writeStr, $val, $pName = null ,$cName = null)
+
+    /**
+     * change the property display format 
+     * in the final input file
+     * @return void
+     */
+    private function fileGenerationHelper(&$writeStr, $val, $pName, $cName = null)
     {             
         $property = $this->inputInfo['properties'][$pName];
 
-        if(isset($property['children'][$cName]['fileDisplay']) || isset($property['fileDisplay']))
+        $fileDisplayType = "NONE";
+        $display = true;
+        if(is_null($cName))
         {
-            $fileDisplayType = $cName ? $property['children'][$cName]['fileDisplay'] : $property['fileDisplay'];
-            switch ($fileDisplayType) {
+            if(isset($property['fileDisplay']))
+            {
+                $fileDisplayType = $property['fileDisplay'];
+            }     
+            
+            if(isset($property['displayOnEnable']))
+            {
+                if($property['displayOnEnable'])
+                {
+                    $display = $this->enableSeq[$pName];
+                }
+            }
+        }
+        else
+        {
+            if(isset($property['children'][$cName]['fileDisplay']))
+            {
+                $fileDisplayType = $property['children'][$cName]['fileDisplay'];
+            }    
+            
+            if(isset($property['children'][$cName]['displayOnEnable']))
+            {
+                if($property['children'][$cName]['displayOnEnable'])
+                {
+                    $display = $this->enableSeq[$pName][$cName];
+                }
+            }
+        }
+        
+        if($display)
+        {
+            switch ($fileDisplayType) 
+            {
                 case "NOEOL":
                     $writeStr .= sprintf("%s ", implode(' ', $val));
                     break;
@@ -376,32 +455,9 @@ class InputGenerator extends Component
                         $writeStr .= sprintf("%s".PHP_EOL, implode(' ', $val));
                     }
                     break;   
-            }  
-        }
-        else
-        {
-            $writeStr .= sprintf("%s".PHP_EOL, implode(' ', $val));
-        }                       
-    }
-
-    private function validationHelper($type)
-    {   
-        $result = "Nullable|max:255";
-
-        switch ($type) {
-            case 'file':
-                $result = "required|max:255";
-                break;
-            
-            case 'point':
-                $result = "regex:/^([-+]?[0-9]*\.?[0-9]+)\s([-+]?[0-9]*\.?[0-9]+)\s([-+]?[0-9]*\.?[0-9]+)/|max:255";
-                break;
-
-            case 'number':
-                $result = "numeric";
-                break;
-        }
-
-        return $result;
+                default:
+                    $writeStr .= sprintf("%s".PHP_EOL, implode(' ', $val));
+            }
+        }                           
     }
 }

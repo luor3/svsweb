@@ -23,7 +23,10 @@
                                     class='block bg-white text-gray-700 disabled:opacity-20 placeholder-gray-400 shadow-md rounded-lg text-base appearance-none mb-5 py-2 px-3 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent'
                                     type="{{ $property['htmlType'] }}" step="any" wire:model="inputValue.{{$key}}.main" id="{{ $key }}" {{ (isset($property['required']) && $property['required'])? "required" : "" }}>                      
                             @endif
-                            <x-jet-input-error for="inputValue.{{$key}}.main" class="mt-2" />
+                            <div class = "h-4">
+                                <x-jet-input-error for="inputValue.{{$key}}.main" class="mt-2" />
+                            </div>
+                            
      
 
                             @for ($i = 0; $i < ((isset($property['children'])) ? ( (isset($repeatNum[$key]['main'])) ? $repeatNum[$key]['main'] : 1) : 0); $i++)
@@ -48,7 +51,10 @@
                                                                 class='bg-white text-gray-700 disabled:opacity-20 placeholder-gray-400 shadow-md rounded-lg text-base appearance-none mb-5 py-2 px-3 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent'
                                                                 type="{{ $cProperty['htmlType'] }}" step="any" wire:model="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" id="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" {{ (isset($cProperty['required']) && $cProperty['required'])? "required" : "" }}>
                                                         @endif
-                                                        <x-jet-input-error for="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" class="mt-2" />                                                                                               
+                                                        <div class="h-4">
+                                                            <x-jet-input-error for="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" class="mt-2" />
+                                                        </div>
+                                                                                                                                                       
                                                 @endfor 
                                             </div>
                                         @endif                                   
