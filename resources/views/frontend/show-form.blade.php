@@ -29,13 +29,17 @@
                 <div>
                     {{ $demo->description }}
                 </div>
-                <button class="mt-5 mb-5 py-2 px-4 bg-blue-300 text-white font-semibold rounded-lg shadow-md hover:bg-red-500 focus:outline-none" wire:click="generateZip({{$demo->id}})" wire:loading.attr="disabled">
-                    Generate Download Link
-                </button>
-                @if($displayLink == $demo->id)
-                    <a class="block mt-2 mx-auto w-2/3 p-2 bg-green-300 text-white font-semibold rounded-lg shadow-md hover:bg-red-500 focus:outline-none" href=" {{ asset(Storage::disk('local')->url('demos'. '/' . $demo->id . '/' . 'inputs.zip')) }} ">Download Input Files</a>
-                    <a class="block mt-2 mb-2 mx-auto w-2/3 p-2 bg-green-300 text-white font-semibold rounded-lg shadow-md hover:bg-red-500 focus:outline-none" href=" {{ asset(Storage::disk('local')->url('demos'. '/' . $demo->id . '/' . 'outputs.zip')) }} ">Download Output Files</a>
-                @endif
+
+                <div class="mx-auto">
+                    <button class="mt-5 mb-5 py-2 px-4 bg-blue-300 text-white font-semibold rounded-lg shadow-md hover:bg-red-500 focus:outline-none" wire:click="downloadFile( {{$demo->id}} , true)" wire:loading.attr="disabled">
+                        Download Input Files
+                    </button>
+
+                    <button class="mt-5 mb-5 py-2 px-4 bg-blue-300 text-white font-semibold rounded-lg shadow-md hover:bg-red-500 focus:outline-none" wire:click="downloadFile( {{$demo->id}} , false)" wire:loading.attr="disabled">
+                        Download Output Files
+                    </button> 
+                </div>
+
             </div>
         </div> 
         @endforeach

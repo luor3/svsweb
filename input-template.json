@@ -5,6 +5,7 @@
         "solverType": {
             "title": "IE-Solver (EFIE || SVS-EFIE):",
             "type": "select",
+            "validationRule": "nullable|in:SVS-EFIE,EFIE",
             "default": "SVS-EFIE",
             "options": [
                 {"title": "SVS-EFIE", "value": "SVS-EFIE"},
@@ -16,6 +17,7 @@
             "title": "Name of the material file:",
             "type": "file",
             "htmlType": "text",
+            "validationRule": "nullable|max:255|string",
             "default":"_INPUT/materials/",
             "required": true
         },
@@ -25,21 +27,77 @@
             "type": "file",
             "required": true,
             "default":"_INPUT/meshes/",
+            "validationRule": "nullable|max:255|string",
             "htmlType": "text",
             "children": {
-                "scale": {
-                    "title": "Scaling Factor",
-                    "type": "point",
-                    "htmlType": "text",
-                    "required": false,
-                    "default": "1.0 1.0 10.0"
+                "X-scale": {
+                    "title": "scale X",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "display": "inline-block",
+                    "validationRule": "nullable|min:0|numeric",
+                    "fileDisplay": "NOEOL",
+                    "default": 0
                 },
-                "stretch": {
-                    "title": "Stretch",
-                    "type": "point",
-	                "htmlType": "text",
-                    "default": "0.0 0.0 0.0",
-                    "required": false
+                "Y-scale": {
+                    "title": "scale Y",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "display": "inline-block",
+                    "validationRule": "nullable|min:0|numeric",
+                    "fileDisplay": "NOEOL",
+                    "default": 0
+                },
+                "Z-scale": {
+                    "title": "scale Z",
+                    "type": "number",
+	                "htmlType": "number",
+                    "validationRule": "nullable|min:0|numeric",
+                    "display": "inline-block",
+                    "required": true,
+                    "default": 0
+                },
+
+
+                "NULLVALUE": {
+                    "title": "NULL",
+                    "type": "number",
+	                "htmlType": "number",
+                    "validationRule": "nullable",
+                    "display": "invisible"
+                },
+
+
+                "X-stretch": {
+                    "title": "stretch X",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "validationRule": "nullable|min:0|numeric",
+                    "display": "inline-block",
+                    "fileDisplay": "NOEOL",
+                    "default": 0
+                },
+                "Y-stretch": {
+                    "title": "stretch Y",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "validationRule": "nullable|min:0|numeric",
+                    "display": "inline-block",
+                    "fileDisplay": "NOEOL",
+                    "default": 0
+                },
+                "Z-stretch": {
+                    "title": "stretch Z",
+                    "type": "number",
+	                "htmlType": "number",
+                    "validationRule": "nullable|min:0|numeric",
+                    "display": "inline-block",
+                    "required": true,
+                    "default": 0
                 }
             }
         },
@@ -48,6 +106,7 @@
             "title": "Name of file with incident field information:",
             "type": "file",
             "htmlType": "text",
+            "validationRule": "nullable|max:255|string",
             "default":"_INPUT/waves/",
             "required": true
         },
@@ -56,6 +115,7 @@
             "title": "Integration Type:",
             "type": "select",
             "default": "Galerkin",
+            "validationRule": "nullable|in:Galerkin,Collocation",
             "options": [
                 {"title": "Galerkin", "value": "Galerkin"},
                 {"title": "Collocation", "value": "Collocation"}
@@ -63,9 +123,10 @@
         },
         
         "preconditioner": {
-            "title": "Preconditioner Type",
+            "title": "Preconditioner Type:",
             "type": "select",
             "default": "No",
+            "validationRule": "nullable|in:Right,Left,CMP,No",
             "options": [
                 {"title": "Right", "value": "Right"},
                 {"title": "Left", "value": "Left"},
@@ -75,9 +136,10 @@
         },
         
         "matrixSolver": {
-            "title": "Matrix Solver",
+            "title": "Matrix Solver:",
             "type": "select",
             "default": "LU",
+            "validationRule": "nullable|in:LU,HLU,GMRES,HGMRES",
             "options": [
                 {"title": "LU", "value": "LU"},
                 {"title": "H-Matrix LU", "value": "HLU"},
@@ -87,9 +149,10 @@
         },
         
         "lossModelType": {
-            "title": "LossModel Type",
+            "title": "LossModel Type:",
             "type": "select",
             "default": "NOLOSS",
+            "validationRule": "nullable|in:Leontovich,sigmaT,NOLOSS",
             "options": [
                 {"title": "Leontovich", "value": "Leontovich"},
                 {"title": "sigmaT", "value": "sigmaT"},
@@ -98,8 +161,10 @@
         },
         
         "excitation": {
-            "title": "Excitation",
+            "title": "Excitation:",
             "type": "select",
+            "default": "PlaneWave",
+            "validationRule": "nullable|in:PlaneWave,Dipole,PortS,KnownJ,DipoleViaRWG",
             "options": [
                 {"title": "PlaneWave", "value": "PlaneWave"},
                 {"title": "Dipole", "value": "Dipole"},
@@ -110,9 +175,10 @@
         },
         
         "planeWavePolarization": {
-            "title": "Plane wave polarization",
+            "title": "Plane wave polarization:",
             "type": "select",
             "default": "1",
+            "validationRule": "nullable|in:1,2",
             "options": [
                 {"title": "Theta", "value": "1"},
                 {"title": "Phi", "value": "2"}
@@ -120,41 +186,127 @@
         },
         
         "dipoleLocation": {
-            "title": "Dipole Location",
+            "title": "Dipole Location:",
             "type": "select",
             "_enabled": {"property": "excitation", "value": "Dipole"},
             "default": "2",
             "fileDisplay": "NOEOL",
+            "validationRule": "nullable|in:1,2",
             "options": [
                 {"title": "[x y z] in meters", "value": "1"},
                 {"title": "[Theta Phi r] in angle and multiple of Wavelength", "value": "2"}
             ],
             "children": {
-                "coordinate": {
-                    "title": "X Y Z",
-                    "type": "point",
-	                "htmlType": "text",
+                "X": {
+                    "title": "X value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "fileDisplay": "NOEOL",
+                    "validationRule": "nullable|min:0|numeric",
+                    "displayOnEnable": "true",
+                    "display": "inline-block",
                     "_enabled": {"property": "dipoleLocation", "value": "1"},
-                    "fileDisplay": "ENABLED",
-                    "default": "0 0 0"
+                    "default": 0
                 },
-                "angle": {
-                    "title": "Theta Phi r",
-                    "type": "point",
-	                "htmlType": "text",
+                "Y": {
+                    "title": "Y value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "fileDisplay": "NOEOL",
+                    "validationRule": "nullable|min:0|numeric",
+                    "displayOnEnable": "true",
+                    "display": "inline-block",
+                    "_enabled": {"property": "dipoleLocation", "value": "1"},
+                    "default": 0
+                },
+                "Z": {
+                    "title": "Z value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "displayOnEnable": "true",
+                    "validationRule": "nullable|min:0|numeric",
+                    "display": "inline-block",
+                    "_enabled": {"property": "dipoleLocation", "value": "1"},
+                    "required": true,
+                    "default": 0
+                },
+
+                "Theta": {
+                    "title": "Theta value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "fileDisplay": "NOEOL",
+                    "displayOnEnable": "true",
+                    "validationRule": "nullable|numeric",
+                    "display": "inline-block",
                     "_enabled": {"property": "dipoleLocation", "value": "2"},
-	                "fileDisplay": "ENABLED",
-                    "default": "30 180 1000000"
+                    "default": 30
+                },
+                "Phi": {
+                    "title": "Phi value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "fileDisplay": "NOEOL",
+                    "display": "inline-block",
+                    "validationRule": "nullable|numeric",
+                    "displayOnEnable": "true",
+                    "_enabled": {"property": "dipoleLocation", "value": "2"},
+                    "default": 180
+                },
+                "r": {
+                    "title": "r value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "display": "inline-block",
+                    "displayOnEnable": "true",
+                    "validationRule": "nullable|numeric",
+                    "_enabled": {"property": "dipoleLocation", "value": "2"},
+                    "required": true,
+                    "default": 1000000
                 }
+
             }
         },
         
         "dipoleOrientation": {
             "title": "Dipole orientation ([x y z] in meters):",
-            "type": "point",
-            "htmlType": "text",
+            "type": "multiple",
             "_enabled": {"property": "excitation", "value": "Dipole"},
-            "default": "0.866 0.0 0.5"
+            "children": {
+                "X": {
+                    "title": "X value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "fileDisplay": "NOEOL",
+                    "validationRule": "nullable|numeric",
+                    "display": "inline-block",
+                    "default": 0.866
+                },
+                "Y": {
+                    "title": "Y value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "required": true,
+                    "validationRule": "nullable|numeric",
+                    "display": "inline-block",
+                    "fileDisplay": "NOEOL",
+                    "default": 0.0
+                },
+                "Z": {
+                    "title": "Z value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "validationRule": "nullable|numeric",
+                    "display": "inline-block",
+                    "required": true,
+                    "default": 0.5
+                }
+            }
         },
         
         "noOfSurfacePorts": {
@@ -166,12 +318,14 @@
                     "title": "Number of Ports",
                     "type": "number",
 	                "htmlType": "number",
+                    "validationRule": "nullable|min:0|integer",
                     "default": 2
                 },
                 "mode": {
                     "title": "Mode",
                     "type": "select",
                     "default": "points",
+                    "validationRule": "nullable|in:meters,points",
                     "options": [
                         {"title": "[x y z] in meters", "value": "meters"},
                         {"title": "Points", "value": "points"}
@@ -187,10 +341,11 @@
             "type": "multiple",
             "children": {
                 "polylines": {
-                    "title": "Poly lines",
+                    "title": "Poly lines (Number of Indexes)",
                     "type": "number",
 	                "htmlType": "number",
                     "display": "inline-block",
+                    "validationRule": "nullable|min:0|integer",
                     "fileDisplay": "NOEOL",
                     "default": 1
                 },
@@ -198,6 +353,7 @@
                     "title": "Flag",
                     "type": "number",
                     "display": "inline-block",
+                    "validationRule": "nullable|min:0|max:1|integer",
 	                "htmlType": "number",
                     "default": 1
                 },
@@ -206,6 +362,7 @@
                     "type": "number",
 	                "htmlType": "number",
                     "fileDisplay": "VERTICAL",
+                    "validationRule": "nullable|min:0|integer",
                     "required": true,
                     "default": 1,
                     "_repeat": "cself.polylines"
@@ -217,19 +374,19 @@
             "title": "Name of file with RWG coefficients:",
             "type": "file",
             "htmlType": "text",
-            "path": "_INPUT/KnownJ/",
+            "validationRule": "nullable|max:255|string",
             "_enabled": {
                 "property": "excitation", 
                 "value": ["KnownJ", "DipoleViaRWG"]
             },
-            "default": "None",
-            "required": false
+            "default": "None"
         },
         
         "kernel": {
             "title": "Kernel:",
             "type": "select",
             "default": "FreeSpace",
+            "validationRule": "nullable|in:FreeSpace,MultiLayer,HalfSpace",
             "options": [
                 {"title": "FreeSpace", "value": "FreeSpace"},
                 {"title": "MultiLayer", "value": "MultiLayer"},
@@ -239,6 +396,7 @@
                 "elevation": {
                     "_enabled": {"property": "kernel", "value": "HalfSpace"},
                     "htmlType": "number",
+                    "validationRule": "nullable|numeric",
                     "title": "Elevation",
                     "type": "number",
                     "default": "0.000"
@@ -250,14 +408,15 @@
             "title": "Name of file with Multilayer description (Name || None):",
             "type": "file",
             "htmlType": "text",
-            "default":"None",
-            "required": false
+            "validationRule": "nullable|max:255|string",
+            "default":"None"
         },
 
         "cubatureOrder": {
             "title": "Cubature order to calculate interactions (-1 means orders will be chosen according to distance between src & obs):",
             "type": "number",
             "htmlType": "number",
+            "validationRule": "nullable|numeric",
             "default":3,
             "required": true
         },
@@ -266,6 +425,7 @@
             "title": "Singularity extraction limit (centre-to-centre distance of src-obs triangle pair is larger than N*largest_edge):",
             "type": "number",
             "htmlType": "number",
+            "validationRule": "nullable|numeric",
             "default":4,
             "required": true
         },
@@ -274,6 +434,8 @@
             "title": "Is computation of scattered field required (Yes || No):",
             "type": "select",
             "default": "No",
+            "required": true,
+            "validationRule": "nullable|in:Yes,No",
             "options": [
                 {"title": "Yes", "value": "Yes"},
                 {"title": "No", "value": "No"}
@@ -284,6 +446,8 @@
             "title": "Is computation of current at surface points required (Yes || No):",
             "type": "select",
             "default": "No",
+            "required": true,
+            "validationRule": "nullable|in:Yes,No",
             "options": [
                 {"title": "Yes", "value": "Yes"},
                 {"title": "No", "value": "No"}
@@ -294,8 +458,323 @@
             "title": "Name of file with observation points (Name || None):",
             "type": "file",
             "htmlType": "text",
-            "default":"None",
-            "required": false
+            "validationRule": "nullable|max:255|string",
+            "default":"None"
+        },
+
+        "currentObservationPoints": {
+            "title": "Name of file with observation points for current at the surface (Name || None):",
+            "type": "file",
+            "htmlType": "text",
+            "validationRule": "nullable|max:255|string",
+            "default":"None"
+        },
+
+
+        "RWGDefinition": {
+            "title": "Name of file with RWG definitions (RWG_info || None):",
+            "type": "file",
+            "default": "None",
+            "validationRule": "nullable|max:255|string",
+            "htmlType": "text"
+        },
+
+        "MoMmatrix": {
+            "title": "Name of file with MoM matrix(MoM_matrix,matrix_mcd || None):",
+            "type": "file",
+            "default": "None",
+            "validationRule": "nullable|max:255|string",
+            "htmlType": "text"
+        },
+        
+        "RHSfile": {
+            "title": "Name of file with RHS(RHS_mcd,RHS, || None):",
+            "type": "file",
+            "default": "None",
+            "validationRule": "nullable|max:255|string",
+            "htmlType": "text"
+        },
+
+        "GMRES": {
+            "title": "GMRES tolerance:",
+            "type": "number",
+            "htmlType": "number",
+            "validationRule": "nullable|numeric",
+            "default":"1E-15"
+        },
+
+        "MaxGMRESLimit": {
+            "title": "Max # of GMRES Iterations:",
+            "type": "number",
+            "validationRule": "nullable|numeric",
+            "htmlType": "number",
+            "default": 1000
+        },
+
+        "GMRESRestart": {
+            "title": "GMRES restart:",
+            "type": "number",
+            "htmlType": "number",
+            "validationRule": "nullable|numeric",
+            "default": 20
+        },
+
+        "ASTolerance": {
+            "title": "ACA or SVD tolerance:",
+            "type": "number",
+            "htmlType": "number",
+            "validationRule": "nullable|numeric",
+            "default": "1E-2"
+        },
+
+        "HarithmTolerance": {
+            "title": "H-arithm tolerance (RELATIVE || ABSOLUTE):",
+            "type": "select",
+            "default": "RELATIVE",
+            "validationRule": "nullable|in:RELATIVE,ABSOLUTE",
+            "required": true,
+            "options": [
+                {"title": "RELATIVE", "value": "RELATIVE"},
+                {"title": "ABSOLUTE", "value": "ABSOLUTE"}
+            ],
+            "children": {
+                "hatValue": {
+                    "htmlType": "number",
+                    "title": "Value",
+                    "validationRule": "nullable|numeric",
+                    "type": "number",
+                    "default": "1E-3"
+                }
+            }
+        },
+        
+        "H-MatrixTreeLevel": {
+            "title": "Number of levels in H-Matrix Cluster Tree:",
+            "type": "number",
+            "htmlType": "number",
+            "validationRule": "nullable|numeric",
+            "default": 20
+        },
+
+        "minElePerLeaf": {
+            "title": "Minimum number of elements per leaf node:",
+            "type": "number",
+            "htmlType": "number",
+            "validationRule": "nullable|numeric",
+            "default": 5
+        },
+
+        "EtaAdmissibilityCondition": {
+            "title": "Eta admissibility condition:",
+            "type": "number",
+            "htmlType": "number",
+            "validationRule": "nullable|numeric",
+            "default": 2
+        },
+
+        "CompressionType": {
+            "title": "Compression type (ACA || GRID || SVD):",
+            "type": "select",
+            "default": "ACA",
+            "required": true,
+            "validationRule": "nullable|in:ACA,GRID,SVD",
+            "options": [
+                {"title": "ACA", "value": "ACA"},
+                {"title": "GRID", "value": "GRID"},
+                {"title": "SVD", "value": "SVD"}
+            ]
+        },
+
+
+        "GridType": {
+            "title": "Grid type (Fixed, Wavelength (dictated by Next parameter. min=3)):",
+            "type": "select",
+            "default": "Fixed",
+            "required": true,
+            "validationRule": "nullable|in:Fixed,Wavelength",
+            "options": [
+                {"title": "Fixed", "value": "Fixed"},
+                {"title": "Wavelength", "value": "Wavelength"}
+            ]
+        },
+
+        "gridPoints": {
+            "title": "Number of grid points (X,Y,Z):",
+            "type": "multiple",
+            "children": {
+                "X": {
+                    "title": "X value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "validationRule": "nullable|numeric",
+                    "display": "inline-block",
+                    "required": true,
+                    "default": 4
+                },
+                "Y": {
+                    "title": "Y value",
+                    "type": "number",
+                    "display": "inline-block",
+	                "htmlType": "number",
+                    "validationRule": "nullable|numeric",
+                    "required": true,
+                    "default": 4
+                },
+                "Z": {
+                    "title": "Z value",
+                    "type": "number",
+                    "display": "inline-block",
+	                "htmlType": "number",
+                    "validationRule": "nullable|numeric",
+                    "required": true,
+                    "default": 4
+                }
+            }
+        },
+
+        "outsideBoundingBox": {
+            "title": "Want one additional grid point outside the bounding box? (No):",
+            "type": "select",
+            "default": "No",
+            "required": true,
+            "validationRule": "nullable|in:No",
+            "options": [
+                {"title": "No", "value": "No"}
+            ]
+        },
+
+        "InterpolationType": {
+            "title": "Interpolation type (Lagrange):",
+            "type": "select",
+            "default": "Lagrange",
+            "required": true,
+            "validationRule": "nullable|in:Lagrange",
+            "options": [
+                {"title": "Lagrange", "value": "Lagrange"}
+            ]
+        },
+
+        "StencilSize": {
+            "title": "Stencil size (X,Y,Z or (-1 -1 -1) - means the same as Num grid points):",
+            "type": "multiple",
+            "children": {
+                "X": {
+                    "title": "X value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "validationRule": "nullable|numeric",
+                    "required": true,
+                    "display": "inline-block",
+                    "default": -1
+                },
+                "Y": {
+                    "title": "Y value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "validationRule": "nullable|numeric",
+                    "required": true,
+                    "display": "inline-block",
+                    "default": -1
+                },
+                "Z": {
+                    "title": "Z value",
+                    "type": "number",
+	                "htmlType": "number",
+                    "validationRule": "nullable|numeric",
+                    "display": "inline-block",
+                    "required": true,
+                    "default": -1
+                }
+            }
+        },
+
+        "OutputMatrices": {
+            "title": "Output Matrices (Yes || No):",
+            "type": "select",
+            "default": "No",
+            "required": true,
+            "validationRule": "nullable|in:No,Yes",
+            "options": [
+                {"title": "No", "value": "No"},
+                {"title": "Yes", "value": "Yes"}
+            ]
+        },
+
+        "ClusteringStrategy": {
+            "title": "Clustering Strategy (0 - Default, 1 - Geometrically balanced, 2 - Geometrically regular, 3 - Geom. regular, regular boxes, 4 - Cardinality based, 5 - Principal directions):",
+            "type": "select",
+            "default": "1",
+            "required": true,
+            "validationRule": "nullable|in:0,1,2,3,4,5",
+            "options": [
+                {"title": "Default", "value": "0"},
+                {"title": "Geometrically balanced", "value": "1"},
+                {"title": "Geometrically regular", "value": "2"},
+                {"title": "Geom. regular, regular boxes", "value": "3"},
+                {"title": "Cardinality based", "value": "4"},
+                {"title": "Principal directions", "value": "5"}
+            ]
+        },
+
+
+        "BlockAdmissibilityCriteria": {
+            "title": "Block Admissibility Criteria (0 - min adm criterion (default), 1 - weak adm, 2 - max adm):",
+            "type": "select",
+            "default": "0",
+            "required": true,
+            "validationRule": "nullable|in:0,1,2",
+            "options": [
+                {"title": "min adm criterion", "value": "0"},
+                {"title": "weak adm", "value": "1"},
+                {"title": "max adm", "value": "2"}
+            ]
+        },
+
+        "BlockHomogeneity": {
+            "title": "Block Homogeneity (0 - homogeneous (default), 1 - inhomogeneous):",
+            "type": "select",
+            "default": "0",
+            "required": true,
+            "validationRule": "nullable|in:0,1",
+            "options": [
+                {"title": "homogeneous", "value": "0"},
+                {"title": "inhomogeneous", "value": "1"}
+            ]
+        },
+
+
+        "MinRankSVDACA": {
+            "title": "MinRank SVD or ACA:",
+            "type": "number",
+            "htmlType": "number",
+            "validationRule": "nullable|numeric",
+            "default": 40
+        },
+
+        "HmatrixElementBoundingBox": {
+            "title": "Hmatrix element bounding box (TRI - push all 4 points of the triangle pair || RWG - push only RWG edge endpoints):",
+            "type": "select",
+            "default": "TRI",
+            "required": true,
+            "validationRule": "nullable|in:TRI,RWG",
+            "options": [
+                {"title": "push all 4 points of the triangle pair", "value": "TRI"},
+                {"title": "push only RWG edge endpoints", "value": "RWG"}
+            ]
+        },
+
+
+        "OutputCurrentFormat": {
+            "title": "OutputCurrent format (VTK || MATLAB || BOTH):",
+            "type": "select",
+            "default": "BOTH",
+            "required": true,
+            "validationRule": "nullable|in:VTK,MATLAB,BOTH",
+            "options": [
+                {"title": "VTK", "value": "VTK"},
+                {"title": "MATLAB", "value": "MATLAB"},
+                {"title": "BOTH", "value": "BOTH"}
+            ]
         }
 
     }

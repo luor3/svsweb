@@ -118,7 +118,7 @@
                         {{ __('Updating User Information') }}<br />                       
                     </span>
                     <span>
-                        {{_('Unique ID')}}: {{ $user_id }}<br />
+                        {{__('Unique ID')}}: {{ $user_id }}<br />
                     </span>
                 </x-slot>
 
