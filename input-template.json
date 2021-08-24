@@ -7,6 +7,7 @@
             "type": "select",
             "validationRule": "nullable|in:SVS-EFIE,EFIE",
             "default": "SVS-EFIE",
+            "hint": "SVS-EFIE is aviliable for this version",
             "options": [
                 {"title": "SVS-EFIE", "value": "SVS-EFIE"},
                 {"title": "EFIE", "value": "EFIE"}
@@ -17,6 +18,7 @@
             "title": "Name of the material file:",
             "type": "file",
             "htmlType": "text",
+            "hint": "Enter the name of your material file",
             "validationRule": "nullable|max:255|string",
             "default":"_INPUT/materials/",
             "required": true
@@ -37,8 +39,9 @@
                     "required": true,
                     "display": "inline-block",
                     "validationRule": "nullable|min:0|numeric",
+                    "hint": "X value",
                     "fileDisplay": "NOEOL",
-                    "default": 0
+                    "default": 1
                 },
                 "Y-scale": {
                     "title": "scale Y",
@@ -47,23 +50,25 @@
                     "required": true,
                     "display": "inline-block",
                     "validationRule": "nullable|min:0|numeric",
+                    "hint": "Y valuessssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                     "fileDisplay": "NOEOL",
-                    "default": 0
+                    "default": 1
                 },
                 "Z-scale": {
                     "title": "scale Z",
                     "type": "number",
 	                "htmlType": "number",
                     "validationRule": "nullable|min:0|numeric",
+                    "hint": "Z value",
                     "display": "inline-block",
                     "required": true,
-                    "default": 0
+                    "default": 1
                 },
 
 
                 "NULLVALUE": {
                     "title": "NULL",
-                    "type": "number",
+                    "type": "linebreak",
 	                "htmlType": "number",
                     "validationRule": "nullable",
                     "display": "invisible"
@@ -125,7 +130,7 @@
         "preconditioner": {
             "title": "Preconditioner Type:",
             "type": "select",
-            "default": "No",
+            "default": "Left",
             "validationRule": "nullable|in:Right,Left,CMP,No",
             "options": [
                 {"title": "Right", "value": "Right"},

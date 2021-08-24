@@ -2,11 +2,11 @@
     <div class="col-span-6 sm:col-span-3">
         <x-jet-label class="mb-2 text-gray-700" for="searchCategory" value="{{ __('Select Demo Category') }}" />
         <select
-            class="form-select block w-full mt-1 rounded-lg" id="searchCategory"
+            class="w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="searchCategory"
             wire:model="searchCategory">
                 <option value="-1">All</option>
                 @foreach($categories as $key => $value)
-                    <option value="{{$key}}">{{$value}}</option>
+                    <option class="text-gray-700 block px-4 py-2 text-sm" value="{{$key}}">{{$value}}</option>
                 @endforeach
         </select> 
     </div>

@@ -39,6 +39,14 @@ class UpdateForm extends Component
 
     /**
      * 
+     * @var Demo id
+     */
+    public $demo_id = -1;
+
+
+
+    /**
+     * 
      * @var Category array
      */
     public $categories = []; 
@@ -97,6 +105,8 @@ class UpdateForm extends Component
      */
     public $input_file_json = [];
 
+
+
     /**
      * 
      * @var array
@@ -133,13 +143,6 @@ class UpdateForm extends Component
     public $nameSearch = '';
 
 
-    /**
-     * 
-     * @var boolean
-     */
-    public $editDemo = false;
-
-
 
     /**
      * 
@@ -147,8 +150,9 @@ class UpdateForm extends Component
      */
     protected $queryString = [
         'categorySearch' => ['except' => -1],
-        'pageNum' => ['except' => 5],
-        'nameSearch' => ['except' => '']
+        'pageNum',
+        'nameSearch' => ['except' => ''],
+        'demo_id' => ['except' => -1]
     ];
 
 
@@ -211,6 +215,11 @@ class UpdateForm extends Component
         {
             $this->categories[$category->id] =  $category->name;
         }
+        if($this->demo_id !== -1)
+        {
+            $this->registerDemo($this->demo_id, false);
+        }
+            
     }
 
 
@@ -220,33 +229,29 @@ class UpdateForm extends Component
      */
     public function render()
     {  
-
-        if($this->editDemo && isset($this->demo))
+        $demos = [];
+        if(isset($this->demo) && $this->demo_id !== -1)
         {
 
             $this->output_file_json = json_decode($this->demo->output_file_json, true);
             $this->input_file_json = json_decode($this->demo->input_file_json, true); 
 
-            if(count($this->output_file_json['fileName']) >= 1  &&
-            count($this->uploadFields) == count($this->input_file_json['fileName']))
-            {
-                $this->displayEditable = true;
-            }
-            else
-            {
-                $this->displayEditable = false;
-            }
-                       
+            (count($this->output_file_json['fileName']) >= 1  &&
+            count($this->uploadFields) == count($this->input_file_json['fileName']))?
+            $this->displayEditable = true : $this->displayEditable = false;          
         }
-
-
-        $demos = Demo::where('name', 'like', '%'.$this->nameSearch.'%');
-
-        if($this->categorySearch != -1)
+        
+        else
         {
-            $demos = $demos->Where('category_id', $this->categorySearch);
+            $demos = Demo::where('name', 'like', '%'.$this->nameSearch.'%');
+
+            if($this->categorySearch != -1)
+            {
+                $demos = $demos->Where('category_id', $this->categorySearch);
+            }
+            $demos = $demos->paginate($this->pageNum);
         }
-        $demos = $demos->paginate($this->pageNum);
+        
 
         return view(self::COMPONENT_TEMPLATE,['demos' => $demos]);
     }
@@ -362,17 +367,20 @@ class UpdateForm extends Component
      * 
      * @return view
      */
-    public function registerDemo(Demo $demo, $delete)
+    public function registerDemo($demo_id, $delete)
     {
-        $this->demo = $demo;
-
+        $this->demo = Demo::find($demo_id);
+        if(is_null($this->demo))
+        {
+            abort(404);
+        }
         if($delete)
         {
             $this->confirmingDemoDeletion = true;
         }
         else
         {
-        
+            $this->demo_id = $this->demo->id;
             if (isset($this->demo)) 
             {
                 $this->demoAttr['name'] = $this->demo->name;
@@ -385,10 +393,13 @@ class UpdateForm extends Component
                     $this->input_files[$fileType] = null;
                 }       
             } 
-            
-            $this->editDemo = true;
-            
         }
+    }
+
+    public function clearDemo()
+    {
+        $this->demo = null;
+        $this->demo_id = -1;
     }
 
 }

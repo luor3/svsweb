@@ -1,5 +1,5 @@
 <div>
-    @if(!$editDemo)
+    @if(!isset($demo) || $demo_id === -1)
         @include('demos.filterBar')
         <table class="min-w-full leading-normal">
             <thead>
@@ -30,20 +30,10 @@
             <tbody>
                 @foreach ($demos as $my_demo)
                     <tr>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <x-jet-label value="{{$my_demo->id}}" class="mt-1 block w-full"/>
-                        </td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <x-jet-input value="{{$my_demo->name}}" type="text" :disabled="true"
-                                class="mt-1 block w-full" />
-                        </td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <x-jet-input value="{{ $categories[$my_demo->category_id] }}" type="text" :disabled="true"
-                                class="mt-1 block w-full" />
-                        </td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            <x-jet-label value="{{ $my_demo->status?'Yes':'No' }}" class="mt-1 block w-full" />
-                        </td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$my_demo->id}}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$my_demo->name}}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $categories[$my_demo->category_id] }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $my_demo->status?'Yes':'No' }}</td>
 
                         <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
                             <x-jet-secondary-button wire:click="registerDemo({{ $my_demo->id }},false)" wire:loading.attr="disabled">
@@ -228,7 +218,7 @@
         </x-jet-form-section>
 
         <div>
-           <x-jet-button class="ml-2" wire:click="$toggle('editDemo')" wire:loading.attr="disabled">
+           <x-jet-button class="ml-2" wire:click="clearDemo" wire:loading.attr="disabled">
                     {{ __('Back') }}
             </x-jet-button> 
         </div>     
