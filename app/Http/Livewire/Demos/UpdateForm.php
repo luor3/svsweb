@@ -118,8 +118,23 @@ class UpdateForm extends Component
         'category_id' => null,
     ];
 
+    public $orderList = [
+        1 => null,
+        2 => "asc",
+        4 => "desc"
+    ];
+
+    public $orderInfo = [
+        "id" => 1,
+        "name" =>1
+    ];
 
 
+    public $orderDisplay = [
+        1 => "",
+        2 => "asc",
+        4 => "desc"
+    ];
 
 
     /**
@@ -249,6 +264,16 @@ class UpdateForm extends Component
             {
                 $demos = $demos->Where('category_id', $this->categorySearch);
             }
+            foreach ($this->orderInfo as $property => $order)
+            {
+                if(is_null($this->orderList[$order]))
+                {
+                    continue;
+                }
+                $demos = $demos -> orderBy($property,$this->orderList[$order]);
+            }
+            
+
             $demos = $demos->paginate($this->pageNum);
         }
         
@@ -396,10 +421,40 @@ class UpdateForm extends Component
         }
     }
 
+
+    /**
+     * call after clicking "back" in demo edit page
+     * 
+     * @return void
+     */
     public function clearDemo()
     {
         $this->demo = null;
         $this->demo_id = -1;
+    }
+
+
+    /**
+     * change order status
+     * 
+     * @return void
+     */
+    public function demoOrder($property)
+    {
+        $order = &$this->orderInfo[$property];
+        ($order << 1 == 8) ? $order = 1 : $order <<= 1;
+    }
+
+
+
+    /**
+     * call after clicking "Edit" in demo page
+     * 
+     * @return redrect route 
+     */
+    public function redirecToDemo($demo_id)
+    {
+        return redirect()->route('demos',['demo_id' => $demo_id]);
     }
 
 }

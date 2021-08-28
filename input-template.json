@@ -3,7 +3,7 @@
     "properties": {
         
         "solverType": {
-            "title": "IE-Solver (EFIE || SVS-EFIE):",
+            "title": "IE-Solver:",
             "type": "select",
             "validationRule": "nullable|in:SVS-EFIE,EFIE",
             "default": "SVS-EFIE",
@@ -25,7 +25,7 @@
         },
         
         "meshFile": {
-            "title": "Name of *.mesh file(mesh file, Scale[x y z], Translate[x y z]):",
+            "title": "Name of *.mesh file:",
             "type": "file",
             "required": true,
             "default":"_INPUT/meshes/",
@@ -278,7 +278,7 @@
         },
         
         "dipoleOrientation": {
-            "title": "Dipole orientation ([x y z] in meters):",
+            "title": "Dipole orientation:",
             "type": "multiple",
             "_enabled": {"property": "excitation", "value": "Dipole"},
             "children": {
@@ -340,7 +340,7 @@
         },
         
         "surfacePort": {
-            "title": "Surface port polylines ([x y z] in meters):",
+            "title": "Surface port polylines:",
             "_enabled": {"property": "excitation", "value": "PortS"},
             "_repeat": "noOfSurfacePorts.children.0.noOfPorts",
             "type": "multiple",
@@ -410,7 +410,7 @@
         },
 
         "multilayerDescription": {
-            "title": "Name of file with Multilayer description (Name || None):",
+            "title": "Name of file with Multilayer description:",
             "type": "file",
             "htmlType": "text",
             "validationRule": "nullable|max:255|string",
@@ -436,7 +436,7 @@
         },
 
         "scatteredFieldRequired": {
-            "title": "Is computation of scattered field required (Yes || No):",
+            "title": "Is computation of scattered field required:",
             "type": "select",
             "default": "No",
             "required": true,
@@ -448,7 +448,7 @@
         },
 
         "atSurfacePoints": {
-            "title": "Is computation of current at surface points required (Yes || No):",
+            "title": "Is computation of current at surface points required:",
             "type": "select",
             "default": "No",
             "required": true,
@@ -533,7 +533,7 @@
         },
 
         "HarithmTolerance": {
-            "title": "H-arithm tolerance (RELATIVE || ABSOLUTE):",
+            "title": "H-arithm tolerance:",
             "type": "select",
             "default": "RELATIVE",
             "validationRule": "nullable|in:RELATIVE,ABSOLUTE",
@@ -578,7 +578,7 @@
         },
 
         "CompressionType": {
-            "title": "Compression type (ACA || GRID || SVD):",
+            "title": "Compression type:",
             "type": "select",
             "default": "ACA",
             "required": true,
@@ -604,7 +604,7 @@
         },
 
         "gridPoints": {
-            "title": "Number of grid points (X,Y,Z):",
+            "title": "Number of grid points:",
             "type": "multiple",
             "children": {
                 "X": {
@@ -638,7 +638,7 @@
         },
 
         "outsideBoundingBox": {
-            "title": "Want one additional grid point outside the bounding box? (No):",
+            "title": "Want one additional grid point outside the bounding box?:",
             "type": "select",
             "default": "No",
             "required": true,
@@ -649,7 +649,7 @@
         },
 
         "InterpolationType": {
-            "title": "Interpolation type (Lagrange):",
+            "title": "Interpolation type:",
             "type": "select",
             "default": "Lagrange",
             "required": true,
@@ -694,7 +694,7 @@
         },
 
         "OutputMatrices": {
-            "title": "Output Matrices (Yes || No):",
+            "title": "Output Matrices:",
             "type": "select",
             "default": "No",
             "required": true,
@@ -706,7 +706,7 @@
         },
 
         "ClusteringStrategy": {
-            "title": "Clustering Strategy (0 - Default, 1 - Geometrically balanced, 2 - Geometrically regular, 3 - Geom. regular, regular boxes, 4 - Cardinality based, 5 - Principal directions):",
+            "title": "Clustering Strategy:",
             "type": "select",
             "default": "1",
             "required": true,
@@ -723,7 +723,7 @@
 
 
         "BlockAdmissibilityCriteria": {
-            "title": "Block Admissibility Criteria (0 - min adm criterion (default), 1 - weak adm, 2 - max adm):",
+            "title": "Block Admissibility Criteria:",
             "type": "select",
             "default": "0",
             "required": true,
@@ -736,7 +736,7 @@
         },
 
         "BlockHomogeneity": {
-            "title": "Block Homogeneity (0 - homogeneous (default), 1 - inhomogeneous):",
+            "title": "Block Homogeneity:",
             "type": "select",
             "default": "0",
             "required": true,
@@ -757,7 +757,7 @@
         },
 
         "HmatrixElementBoundingBox": {
-            "title": "Hmatrix element bounding box (TRI - push all 4 points of the triangle pair || RWG - push only RWG edge endpoints):",
+            "title": "Hmatrix element bounding box:",
             "type": "select",
             "default": "TRI",
             "required": true,
@@ -770,7 +770,7 @@
 
 
         "OutputCurrentFormat": {
-            "title": "OutputCurrent format (VTK || MATLAB || BOTH):",
+            "title": "OutputCurrent format:",
             "type": "select",
             "default": "BOTH",
             "required": true,

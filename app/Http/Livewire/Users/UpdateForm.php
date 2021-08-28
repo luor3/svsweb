@@ -99,6 +99,26 @@ class UpdateForm extends Component
      */
     public $pageNum = 5;
 
+
+    public $orderList = [
+        1 => null,
+        2 => "asc",
+        4 => "desc"
+    ];
+
+    public $orderInfo = [
+        "name" => 1,
+        "email" =>1
+    ];
+
+
+    public $orderDisplay = [
+        1 => "",
+        2 => "asc",
+        4 => "desc"
+    ];
+
+
     /**
      * 
      * @var array
@@ -246,8 +266,24 @@ class UpdateForm extends Component
             $users = $users->Where('role', strtolower($this->searchRole));
         }
 
+        foreach ($this->orderInfo as $property => $order)
+        {
+            if(is_null($this->orderList[$order]))
+            {
+                continue;
+            }
+            $users = $users -> orderBy($property,$this->orderList[$order]);
+        }
+
+
         $users = $users->paginate($this->pageNum,['users.*','teams.name AS team_name'])->appends(InputRequest::except('page'));
 
         return view('users.update-form',['users' => $users]);
+    }
+
+    public function demoOrder($property)
+    {
+        $order = &$this->orderInfo[$property];
+        ($order << 1 == 8) ? $order = 1 : $order <<= 1;
     }
 }

@@ -6,11 +6,15 @@
                 <thead>
                     <tr>
                         <th
-                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Name </th>
+                            wire:click="demoOrder('name')" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Name 
+                            <span class="lowercase text-red-500">{{ $orderDisplay[$orderInfo["name"]] }}</span>
+                        </th>
                         <th
-                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Email </th>
+                            wire:click="demoOrder('email')" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Email 
+                            <span class="lowercase text-red-500">{{ $orderDisplay[$orderInfo["email"]] }}</span>
+                        </th>
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Team</th>
