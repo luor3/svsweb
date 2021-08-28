@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\User;
+use App\Models\Team;
 use Illuminate\Support\Facades\Request as InputRequest;
+
 
 class UpdateForm extends Component
 {
@@ -56,6 +58,13 @@ class UpdateForm extends Component
 
     /**
      * 
+     * @var array
+     */
+    public $team_list = [];
+
+
+    /**
+     * 
      * @var string
      */
     public $role;
@@ -90,6 +99,26 @@ class UpdateForm extends Component
      */
     public $pageNum = 5;
 
+
+    public $orderList = [
+        1 => null,
+        2 => "asc",
+        4 => "desc"
+    ];
+
+    public $orderInfo = [
+        "name" => 1,
+        "email" =>1
+    ];
+
+
+    public $orderDisplay = [
+        1 => "",
+        2 => "asc",
+        4 => "desc"
+    ];
+
+
     /**
      * 
      * @var array
@@ -113,6 +142,15 @@ class UpdateForm extends Component
             'current_team_id' => 'required|numeric',
             'role' =>'required'
         ];
+    }
+
+
+    public function mount()
+    {
+        $teams = Team::all();
+        foreach ($teams as $team){
+            $this->team_list[$team->id] =  $team->name;
+        }
     }
 
 
@@ -223,12 +261,29 @@ class UpdateForm extends Component
      */
     public function render()
     {
-        $users = User::where('name', 'like', '%'.$this->searchTerm.'%');
+        $users = User::leftjoin('teams', 'users.current_team_id','=','teams.id')->where('users.name', 'like', '%'.$this->searchTerm.'%');
         if(strtolower($this->searchRole) != "all"){
             $users = $users->Where('role', strtolower($this->searchRole));
         }
-        $users = $users->paginate($this->pageNum)->appends(InputRequest::except('page'));
+
+        foreach ($this->orderInfo as $property => $order)
+        {
+            if(is_null($this->orderList[$order]))
+            {
+                continue;
+            }
+            $users = $users -> orderBy($property,$this->orderList[$order]);
+        }
+
+
+        $users = $users->paginate($this->pageNum,['users.*','teams.name AS team_name'])->appends(InputRequest::except('page'));
 
         return view('users.update-form',['users' => $users]);
+    }
+
+    public function demoOrder($property)
+    {
+        $order = &$this->orderInfo[$property];
+        ($order << 1 == 8) ? $order = 1 : $order <<= 1;
     }
 }

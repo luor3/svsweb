@@ -6,14 +6,18 @@
                 <thead>
                     <tr>
                         <th
-                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Name </th>
+                            wire:click="demoOrder('name')" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Name 
+                            <span class="lowercase text-red-500">{{ $orderDisplay[$orderInfo["name"]] }}</span>
+                        </th>
+                        <th
+                            wire:click="demoOrder('email')" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Email 
+                            <span class="lowercase text-red-500">{{ $orderDisplay[$orderInfo["email"]] }}</span>
+                        </th>
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Email </th>
-                        <th
-                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Team ID </th>
+                            Team</th>
                         
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -42,26 +46,14 @@
                                         @endif
                                     </div>
 
-                                    <div class="ml-3">
-                                        <x-jet-input value="{{$user->name}}" type="text" :disabled="true" class="mt-1 block w-full"/>
-                                    </div>
+                                    <div class="ml-3 h-10 leading-10">{{$user->name}}</div>
                                 </div>
                             </td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                <x-jet-input value="{{$user->email}}" type="text" :disabled="true" class="mt-1 block w-full"/>
-
-                            </td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                <x-jet-input value="{{$user->current_team_id}}" type="text" :disabled="true"
-                                    class="mt-1 block w-full" />
-                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$user->email}}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$user->team_name}}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$user->role}}</td>
 
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                <x-jet-label value="{{$user->role}}"
-                                    class="mt-1 block w-full" />
-                            </td>
-
-                            <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
                                 <x-jet-secondary-button wire:click="registerUser({{$user->id}},false)" wire:loading.attr="disabled">
                                     <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
                                         <path fill-rule="evenodd"
@@ -71,7 +63,7 @@
                                     {{ __('Edit') }}
                                 </x-jet-secondary-button>
                             </td>
-                            <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                 <x-jet-danger-button class="ml-2" wire:click="registerUser({{$user->id}},true)"
                                     wire:loading.attr="disabled">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
@@ -143,11 +135,16 @@
                     </div>
 
                     <div class="col-span-6 sm:col-span-3 mt-2">
-                        <x-jet-label for="current_team_id" value="{{ __('Team ID') }}" />
-                        <x-jet-input 
-                            id="current_team_id" type="text" 
-                            class="mt-1 block w-full" 
-                            wire:model.defer="current_team_id" />
+                        <x-jet-label for="current_team_id" value="{{ __('Team') }}" />
+ 
+                        <select id="current_team_id" wire:model.defer="current_team_id" class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg">
+                            @foreach ($team_list as $team_id => $team_name)
+                                <option value="{{ $team_id }}">
+                                    {{ $team_name }}
+                                </option>
+                            @endforeach
+                        </select>
+
                         <x-jet-input-error for="current_team_id" class="mt-1" />
                     </div>
 

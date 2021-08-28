@@ -195,11 +195,7 @@ class InputGenerator extends Component
             foreach ($property as $cKey => &$enable)
             {                  
                 $enabledInfo = null;
-                if($cKey === "main")
-                    $enabledInfo = $inputProperty['_enabled'];          
-                else
-                    $enabledInfo = $inputProperty['children'][$cKey]['_enabled'];
-
+                $enabledInfo = ($cKey === "main") ? $inputProperty['_enabled'] : $inputProperty['children'][$cKey]['_enabled'];
                 if(isset($enabledInfo))
                 {
                     $array_val = is_array($enabledInfo['value']) ? $enabledInfo['value'] : [$enabledInfo['value']];
@@ -231,13 +227,9 @@ class InputGenerator extends Component
                 $tempInt = null;
                 foreach ($valuePath_array as $index)
                 {
-                    if($tempInt)
-                        $tempInt = $tempInt[$index];
-                    else
-                        $tempInt = $this->inputValue[$index];
+                    $tempInt = ($tempInt) ? $tempInt[$index] : $this->inputValue[$index];
                 }
                 $repeatSet['main'] = ((int)$tempInt < 0) ? 0 : (int)$tempInt;
-
 
 
                 $newCNum = $repeatSet['main'];

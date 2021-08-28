@@ -24,11 +24,6 @@ use App\Http\Controllers\Frontend\InputGeneratorController;
 */
 
 
-
-/*Route::get('/', function () {
-    return view('welcome');
-}); */
-
 Route::get('/', HomeController::class)->name('homepage');
 
 Route::get('/demos', GetstartedController::class)->name('demopage');
@@ -62,10 +57,6 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/categories')->gro
     Route::get('/', [CategoriesController::class, 'show'])->name('categories');
     Route::get('/create', [CategoriesController::class, 'showCreate'])->name('categories.create');
 });
-
-
-
-Route::post('/submit/{formType}', [SubmitController::class, 'submit']);
 
 
 

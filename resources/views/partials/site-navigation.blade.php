@@ -26,7 +26,7 @@
                 @auth
                     <a href="{{ url('/dashboard') }}" class="block lg:inline-block mb-2 lg:mb-0 py-2 px-4 text-gray-700 bg-white hover:bg-gray-300 rounded-lg mr-2">Dashboard</a>
                 @else
-                    @if (false) 
+                    @if (true) 
                     <a href="{{ route('login') }}" class="block lg:inline-block mb-2 lg:mb-0 py-2 px-4 text-gray-700 bg-white hover:bg-gray-300 rounded-lg mr-2">Login</a>
                     @endif
                     
