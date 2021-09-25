@@ -60,8 +60,13 @@ class UpdateForm extends Component
      * 
      * @var array
      */
-    public $team_list = [];
+    public $teamList = [];
 
+
+    public $currentOrderProperty;
+
+
+    public $currentOrder = 'asc';
 
     /**
      * 
@@ -100,24 +105,6 @@ class UpdateForm extends Component
     public $pageNum = 5;
 
 
-    public $orderList = [
-        1 => null,
-        2 => "asc",
-        4 => "desc"
-    ];
-
-    public $orderInfo = [
-        "name" => 1,
-        "email" =>1
-    ];
-
-
-    public $orderDisplay = [
-        1 => "",
-        2 => "asc",
-        4 => "desc"
-    ];
-
 
     /**
      * 
@@ -149,7 +136,7 @@ class UpdateForm extends Component
     {
         $teams = Team::all();
         foreach ($teams as $team){
-            $this->team_list[$team->id] =  $team->name;
+            $this->teamList[$team->id] =  $team->name;
         }
     }
 
@@ -266,13 +253,9 @@ class UpdateForm extends Component
             $users = $users->Where('role', strtolower($this->searchRole));
         }
 
-        foreach ($this->orderInfo as $property => $order)
+        if(!is_null($this->currentOrderProperty) && $this->currentOrder !== '')
         {
-            if(is_null($this->orderList[$order]))
-            {
-                continue;
-            }
-            $users = $users -> orderBy($property,$this->orderList[$order]);
+            $users = $users -> orderBy($this->currentOrderProperty,$this->currentOrder);  
         }
 
 
@@ -281,9 +264,22 @@ class UpdateForm extends Component
         return view('users.update-form',['users' => $users]);
     }
 
+    /**
+     * change order status
+     * 
+     * @return void
+     */
     public function demoOrder($property)
     {
-        $order = &$this->orderInfo[$property];
-        ($order << 1 == 8) ? $order = 1 : $order <<= 1;
+        if($property === $this->currentOrderProperty)
+        {
+           $this->currentOrder = ($this->currentOrder === 'asc') ? 'desc' : (($this->currentOrder === 'desc') ? '' : 'asc');
+        }
+        else
+        {
+            $this->currentOrder = 'asc';
+            $this->currentOrderProperty = $property;
+        }
     }
+   
 }

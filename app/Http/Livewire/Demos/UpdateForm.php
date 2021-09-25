@@ -41,7 +41,7 @@ class UpdateForm extends Component
      * 
      * @var Demo id
      */
-    public $demo_id = -1;
+    public $demoID = -1;
 
 
 
@@ -56,14 +56,14 @@ class UpdateForm extends Component
      * 
      * @var File array
      */
-    public $output_files;
+    public $outputFiles;
 
 
     /**
      * 
      * @var File array
      */
-    public $input_files;
+    public $inputFiles;
 
 
 
@@ -73,7 +73,7 @@ class UpdateForm extends Component
      * 
      * @var File
      */
-    public $plot_file;
+    public $plotFile;
 
 
     /**
@@ -95,7 +95,7 @@ class UpdateForm extends Component
      * 
      * @var array
      */
-    public $output_file_json = [];
+    public $outputFileJson = [];
 
 
 
@@ -103,7 +103,7 @@ class UpdateForm extends Component
      * 
      * @var array
      */
-    public $input_file_json = [];
+    public $inputFileJson = [];
 
 
 
@@ -118,25 +118,13 @@ class UpdateForm extends Component
         'category_id' => null,
     ];
 
-    public $orderList = [
-        1 => null,
-        2 => "asc",
-        4 => "desc"
-    ];
 
-    public $orderInfo = [
-        "id" => 1,
-        "name" =>1
-    ];
+    public $currentOrderProperty;
 
 
-    public $orderDisplay = [
-        1 => "",
-        2 => "asc",
-        4 => "desc"
-    ];
+    public $currentOrder = 'asc';
 
-
+    
     /**
      * 
      * @var integer
@@ -167,7 +155,7 @@ class UpdateForm extends Component
         'categorySearch' => ['except' => -1],
         'pageNum',
         'nameSearch' => ['except' => ''],
-        'demo_id' => ['except' => -1]
+        'demoID' => ['except' => -1]
     ];
 
 
@@ -183,7 +171,7 @@ class UpdateForm extends Component
             'demoAttr.category_id' => 'required|integer',
             'demoAttr.description' => 'required|max:1024',
             'demoAttr.status' => 'required|boolean',
-            'output_files.*' => 'file',       
+            'outputFiles.*' => 'file',       
         ];
     }
 
@@ -230,9 +218,9 @@ class UpdateForm extends Component
         {
             $this->categories[$category->id] =  $category->name;
         }
-        if($this->demo_id !== -1)
+        if($this->demoID !== -1)
         {
-            $this->registerDemo($this->demo_id, false);
+            $this->registerDemo($this->demoID, false);
         }
             
     }
@@ -245,36 +233,33 @@ class UpdateForm extends Component
     public function render()
     {  
         $demos = [];
-        if(isset($this->demo) && $this->demo_id !== -1)
+        if(isset($this->demo) && $this->demoID !== -1)
         {
 
-            $this->output_file_json = json_decode($this->demo->output_file_json, true);
-            $this->input_file_json = json_decode($this->demo->input_file_json, true); 
+            $this->outputFileJson = json_decode($this->demo->output_file_json, true);
+            $this->inputFileJson = json_decode($this->demo->input_file_json, true); 
 
-            (count($this->output_file_json['fileName']) >= 1  &&
-            count($this->uploadFields) == count($this->input_file_json['fileName']))?
+            (count($this->outputFileJson['fileName']) >= 1  &&
+            count($this->uploadFields) == count($this->inputFileJson['fileName']))?
             $this->displayEditable = true : $this->displayEditable = false;          
         }
         
         else
         {
-            $demos = Demo::where('name', 'like', '%'.$this->nameSearch.'%');
+            $demos = Demo::leftjoin('categories', 'demos.category_id','=','categories.id')->where('demos.name', 'like', '%'.$this->nameSearch.'%');
 
             if($this->categorySearch != -1)
             {
                 $demos = $demos->Where('category_id', $this->categorySearch);
             }
-            foreach ($this->orderInfo as $property => $order)
+
+            if(!is_null($this->currentOrderProperty) && $this->currentOrder !== '')
             {
-                if(is_null($this->orderList[$order]))
-                {
-                    continue;
-                }
-                $demos = $demos -> orderBy($property,$this->orderList[$order]);
+                $demos = $demos -> orderBy($this->currentOrderProperty,$this->currentOrder);  
             }
             
 
-            $demos = $demos->paginate($this->pageNum);
+            $demos = $demos->paginate($this->pageNum,['demos.*','categories.name AS category_name']);
         }
         
 
@@ -300,29 +285,29 @@ class UpdateForm extends Component
 
             try 
             {
-                if(isset($this->plot_file))
+                if(isset($this->plotFile))
                 {
                     if($this->demo->plot_path)
                     {
                         Storage::disk('public')->delete($this->demo->plot_path);
                     }                
-                    $this->demo->plot_path = $this->plot_file->store('demos/'.$this->demo->id,'public');
+                    $this->demo->plot_path = $this->plotFile->store('demos/'.$this->demo->id,'public');
 
-                    $this->plot_file = null;
+                    $this->plotFile = null;
                 }           
                 
-                if(isset($this->output_files))
+                if(isset($this->outputFiles))
                 {
                     
-                    foreach ($this->output_file_json['fileName'] as $fileName)
+                    foreach ($this->outputFileJson['fileName'] as $fileName)
                     {
-                        Storage::disk('public')->delete($this->output_file_json[$fileName]);
+                        Storage::disk('public')->delete($this->outputFileJson[$fileName]);
                     } 
 
                     $output_json = [
                         'fileName' => [],
                     ];
-                    foreach ($this->output_files as $file)
+                    foreach ($this->outputFiles as $file)
                     {
                         
                         $uniqueFileName = Str::uuid().$file->getClientOriginalName();
@@ -330,22 +315,22 @@ class UpdateForm extends Component
                         $output_json[$uniqueFileName] = $file->store('demos/'.$this->demo->id,'public');
                     }
                     $this->demo->output_file_json  = json_encode($output_json);
-                    $this->output_files = null;
+                    $this->outputFiles = null;
                 }
                 
-                foreach ($this->input_files as $fileType => $file)
+                foreach ($this->inputFiles as $fileType => $file)
                 {
-                    if(isset($this->input_files[$fileType]))
+                    if(isset($this->inputFiles[$fileType]))
                     {
                         if(isset($input_file_json['fileName'][$fileType]))
                         {
-                            Storage::disk('public')->delete($this->input_file_json[$fileType]);
+                            Storage::disk('public')->delete($this->inputFileJson[$fileType]);
                         }       
-                        $this->input_file_json['fileName'][$fileType] = $file->getClientOriginalName();
-                        $this->input_file_json[$fileType] = $file->store('demos/'.$this->demo->id,'public');
+                        $this->inputFileJson['fileName'][$fileType] = $file->getClientOriginalName();
+                        $this->inputFileJson[$fileType] = $file->store('demos/'.$this->demo->id,'public');
                     }
                 }
-                $this->demo->input_file_json = json_encode($this->input_file_json);
+                $this->demo->input_file_json = json_encode($this->inputFileJson);
                 
                 
             } 
@@ -405,7 +390,7 @@ class UpdateForm extends Component
         }
         else
         {
-            $this->demo_id = $this->demo->id;
+            $this->demoID = $this->demo->id;
             if (isset($this->demo)) 
             {
                 $this->demoAttr['name'] = $this->demo->name;
@@ -415,7 +400,7 @@ class UpdateForm extends Component
 
                 $this->uploadFields = json_decode($this->demo->input_property_json,true);
                 foreach ($this->uploadFields as $fileType => $extension){
-                    $this->input_files[$fileType] = null;
+                    $this->inputFiles[$fileType] = null;
                 }       
             } 
         }
@@ -430,7 +415,7 @@ class UpdateForm extends Component
     public function clearDemo()
     {
         $this->demo = null;
-        $this->demo_id = -1;
+        $this->demoID = -1;
     }
 
 
@@ -441,8 +426,15 @@ class UpdateForm extends Component
      */
     public function demoOrder($property)
     {
-        $order = &$this->orderInfo[$property];
-        ($order << 1 == 8) ? $order = 1 : $order <<= 1;
+        if($property === $this->currentOrderProperty)
+        {
+           $this->currentOrder = ($this->currentOrder === 'asc') ? 'desc' : (($this->currentOrder === 'desc') ? '' : 'asc');
+        }
+        else
+        {
+            $this->currentOrder = 'asc';
+            $this->currentOrderProperty = $property;
+        }
     }
 
 
@@ -452,9 +444,9 @@ class UpdateForm extends Component
      * 
      * @return redrect route 
      */
-    public function redirecToDemo($demo_id)
+    public function redirecToDemo($demoID)
     {
-        return redirect()->route('demos',['demo_id' => $demo_id]);
+        return redirect()->route('demos',['demoID' => $demoID]);
     }
 
 }

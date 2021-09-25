@@ -36,16 +36,16 @@
                 </div>
 
                 <div class="col-span-6 sm:col-span-full">
-                    <x-jet-label class="mt-5" for="plot_file" value="{{ __('Plot Image File (max:10MB)') }}" />
-                    <x-jet-input id="plot_file" type="file" class="mt-1 block w-full" wire:model="plot_file" enctype='multipart/form-data' accept='.jpg,.jpeg,.png,.gif'/>
-                    <div class="text-black-500" wire:loading wire:target="plot_file">Uploading Image...</div>
-                    <x-jet-input-error for="plot_file" class="mt-2" />
+                    <x-jet-label class="mt-5" for="plotFile" value="{{ __('Plot Image File (max:10MB)') }}" />
+                    <x-jet-input id="plotFile" type="file" class="mt-1 block w-full" wire:model="plotFile" enctype='multipart/form-data' accept='.jpg,.jpeg,.png,.gif'/>
+                    <div class="text-black-500" wire:loading wire:target="plotFile">Uploading Image...</div>
+                    <x-jet-input-error for="plotFile" class="mt-2" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-full">
-                    @if(isset($plot_file))
-                        <x-jet-label class="my-5" for="plot_image" value="{{ __('Plot Image: ').$plot_file->getClientOriginalName() }}" />
-                        <img id="plot_image" src="{{ $plot_file->temporaryUrl() }}" alt="Something Wrong to Display Image">
+                    @if(isset($plotFile))
+                        <x-jet-label class="my-5" for="plot_image" value="{{ __('Plot Image: ').$plotFile->getClientOriginalName() }}" />
+                        <img id="plot_image" src="{{ $plotFile->temporaryUrl() }}" alt="Something Wrong to Display Image">
                     @endif
                 </div>
 
@@ -89,6 +89,18 @@
                     <x-jet-input-error for="name" class="mt-2" />
                 </div>
 
+                <div class="col-span-6 sm:col-span-3">
+                    <x-jet-label for="category_id" value="{{ __('Category') }}" />
+                    <select
+                        class="block mt-1 w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" id="category_id"
+                        wire:model.defer="category_id">
+                        @foreach($categories as $key => $value)
+                            <option value="{{$key}}">{{$value}}</option>
+                        @endforeach
+                    </select> 
+                    <x-jet-input-error for="category_id" class="mt-2" />
+                </div>
+
                 <div class="col-span-6">
                     <x-jet-label for="description" value="{{ __('Description') }}" />
 
@@ -102,17 +114,7 @@
                     <x-jet-input-error for="description" class="mt-2" />
                 </div>
 
-                <div class="col-span-6 sm:col-span-3">
-                    <x-jet-label class="mb-2" for="category_id" value="{{ __('Category') }}" />
-                    <select
-                        class="w-full" id="category_id"
-                        wire:model.defer="category_id">
-                        @foreach($categories as $key => $value)
-                            <option value="{{$key}}">{{$value}}</option>
-                        @endforeach
-                    </select> 
-                    <x-jet-input-error for="category_id" class="mt-2" />
-                </div>
+                
 
                 <div class="col-span-6 sm:col-span-full">
                     <x-jet-label for="input_file" value="{{ __('Input File') }}" />

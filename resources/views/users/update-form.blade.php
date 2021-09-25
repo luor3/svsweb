@@ -8,20 +8,24 @@
                         <th
                             wire:click="demoOrder('name')" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Name 
-                            <span class="lowercase text-red-500">{{ $orderDisplay[$orderInfo["name"]] }}</span>
+                            @include('backend-order-bar', ['columnName' => 'name'] )
                         </th>
                         <th
                             wire:click="demoOrder('email')" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Email 
-                            <span class="lowercase text-red-500">{{ $orderDisplay[$orderInfo["email"]] }}</span>
+                            @include('backend-order-bar', ['columnName' => 'email'] )
                         </th>
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Team</th>
-                        
+                            Team
+                            @include('backend-order-bar', ['columnName' => 'team_name'] )
+                        </th>
+                            
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Role </th>
+                            Role 
+                            @include('backend-order-bar', ['columnName' => 'role'] )
+                        </th>
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         </th>
@@ -138,8 +142,8 @@
                         <x-jet-label for="current_team_id" value="{{ __('Team') }}" />
  
                         <select id="current_team_id" wire:model.defer="current_team_id" class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg">
-                            @foreach ($team_list as $team_id => $team_name)
-                                <option value="{{ $team_id }}">
+                            @foreach ($teamList as $teamID => $team_name)
+                                <option value="{{ $teamID }}">
                                     {{ $team_name }}
                                 </option>
                             @endforeach
