@@ -1,27 +1,31 @@
 <div>
-    @if(!isset($demo) || $demo_id === -1)
+    @if(!isset($demo) || $demoID === -1)
         @include('demos.filterBar')
         <table class="min-w-full leading-normal">
             <thead>
                 <tr>
                     <th
-                        wire:click="demoOrder('id')" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        <span>Demo ID</span> 
-                        <span class="lowercase text-red-500">{{ $orderDisplay[$orderInfo["id"]] }}</span>
-                    </th>
-                    <th
-                        wire:click="demoOrder('name')" class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        <span>Name</span> 
-                        <span class="lowercase text-red-500">{{ $orderDisplay[$orderInfo["name"]] }}</span>
+                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Demo ID
+                        @include('backend-order-bar', ['columnName' => 'id'] )
                     </th>
                     <th
                         class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Category </th>
-
+                        Name
+                        @include('backend-order-bar', ['columnName' => 'name'] )
+                    </th>
                     <th
                         class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Display </th>
-
+                        Category 
+                        @include('backend-order-bar', ['columnName' => 'category_name'] )
+                    </th>
+                        
+                    <th
+                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Display 
+                        @include('backend-order-bar', ['columnName' => 'status'] )
+                    </th>
+                        
                     <th
                         class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     </th>
@@ -32,15 +36,15 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($demos as $my_demo)
+                @foreach ($demos as $myDemo)
                     <tr>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$my_demo->id}}</td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$my_demo->name}}</td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $categories[$my_demo->category_id] }}</td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $my_demo->status?'Yes':'No' }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->id }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->name }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->category_name }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->status?'Yes':'No' }}</td>
 
                         <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
-                            <x-jet-secondary-button wire:click="redirecToDemo( {{ $my_demo->id }} )" wire:loading.attr="disabled">
+                            <x-jet-secondary-button wire:click="redirecToDemo( {{ $myDemo->id }} )" wire:loading.attr="disabled">
                                 <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
                                     <path fill-rule="evenodd"
                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -50,7 +54,7 @@
                             </x-jet-secondary-button>
                         </td>
                         <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
-                            <x-jet-danger-button class="ml-2" wire:click="registerDemo({{ $my_demo->id }},true)"
+                            <x-jet-danger-button class="ml-2" wire:click="registerDemo({{ $myDemo->id }},true)"
                                 wire:loading.attr="disabled">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -115,9 +119,9 @@
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
-                    <x-jet-label class="mb-2" for="demoAttr.category_id" value="{{ __('Category') }}" />
+                    <x-jet-label for="demoAttr.category_id" value="{{ __('Category') }}" />
                     <select
-                        class="w-full" id="demoAttr.category_id"
+                        class="block mt-1 w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" id="demoAttr.category_id"
                         wire:model.defer="demoAttr.category_id">
                         <option>Select a Category</option>
                         @foreach($categories as $key => $value)
@@ -148,43 +152,43 @@
 
                 @foreach($uploadFields as $fileType => $extension)
                     <div class="col-span-6 sm:col-span-full">
-                        <x-jet-label class="mt-5" for="{{'input_files.'.$fileType}}" value="{{  'Input '.$fileType.' File'  }}" />
-                        <x-jet-input id="{{'input_files.'.$fileType}}" type="file" class="mt-1 block w-full" wire:model="input_files.{{$fileType}}" enctype='multipart/form-data' accept="{{'.'.$extension}}"/>
-                        <div class="text-black-500" wire:loading wire:target="input_files.{{$fileType}}">Uploading...</div>
-                        <x-jet-input-error for="input_files.{{$fileType}}" class="mt-2" />
+                        <x-jet-label class="mt-5" for="{{'inputFiles.'.$fileType}}" value="{{  'Input '.$fileType.' File'  }}" />
+                        <x-jet-input id="{{'inputFiles.'.$fileType}}" type="file" class="mt-1 block w-full" wire:model="inputFiles.{{$fileType}}" enctype='multipart/form-data' accept="{{'.'.$extension}}"/>
+                        <div class="text-black-500" wire:loading wire:target="inputFiles.{{$fileType}}">Uploading...</div>
+                        <x-jet-input-error for="inputFiles.{{$fileType}}" class="mt-2" />
 
-                        @if(isset($input_file_json['fileName'][$fileType]))
-                            <x-jet-label value="{{ $input_file_json['fileName'][$fileType] }}" />
+                        @if(isset($inputFileJson['fileName'][$fileType]))
+                            <x-jet-label value="{{ $inputFileJson['fileName'][$fileType] }}" />
                         @endif
                     </div>
                 @endforeach
 
 
                 <div class="col-span-6 sm:col-span-full">
-                    <x-jet-label class="mt-5" for="output_files" value="{{ __('Output Files (select multiple files)') }}" />
-                    <x-jet-input id="output_files" type="file" class="mt-1 block w-full" wire:model="output_files" enctype='multipart/form-data' multiple/>
-                    <div class="text-black-500" wire:loading wire:target="output_files">Uploading Multiple Files...</div>
-                    <x-jet-input-error for="output_files.*" class="mt-2" />
+                    <x-jet-label class="mt-5" for="outputFiles" value="{{ __('Output Files (select multiple files)') }}" />
+                    <x-jet-input id="outputFiles" type="file" class="mt-1 block w-full" wire:model="outputFiles" enctype='multipart/form-data' multiple/>
+                    <div class="text-black-500" wire:loading wire:target="outputFiles">Uploading Multiple Files...</div>
+                    <x-jet-input-error for="outputFiles.*" class="mt-2" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-full">
-                    @foreach($output_file_json['fileName'] as $output_file_name)
-                        <x-jet-label value="{{ substr($output_file_name, 36) }}" /> 
+                    @foreach($outputFileJson['fileName'] as $outputFileName)
+                        <x-jet-label value="{{ substr($outputFileName, 36) }}" /> 
                     @endforeach
                 </div>
 
 
                 <div class="col-span-6 sm:col-span-full">
-                    <x-jet-label class="mt-5" for="plot_file" value="{{ __('Plot Image File (max:10MB)') }}" />
-                    <x-jet-input id="plot_file" type="file" class="mt-1 block w-full" wire:model="plot_file" enctype='multipart/form-data' accept='.jpg,.jpeg,.png,.gif'/>
-                    <div class="text-black-500" wire:loading wire:target="plot_file">Uploading...</div>
-                    <x-jet-input-error for="plot_file" class="mt-2" />
+                    <x-jet-label class="mt-5" for="plotFile" value="{{ __('Plot Image File (max:10MB)') }}" />
+                    <x-jet-input id="plotFile" type="file" class="mt-1 block w-full" wire:model="plotFile" enctype='multipart/form-data' accept='.jpg,.jpeg,.png,.gif'/>
+                    <div class="text-black-500" wire:loading wire:target="plotFile">Uploading...</div>
+                    <x-jet-input-error for="plotFile" class="mt-2" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-full">
-                    @if(isset($plot_file))
-                        <x-jet-label class="my-5" for="plot_image" value="{{ __('Uploaded Image: ').$plot_file->getClientOriginalName() }}" />
-                        <img id="plot_image" src="{{ $plot_file->temporaryUrl() }}" alt="Something Wrong to Display Image">
+                    @if(isset($plotFile))
+                        <x-jet-label class="my-5" for="plot_image" value="{{ __('Uploaded Image: ').$plotFile->getClientOriginalName() }}" />
+                        <img id="plot_image" src="{{ $plotFile->temporaryUrl() }}" alt="Something Wrong to Display Image">
                         
                     @elseif($demo->plot_path)
                         <x-jet-label class="my-5" for="plot_image" value="{{ __('Plot Image: ') }}" />
