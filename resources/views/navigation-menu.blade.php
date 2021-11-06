@@ -92,7 +92,7 @@
                         <ul class="block w-full bg-white shadow">
                             <li class="py-2 px-5">
                                 <x-jet-nav-link href="{{ route('jobs.create') }}">
-                                    Add Jobs
+                                    Add Job
                                 </x-jet-nav-link>
                             </li>
                         </ul>
@@ -160,7 +160,6 @@
                         <x-slot name="trigger">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                 <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                                    <!-- <img class="h-8 w-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" /> -->
                                     <img class="h-8 w-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
                                 </button>
                             @else
