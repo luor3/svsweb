@@ -10,7 +10,7 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\GetstartedController;
 use App\Http\Controllers\Frontend\DynamicPagesController;
 use App\Http\Controllers\Frontend\InputGeneratorController;
-
+use App\Http\Controllers\JobsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,9 +58,13 @@ Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/categories')->gro
     Route::get('/create', [CategoriesController::class, 'showCreate'])->name('categories.create');
 });
 
-
+Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/jobs')->group(function () {
+    Route::get('/', [JobsController::class, 'show'])->name('jobs');
+    Route::get('/create', [JobsController::class, 'showCreate'])->name('jobs.create');
+});
 
 //------------------------------------------------------------------------------//
 //-------------------------------- FIND DYNAMIC PAGES --------------------------//
 //------------------------------------------------------------------------------//
 Route::get('/{page}/', [DynamicPagesController::class, 'show']);
+
