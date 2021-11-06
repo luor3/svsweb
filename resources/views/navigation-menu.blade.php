@@ -92,7 +92,7 @@
                         <ul class="block w-full bg-white shadow">
                             <li class="py-2 px-5">
                                 <x-jet-nav-link href="{{ route('jobs.create') }}">
-                                    Add Jobs
+                                    Add Job
                                 </x-jet-nav-link>
                             </li>
                         </ul>

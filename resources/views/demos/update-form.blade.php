@@ -1,36 +1,36 @@
 <div>
     @if(!isset($demo) || $demoID === -1)
         @include('demos.filterBar')
-        <table class="min-w-full leading-normal">
+        <table class="min-w-full leading-normal text-center">
             <thead>
                 <tr>
                     <th
-                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Demo ID
                         @include('backend-order-bar', ['columnName' => 'id'] )
                     </th>
                     <th
-                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Name
                         @include('backend-order-bar', ['columnName' => 'name'] )
                     </th>
                     <th
-                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Category 
                         @include('backend-order-bar', ['columnName' => 'category_name'] )
                     </th>
                         
                     <th
-                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         Display 
                         @include('backend-order-bar', ['columnName' => 'status'] )
                     </th>
                         
                     <th
-                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     </th>
                     <th
-                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     </th>
 
                 </tr>

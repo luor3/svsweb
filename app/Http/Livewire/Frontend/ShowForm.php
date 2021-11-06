@@ -105,9 +105,9 @@ class ShowForm extends Component
 
         return response()->streamDownload(function () use($file_json,$isInput) 
         {
-            $options = new \ZipStream\Option\Archive();
+            $options = new Archive();
             $options->setSendHttpHeaders(false);
-            $zip = new \ZipStream\ZipStream( $isInput ? "input.zip" : "output.zip", $options);
+            $zip = new ZipStream( $isInput ? "input.zip" : "output.zip", $options);
             foreach ($file_json['fileName'] as $fileType => $fileName)
             {
                 $zip->addFileFromPath($isInput ? $fileName : substr($fileName, 36), 
