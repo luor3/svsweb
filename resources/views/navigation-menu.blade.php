@@ -83,8 +83,25 @@
                         </ul>
                     </div>
                 </div>
+                
+                <div class="custom-dropdown hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-jet-nav-link href="{{ route('jobs') }}" :active="request()->routeIs('jobs') || request()->routeIs('jobs.create')">
+                        {{ __('Jobs') }}
+                    </x-jet-nav-link>
+                    <div class="dropdown-menu absolute hidden h-auto flex pt-4 mt-14">
+                        <ul class="block w-full bg-white shadow">
+                            <li class="py-2 px-5">
+                                <x-jet-nav-link href="{{ route('jobs.create') }}">
+                                    Add Jobs
+                                </x-jet-nav-link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
 
             </div>
+            
+            
 
             <div class="hidden sm:flex sm:items-center sm:ml-6">
                 <!-- Teams Dropdown -->
