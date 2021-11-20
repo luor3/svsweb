@@ -1,5 +1,7 @@
 <div class="text-center">
-
+    @if(count($jobs) == 0)
+        <h1 class="mt-10 text-center font-bold uppercase">Sorry. No Job Submission Records Found</h1>
+    @else
     <div class="mb-5 text-left">
         <select
             class="bg-white border-gray-400 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -81,4 +83,6 @@
     <div class="mt-3">
         {{ $jobs->links() }} 
     </div>
+
+    @endif
 </div>

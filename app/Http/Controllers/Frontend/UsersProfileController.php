@@ -6,25 +6,25 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Page;
 use App\Models\App;
-use App\Models\Demo;
 
-class GetstartedController extends Controller
+
+class UsersProfileController extends Controller
 {
-
     /**
      * 
      * @var array Page info
      */
     const PAGE_INFO = [
-        'title'         => "Demo",
-        'description'   => "SVS-EFIE Solver's Get Started",
-        'keywords'      => "input, svs, svs-efie, generator, input generator",
+        'title'         => "Users Profile",
+        'description'   => "SVS-EFIE Solver's Users Profile",
+        'keywords'      => "profile, svs, svs-efie, generator, user profile",
     ];
+
     
     /**
      * @var string
      */
-    const TEMPLATE_FILE = 'frontdemo';
+    const TEMPLATE_FILE = 'frontuserprofile';
 
 
     /**
