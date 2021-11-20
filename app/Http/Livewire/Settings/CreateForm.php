@@ -13,6 +13,7 @@ class CreateForm extends Component
      */
     public $user;
     
+    
     /**
      * 
      * @var type

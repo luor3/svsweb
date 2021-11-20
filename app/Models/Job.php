@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Job extends Model
 {
@@ -16,4 +17,12 @@ class Job extends Model
     protected $fillable = [
         'user', 'configuration', 'description', 'keywords', 'content', 'status'
     ];
+    
+    protected static function booted()
+    {
+        static::deleting(function ($job) 
+        {
+            Storage::disk('public')->deleteDirectory('jobs/'.$job->id);
+        });
+    }
 }
