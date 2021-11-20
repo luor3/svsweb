@@ -269,7 +269,6 @@ class CreateForm extends Component
         }
         
         
-
         $this->demo = Demo::create($data);
 
        

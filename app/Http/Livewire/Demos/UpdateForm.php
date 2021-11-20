@@ -43,8 +43,6 @@ class UpdateForm extends Component
      */
     public $demoID = -1;
 
-
-
     /**
      * 
      * @var Category array
@@ -436,7 +434,6 @@ class UpdateForm extends Component
             $this->currentOrderProperty = $property;
         }
     }
-
 
 
     /**

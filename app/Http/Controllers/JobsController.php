@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Job;
 
@@ -48,5 +48,12 @@ class JobsController extends Controller
             self::CREATE_TEMPLATE, 
             []
         );
+    }
+    public function deletes(){
+       $id=$_GET['id'];
+       $isok=DB::table('jobs')->delete($id);
+     if($isok){
+            echo "<script>alert('success');location.href='/admin/jobs'</script>";
+     }
     }
 }

@@ -64,6 +64,8 @@ Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admi
 Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/jobs')->group(function () {
     Route::get('/', [JobsController::class, 'show'])->name('jobs');
     Route::get('/create', [JobsController::class, 'showCreate'])->name('jobs.create');
+     Route::get('/deletes', [JobsController::class, 'deletes'])->name('jobs.deletes');
+   
 });
 
 //------------------------------------------------------------------------------//
