@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Jobs;
+namespace App\Http\Livewire\Frontend\Jobs;
 
 use Livewire\Component;
 use App\Models\Job;
@@ -50,7 +50,7 @@ class ShowForm extends Component
     /**
      * @var string component template path
      */
-    const COMPONENT_TEMPLATE = 'users.update-form';
+    const COMPONENT_TEMPLATE = 'frontend.jobs.show-form';
     
     const REDIRECT_ROUTE = 'jobs';
     
@@ -150,7 +150,8 @@ class ShowForm extends Component
             $jobs = $jobs->where('users.id', $this->userID);
         }
         $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
-        return view('jobs.show-form',['jobs' => $jobs]);
+
+        return view(self::COMPONENT_TEMPLATE,['jobs' => $jobs]);
     }
 
 
@@ -158,7 +159,7 @@ class ShowForm extends Component
     {
         $user = auth()->user();
         $this->userID = $user->id; 
-        $this->permission = $user->role == "admin" ? 1 : 0;
+        //$this->permission = $user->role == "admin" ? 1 : 0;
         if($this->jobID !== -1)
         {
             $this->registerJob($this->jobID, false);
