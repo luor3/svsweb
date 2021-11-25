@@ -18,6 +18,8 @@ class CreateJobsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user');
             $table->foreign('user')->references('id')->on('users')->onDelete('cascade');
+            $table->string('name');
+            $table->string('description');
             $table->text('configuration')->nullable();
             $table->boolean('status')->default(1);
             $table->enum('progress', ['Pending', 'In Progress', 'Completed','Cancelled'])->default('Pending');

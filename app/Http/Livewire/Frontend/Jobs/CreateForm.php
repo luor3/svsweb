@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Jobs;
+namespace App\Http\Livewire\Frontend\Jobs;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -113,7 +113,7 @@ class CreateForm extends Component
     /**
      * @var string component template path
      */
-    const COMPONENT_TEMPLATE = 'jobs.create-form';
+    const COMPONENT_TEMPLATE = 'frontend.jobs.create-form';
     
 
     /**

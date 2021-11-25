@@ -11,7 +11,7 @@ use App\Http\Controllers\Frontend\GetstartedController;
 use App\Http\Controllers\Frontend\DynamicPagesController;
 use App\Http\Controllers\Frontend\InputGeneratorController;
 use App\Http\Controllers\Frontend\UsersProfileController;
-use App\Http\Controllers\JobsController;
+use App\Http\Controllers\Frontend\JobsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,11 +61,14 @@ Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admi
     Route::get('/create', [CategoriesController::class, 'showCreate'])->name('categories.create');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->prefix('admin/jobs')->group(function () {
+Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admin/jobs')->group(function () {
+    Route::get('/', [App\Http\Controllers\JobsController::class, 'show'])->name('jobs.all');
+});
+
+Route::middleware(['auth:sanctum', 'verified'])->prefix('jobs')->group(function () {
     Route::get('/', [JobsController::class, 'show'])->name('jobs');
     Route::get('/create', [JobsController::class, 'showCreate'])->name('jobs.create');
-     Route::get('/deletes', [JobsController::class, 'deletes'])->name('jobs.deletes');
-   
+    //Route::get('/deletes', [JobsController::class, 'deletes'])->name('jobs.deletes');
 });
 
 //------------------------------------------------------------------------------//
