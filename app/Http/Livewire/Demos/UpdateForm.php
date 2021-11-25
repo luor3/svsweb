@@ -443,6 +443,7 @@ class UpdateForm extends Component
      */
     public function redirecToDemo($demoID)
     {
+        //dd(route('demos',['demoID' => $demoID]));
         return redirect()->route('demos',['demoID' => $demoID]);
     }
 

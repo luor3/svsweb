@@ -238,8 +238,6 @@ class CreateForm extends Component
 
     }
 
-
-
     /**
      * register new demo
      * 

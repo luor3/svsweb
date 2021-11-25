@@ -1,5 +1,5 @@
 <div class="text-center">
-    @if(!isset($job) || $jobID === -1)
+    @if( $jobID === -1)
     <div class="mb-5 text-left">
         <select
             class="bg-white border-gray-400 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -51,7 +51,7 @@
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->user_name}}</td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->progress}}</td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->created_at}}</td>
-                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $job->status?'Yes':'No' }}</td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->status?'Yes':'No' }}</td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
 
                         <x-jet-secondary-button wire:click="redirecToJob( {{ $job->id }} )" wire:loading.attr="disabled">
@@ -64,7 +64,7 @@
                         </x-jet-secondary-button>
                     </td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <x-jet-danger-button class="ml-2" wire:click="registerJob({{ $job->id }},true)"
+                        <x-jet-danger-button class="ml-2" wire:click="registerJob({{$job->id }},true)"
                             wire:loading.attr="disabled">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -92,7 +92,7 @@
             </x-slot>
 
             <x-slot name="content">
-                {{ __('Are you sure you want to delete job: ') }} <strong>{{ isset($job) ? $job->id : 'null' }}</strong> ?
+                {{ __('Are you sure you want to delete job: ') }} <strong>{{ isset($job) ? $job->name : 'null' }}</strong> ?
             </x-slot>
 
             <x-slot name="footer">
@@ -107,33 +107,7 @@
         </x-jet-confirmation-modal>
     @else
         <div>
-            <x-jet-form-section submit="update">
-                <x-slot name="title">
-                {{'Unique ID: '.$job->id}}
-            </x-slot>
-
-            <x-slot name="description">
-                {{ __('Description: ').$job->configuration}}
-            </x-slot>
-             <x-slot name="actions">
-                <x-jet-action-message class="mr-3" on="saved">
-                    {{ __('Saved.') }}
-                </x-jet-action-message>
-
-                <x-jet-button class="btn-submit-form-has-tinymce">
-                    <svg 
-                        viewBox="0 0 20 20" 
-                        fill="currentColor" 
-                        class="w-4 h-4 mr-1">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg> 
-                    {{ __('Save') }}
-                </x-jet-button>
-            </x-slot>
-            </x-jet-form-section>
-           <x-jet-button class="ml-2" wire:click="clearDemo" wire:loading.attr="disabled">
-                    {{ __('Back') }}
-            </x-jet-button> 
+            <h1>zzzzzzzzzzzzzzzzz</h1>
         </div>  
     @endif
 </div>

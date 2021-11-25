@@ -6,11 +6,11 @@ use Livewire\Component;
 use App\Models\Job;
 use App\Models\User;
 use Livewire\WithPagination;
-
+use Livewire\WithFileUploads;
 
 class ShowForm extends Component
 {
-    
+    use WithFileUploads;
     use WithPagination;
    
     public $job;
@@ -29,11 +29,23 @@ class ShowForm extends Component
     
     public $confirmingJobDeletion = false;
     
+     /**
+     * 
+     * @var array
+     */
+    protected $queryString = [        
+        'pageNum',
+        'jobID' => ['except' => -1]
+    ];
+    
     public $jobAttr = [
-        'user' => null,
+        'user'=>null,
+        'name' => null,
         'configuration' => null,
         'status' => null,
         'category_id' => null,
+        'description'=>null,
+        'id'=>null   
     ];
     /**
      * @var string component template path
@@ -41,6 +53,21 @@ class ShowForm extends Component
     const COMPONENT_TEMPLATE = 'users.update-form';
     
     const REDIRECT_ROUTE = 'jobs';
+    
+    /**
+     * 
+     * @return array
+     */
+    protected function rules()
+    {
+        return [
+            'jobAttr.user' => 'required|max:255',
+            'jobAttr.category_id' => 'required|integer',
+            'jobAttr.description' => 'required|max:1024',
+            'jobAttr.status' => 'required|boolean',
+            'jobAttr.name'=> 'requiared|max:255',
+        ];
+    }
 
     /**
      * reset page number before updating pageNum
@@ -98,17 +125,21 @@ class ShowForm extends Component
             $this->jobID = $this->job->id;
             if (isset($this->job)) 
             {
-                $this->jobAttr['user'] = $this->job->user;aozuo;
+                $this->jobAttr['user'] = $this->job->user;
+                $this->jobAttr['name'] = $this->job->name;
+                $this->jobAttr['description'] = $this->job->description;      
                 $this->jobAttr['configuration'] = $this->job->configuration;
                 $this->jobAttr['category_id'] = $this->job->category_id;
                 $this->jobAttr['status'] = $this->job->status;
-
+                
                 $this->uploadFields = json_decode($this->job->input_property_json,true);
+               
                 foreach ($this->uploadFields as $fileType => $extension){
                     $this->inputFiles[$fileType] = null;
                 }       
             } 
         }
+      
     }
 
     public function render()
@@ -119,7 +150,6 @@ class ShowForm extends Component
             $jobs = $jobs->where('users.id', $this->userID);
         }
         $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
-
         return view('jobs.show-form',['jobs' => $jobs]);
     }
 
@@ -149,11 +179,11 @@ class ShowForm extends Component
     /**
      * call after clicking "Edit" in job page
      * 
-     * @return redrect route 
+     * @return redirect route 
      */
     public function redirecToJob($jobID)
-    {
-        return redirect()->route('jobs',['jobID' => $jobID]);
+    { 
+       return redirect()->route('jobs',['jobID'=>$jobID]);
     } 
     
     /**
@@ -172,8 +202,8 @@ class ShowForm extends Component
             $this->job->category_id = $this->jobAttr['category_id'];
             $this->job->status = $this->jobAttr['status'];
 
-                session()->flash('flash.banner', 'Something Wrong while Updating Demo');
-                session()->flash('flash.bannerStyle', 'danger');
+            session()->flash('flash.banner', 'Something Wrong while Updating Demo');
+            session()->flash('flash.bannerStyle', 'danger');
                
             
                            

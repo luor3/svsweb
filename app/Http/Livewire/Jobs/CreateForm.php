@@ -27,6 +27,12 @@ class CreateForm extends Component
      * 
      * @var string
      */
+    public $name;
+    
+    /**
+     * 
+     * @var string
+     */
     public $description;
     
     /**
@@ -93,15 +99,11 @@ class CreateForm extends Component
 
     public $uploadFields = [];
 
-
-
     /**
      * 
      * @var Job
      */
     public $job;
-
-
 
     /**
      * 
@@ -126,8 +128,6 @@ class CreateForm extends Component
      * @var string Redirect to itself
      */
     const FAIL_ROUTE = 'jobs.create';
-
-
 
     /**
      * initilize properties
@@ -222,8 +222,8 @@ class CreateForm extends Component
             $this->job->plot_path = $this->plot_file->store('jobs/'.$this->job->id,'public');
         }
 
-        //$this->job->input_file_json = $input_json;
-        //$this->job->output_file_json = $output_json;
+        $this->job->configuration = $input_json;
+        //$this->job->configuration = $output_json;
         $this->job->status = $this->status; 
 
         $status = $this->job->save();   
@@ -251,9 +251,10 @@ class CreateForm extends Component
     public function registerJob(Request $request)
     {
         $data = $this->validate([
-            'user' => 'required|max:255|unique:jobs,user',
+            'name'=>'max:255',
             'category_id' => 'required|integer',
             'input_file' => 'file',
+            'description' => 'required|max:255',
         ]);
      
         try 
@@ -261,7 +262,10 @@ class CreateForm extends Component
             $this->readFileFrom($this->input_file->getRealPath());
             $input_file_json = '{ "fileName" : [] }';
             $output_file_json = '{ "fileName" : [] }';
-            $data['user'] = auth()->user()->id;
+            
+            $data['user'] = auth()->user()->id;     
+            $data['name'] = $this->user;
+
             $input_property_json = json_encode($this->uploadFields);
             $data['configuration'] = implode(',',[$input_file_json, $output_file_json, $input_property_json] );
                       
@@ -272,8 +276,6 @@ class CreateForm extends Component
             session()->flash('flash.bannerStyle', 'danger');
             return redirect()->route(self::FAIL_ROUTE);
         }
-        
-        
         $this->job = job::create($data);
 
        
@@ -344,5 +346,6 @@ class CreateForm extends Component
             }
         }
     }
+   
 
 }
