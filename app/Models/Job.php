@@ -15,7 +15,7 @@ class Job extends Model
      * @var array
      */
     protected $fillable = [
-        'user', 'configuration', 'description', 'keywords', 'content', 'status'
+        'user', 'configuration', 'description', 'keywords', 'content', 'status','name','category_id'
     ];
     
     protected static function booted()

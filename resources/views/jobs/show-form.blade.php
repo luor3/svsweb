@@ -1,14 +1,9 @@
 <div class="text-center">
-    @if(!isset($job) || $jobID === -1)
-    <div class="mb-5 text-left">
-        <select
-            class="bg-white border-gray-400 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            wire:model="pageNum">
-            <option>5</option>
-            <option>10</option>
-            <option>20</option>
-        </select>
-    </div>
+
+    @if( $jobID === -1)
+    @include('jobs.filterBar')
+
+   
     <table class="min-w-full leading-normal">
         <thead>
             <tr>
@@ -80,10 +75,11 @@
         </tbody>
     </table>
 
-    <div class="mt-3">
-        {{ $jobs->links() }} 
-    </div>
-    <!-- Delete Page Confirmation Modal -->
+   <div class="mt-3">
+           {{ $jobs->links() }} 
+        </div>
+
+        <!-- Delete Page Confirmation Modal -->
         <x-jet-confirmation-modal wire:model="confirmingJobDeletion">
             <x-slot name="title">
                 <span class="font-bold uppercase">
@@ -105,17 +101,81 @@
                 </x-jet-danger-button>
             </x-slot>
         </x-jet-confirmation-modal>
+
+    </div>
+</div>
     @else
-        <div>
+
             <x-jet-form-section submit="update">
-                <x-slot name="title">
+            <x-slot name="title">
                 {{'Unique ID: '.$job->id}}
             </x-slot>
 
             <x-slot name="description">
-                {{ __('Description: ').$job->configuration}}
+                {{ __('Description: ').$job->description}}
             </x-slot>
-             <x-slot name="actions">
+
+            <x-slot name="form">
+                <div class="col-span-6">
+                    <x-jet-label class="text-2xl text-indigo-500" value="{{ $job->name }}" />
+                </div>
+
+                <div class="col-span-6 sm:col-span-3">
+                    <x-jet-label for="name" value="{{ __('Name') }}" />
+                    <x-jet-input id="name" type="text" class="mt-1 block w-full" wire:model.defer="jobAttr.name" />
+                    <x-jet-input-error for="jobAttr.name" class="mt-2" />
+                </div>
+
+                <div class="col-span-6 sm:col-span-3">
+                    <x-jet-label for="jobAttr.category_id" value="{{ __('Category') }}" />
+                    <select
+                        class="block mt-1 w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" id="jobAttr.category_id"
+                        wire:model.defer="jobAttr.category_id">
+                        <option>Select a Category</option>
+                        @foreach($categories as $key => $value)
+                            <option value="{{$key}}">{{$value}}</option>
+                        @endforeach
+                    </select> 
+                    <x-jet-input-error for="jobAttr.category_id" class="mt-2" />
+                </div>
+
+
+                <div class="col-span-6">
+                    <x-jet-label for="description" value="{{ __('Description') }}" />
+
+
+                    <textarea
+                        name="description"
+                        class="tinymce mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
+                        rows="6"
+                        wire:model.defer="jobAttr.description">
+                    </textarea>
+
+                    
+                    <x-jet-input-error for="jobAttr.description" class="mt-2" />
+                </div>
+
+                
+
+
+                @foreach($uploadFields as $fileType => $extension)
+                    <div class="col-span-6 sm:col-span-full" style="text-align: left">
+                        <x-jet-label class="mt-5" for="{{'inputFiles.'.$fileType}}" value="{{  'Input '.$fileType.' File'  }}" />
+                        <x-jet-input id="{{'inputFiles.'.$fileType}}" type="file" class="mt-1 block w-full" wire:model="inputFiles.{{$fileType}}" enctype='multipart/form-data' accept="{{'.'.$extension}}"/>
+                        <div class="text-black-500" wire:loading wire:target="inputFiles.{{$fileType}}">Uploading...</div>
+                        <x-jet-input-error for="inputFiles.{{$fileType}}" class="mt-2" />
+
+                        @if(isset($inputFileJson['fileName'][$fileType]))
+                            <x-jet-label value="{{ $inputFileJson['fileName'][$fileType] }}" />
+                        @endif
+                    </div>
+                @endforeach
+
+
+
+            </x-slot>
+
+            <x-slot name="actions">
                 <x-jet-action-message class="mr-3" on="saved">
                     {{ __('Saved.') }}
                 </x-jet-action-message>
@@ -130,10 +190,12 @@
                     {{ __('Save') }}
                 </x-jet-button>
             </x-slot>
-            </x-jet-form-section>
-           <x-jet-button class="ml-2" wire:click="clearDemo" wire:loading.attr="disabled">
+        </x-jet-form-section>
+
+        <div style="text-align: left">
+           <x-jet-button class="ml-2" wire:click="clearJob" wire:loading.attr="disabled">
                     {{ __('Back') }}
             </x-jet-button> 
-        </div>  
-    @endif
-</div>
+        </div>   
+            @endif
+        </div>

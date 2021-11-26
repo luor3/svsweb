@@ -22,48 +22,11 @@
                 @endif
 
 
-                <div class="col-span-6 sm:col-span-full">
-                    <x-jet-label class="mt-5" for="output_files" value="{{ __('Output Files (select multiple files)') }}" />
-                    <x-jet-input id="output_files" type="file" class="mt-1 block w-full" wire:model="output_files" enctype='multipart/form-data' multiple/>
-                    <div class="text-black-500" wire:loading wire:target="output_files">Uploading Multiple Files...</div>
-                    <x-jet-input-error for="output_files.*" class="mt-2" />
-                </div>
-
-                <div class="col-span-6 sm:col-span-full">
-                    @foreach($output_file_names as $output_file_name)
-                        <x-jet-label value="{{ $output_file_name }}" /> 
-                    @endforeach
-                </div>
-
-                <div class="col-span-6 sm:col-span-full">
-                    <x-jet-label class="mt-5" for="plotFile" value="{{ __('Plot Image File (max:10MB)') }}" />
-                    <x-jet-input id="plotFile" type="file" class="mt-1 block w-full" wire:model="plotFile" enctype='multipart/form-data' accept='.jpg,.jpeg,.png,.gif'/>
-                    <div class="text-black-500" wire:loading wire:target="plotFile">Uploading Image...</div>
-                    <x-jet-input-error for="plotFile" class="mt-2" />
-                </div>
-
-                <div class="col-span-6 sm:col-span-full">
-                    @if(isset($plotFile))
-                        <x-jet-label class="my-5" for="plot_image" value="{{ __('Plot Image: ').$plotFile->getClientOriginalName() }}" />
-                        <img id="plot_image" src="{{ $plotFile->temporaryUrl() }}" alt="Something Wrong to Display Image">
-                    @endif
-                </div>
-
-
-
-                <div class="col-span-6 sm:col-span-6">
-                    <x-jet-label for="fld-status" value="{{ __('Display') }}" />
-                    <select id="fld-status" wire:model.defer="status" {{ $displayEditable ? "" : "disabled" }} class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                    <x-jet-input-error for="status" class="mt-2" />
-                </div>
-
             </x-slot>
 
             <x-slot name="actions">
                 <x-jet-button class="btn-submit-form-has-tinymce">
+                    
                     {{ __('Create') }}
                 </x-jet-button>
             </x-slot>
@@ -84,9 +47,9 @@
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">
-                    <x-jet-label for="user" value="{{ __('Name') }}" />
-                    <x-jet-input id="user" type="text" class="mt-1 block w-full" wire:model.defer="user" />
-                    <x-jet-input-error for="user" class="mt-2" />
+                    <x-jet-label for="name" value="{{ __('Name') }}" />
+                    <x-jet-input id="name" type="text" class="mt-1 block w-full" wire:model.defer="name" />
+                    <x-jet-input-error for="name" class="mt-2" />
                 </div>
 
                 <div class="col-span-6 sm:col-span-3">

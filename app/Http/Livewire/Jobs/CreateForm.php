@@ -93,7 +93,7 @@ class CreateForm extends Component
 
     public $uploadFields = [];
 
-
+    public $name;
 
     /**
      * 
@@ -205,7 +205,8 @@ class CreateForm extends Component
         {
             $input_json['fileName'][$type] = $file->getClientOriginalName();
             $input_json[$type] = $file->store('jobs/'.$this->job->id,'public');
-        }$input_json = json_encode($input_json);
+        }
+        $input_json = json_encode($input_json);
 
         $output_json = [
             'fileName' => [],
@@ -215,7 +216,8 @@ class CreateForm extends Component
             $uniqueFileName = Str::uuid().$file->getClientOriginalName();
             array_push($output_json['fileName'],$uniqueFileName);
             $output_json[$uniqueFileName] = $file->store('jobs/'.$this->job->id,'public');
-        }$output_json = json_encode($output_json);
+        }
+        $output_json = json_encode($output_json);
 
         if(isset($this->plot_file))
         {
@@ -225,7 +227,12 @@ class CreateForm extends Component
         //$this->job->input_file_json = $input_json;
         //$this->job->output_file_json = $output_json;
         $this->job->status = $this->status; 
-
+        $result = job::find(['id'=>$this->job->id])->toArray();
+        $result[0]['configuration'] = json_decode($result[0]['configuration'],true);
+        $result[0]['configuration']['input_file_json'] = $input_json;
+        $result[0]['configuration']['output_file_json'] = $output_json;
+        $result[0]['configuration'] = json_encode($result[0]['configuration']);
+        $this->job->configuration = $result[0]['configuration'];
         $status = $this->job->save();   
 
         $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
@@ -249,21 +256,37 @@ class CreateForm extends Component
      * @return void
      */
     public function registerJob(Request $request)
-    {
+    {    
+        
         $data = $this->validate([
-            'user' => 'required|max:255|unique:jobs,user',
+            'name'=>'required|max:255',  
+            'description' => 'required|max:255',
             'category_id' => 'required|integer',
             'input_file' => 'file',
         ]);
-     
+        $user = auth()->user();
+        //$data['name'] = $data['user'];
+        $data['user'] = $user->id;
         try 
-        {
+        {   
+
             $this->readFileFrom($this->input_file->getRealPath());
             $input_file_json = '{ "fileName" : [] }';
             $output_file_json = '{ "fileName" : [] }';
-            $data['user'] = auth()->user()->id;
             $input_property_json = json_encode($this->uploadFields);
-            $data['configuration'] = implode(',',[$input_file_json, $output_file_json, $input_property_json] );
+            $map = [
+            'input_file_json'=>$input_file_json,
+            'output_file_json'=>$output_file_json,
+            'input_property_json'=>$input_property_json,
+           ];
+           $data['configuration'] = json_encode($map);
+// exit;
+//             $this->readFileFrom($this->input_file->getRealPath());
+//             $input_file_json = '{ "fileName" : [] }';
+//             $output_file_json = '{ "fileName" : [] }';
+//             $data['user'] = auth()->user()->id;
+//             $input_property_json = json_encode($this->uploadFields);
+//             $data['configuration'] = implode(',',[$input_file_json, $output_file_json, $input_property_json] );
                       
         } 
         catch (\Exception $e) 
@@ -272,11 +295,11 @@ class CreateForm extends Component
             session()->flash('flash.bannerStyle', 'danger');
             return redirect()->route(self::FAIL_ROUTE);
         }
-        
-        
-        $this->job = job::create($data);
+        unset($data['input_file']);
 
-       
+        //$id = job::insertGetId($data);
+        $this->job = job::create($data);
+        
         $msg =  $this->job ? 'Job successfully created!' : 'Ooops! Something went wrong.';
         $flag = $this->job ? 'success' : 'danger';
 

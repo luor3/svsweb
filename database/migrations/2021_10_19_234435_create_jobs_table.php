@@ -16,6 +16,9 @@ class CreateJobsTable extends Migration
         Schema::create('jobs', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
+            $table->string('name');
+            $table->string('description');
+            $table->unsignedBigInteger('category_id');
             $table->unsignedBigInteger('user');
             $table->foreign('user')->references('id')->on('users')->onDelete('cascade');
             $table->text('configuration')->nullable();
