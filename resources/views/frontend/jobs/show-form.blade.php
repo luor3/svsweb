@@ -16,6 +16,10 @@
                 </th>
                 <th
                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Name
+                </th>
+                <th
+                    class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Progress
                 </th>
                     
@@ -43,6 +47,7 @@
                 <tr>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->id}}</td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->user_name}}</td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->name}}</td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->progress}}</td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->created_at}}</td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->status?'Yes':'No' }}</td>

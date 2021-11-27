@@ -100,8 +100,7 @@ class ShowForm extends Component
      */
     public $outputFileJson = [];
 
-
-
+    public $nameSearch = '';
     /**
      * 
      * @var array
@@ -147,7 +146,6 @@ class ShowForm extends Component
      * 
      * @var string
      */
-    public $nameSearch = '';
 
 
 
@@ -255,10 +253,10 @@ class ShowForm extends Component
         }
         
         else
-        {
-        $jobs = Job::leftjoin('users', 'jobs.user','=','users.id');
-        if(!$this->permission){
-            $jobs = $jobs->where('users.id', $this->userID);
+        {            
+            $jobs = Job::leftjoin('users', 'jobs.user','=','users.id')->where('jobs.name', 'like', '%'.$this->nameSearch.'%') ->orWhere('users.name', 'like', '%'.$this->nameSearch.'%');         
+            if(!$this->permission){
+                $jobs = $jobs->where('users.id', $this->userID);
         }
         $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
         }
