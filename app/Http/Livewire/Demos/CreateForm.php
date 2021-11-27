@@ -42,7 +42,7 @@ class CreateForm extends Component
      * 
      * @var file
      */
-    public $plot_file;
+    public $plotFile;
 
 
     /**
@@ -190,7 +190,7 @@ class CreateForm extends Component
         $this->validate([
             'output_files.*' => 'file',
             'input_files.*' => 'required|file',
-            'plot_file' => 'image|nullable',
+            'plotFile' => 'image|nullable',
             'status' => 'required|boolean'
         ]);
 
@@ -214,9 +214,9 @@ class CreateForm extends Component
             $output_json[$uniqueFileName] = $file->store('demos/'.$this->demo->id,'public');
         }$output_json = json_encode($output_json);
 
-        if(isset($this->plot_file))
+        if(isset($this->plotFile))
         {
-            $this->demo->plot_path = $this->plot_file->store('demos/'.$this->demo->id,'public');
+            $this->demo->plot_path = $this->plotFile->store('demos/'.$this->demo->id,'public');
         }
 
         $this->demo->input_file_json = $input_json;
