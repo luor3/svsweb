@@ -4,6 +4,7 @@
 /public/build
 /storage/*.key
 /vendor
+/old
 .env
 .env.backup
 .phpunit.result.cache

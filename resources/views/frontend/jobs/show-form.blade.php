@@ -1,6 +1,6 @@
 <div class="text-center">
     @if( $jobID === -1)
-    @include('jobs.filterBar')
+    @include('frontend.jobs.filterBar')
 
    
     <table class="min-w-full leading-normal">

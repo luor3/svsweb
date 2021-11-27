@@ -40,6 +40,9 @@ class ShowForm extends Component
     
     public $userID;
    
+
+    public $pathName;
+
     /**
      * 
      * @var Job id
@@ -213,7 +216,8 @@ class ShowForm extends Component
      */
     public function mount()
     { 
-         $categories = Category::all();
+        $this->pathName = request()->route()->getName();;
+        $categories = Category::all();
         foreach ($categories as $category)
         {
             $this->categories[$category->id] =  $category->name;
@@ -428,7 +432,6 @@ class ShowForm extends Component
     {
         $this->job = null;
         $this->jobID = -1;
-        return redirect()->route('jobs');
     }
 
 
@@ -458,7 +461,7 @@ class ShowForm extends Component
      */
     public function redirecToJob($jobID)
     {   
-        return redirect()->route('jobs',['jobID' => $jobID]);
+        return redirect()->route($this->pathName , ['jobID' => $jobID]);
     }
 
 }
