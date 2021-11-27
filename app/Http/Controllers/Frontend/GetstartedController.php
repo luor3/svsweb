@@ -15,7 +15,11 @@ class GetstartedController extends Controller
      * 
      * @var array Page info
      */
-    const PAGE_INFO = [];
+    const PAGE_INFO = [
+        'title'         => "Demo",
+        'description'   => "SVS-EFIE Solver's Get Started",
+        'keywords'      => "input, svs, svs-efie, generator, input generator",
+    ];
     
     /**
      * @var string
