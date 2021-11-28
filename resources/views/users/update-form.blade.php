@@ -2,7 +2,7 @@
     @include('users.filterBar')
     <div class="flex flex-col mt-6">
         <div class="align-middle inline-block min-w-full overflow-hidden sm:rounded-lg">
-            <table class="min-w-full leading-normal">
+            <table class="min-w-full leading-normal border-4">
                 <thead>
                     <tr>
                         <th
@@ -55,7 +55,11 @@
                             </td>
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$user->email}}</td>
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$user->team_name}}</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$user->role}}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <span class="{{ $user->role == 'user'?  'bg-purple-200 text-purple-600': 'bg-red-200 text-red-600' }} py-1 px-3 rounded-full text-xs">
+                                    {{$user->role}}
+                                </span>
+                            </td>
 
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                 <x-jet-secondary-button wire:click="registerUser({{$user->id}},false)" wire:loading.attr="disabled">

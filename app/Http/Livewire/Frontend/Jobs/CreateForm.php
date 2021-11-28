@@ -226,7 +226,6 @@ class CreateForm extends Component
         }
 
         $this->job->configuration = $input_json;
-        //$this->job->configuration = $output_json;
         $this->job->status = $this->status; 
         $result = job::find(['id'=>$this->job->id])->toArray();
         $result[0]['configuration'] = json_decode($result[0]['configuration'],true);
@@ -267,7 +266,6 @@ class CreateForm extends Component
             'description' => 'required|max:255',
         ]);
         $user = auth()->user();
-        //$data['name'] = $data['user'];
         $data['user'] = $user->id;
         try 
         {   
@@ -282,13 +280,6 @@ class CreateForm extends Component
             'input_property_json'=>$input_property_json,
            ];
            $data['configuration'] = json_encode($map);
-// exit;
-//             $this->readFileFrom($this->input_file->getRealPath());
-//             $input_file_json = '{ "fileName" : [] }';
-//             $output_file_json = '{ "fileName" : [] }';
-//             $data['user'] = auth()->user()->id;
-//             $input_property_json = json_encode($this->uploadFields);
-//             $data['configuration'] = implode(',',[$input_file_json, $output_file_json, $input_property_json] );
                       
         } 
         catch (\Exception $e) 

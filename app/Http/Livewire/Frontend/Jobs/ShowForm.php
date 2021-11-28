@@ -216,16 +216,14 @@ class ShowForm extends Component
      */
     public function mount()
     { 
-        $this->pathName = request()->route()->getName();;
+        $this->pathName = request()->route()->getName();
         $categories = Category::all();
         foreach ($categories as $category)
         {
             $this->categories[$category->id] =  $category->name;
         }
         $user = auth()->user();
-        //dd($user);
         $this->userID = $user->id; 
-        $this->permission = $user->role == "admin" ? 1 : 0;
         if($this->jobID !== -1)
         {
             $this->registerJob($this->jobID, false);
@@ -240,7 +238,6 @@ class ShowForm extends Component
      */
     public function render()
     {  
-        //dd($this->userID);
         $jobs = [];
         if(isset($this->job) && $this->jobID !== -1)
         {

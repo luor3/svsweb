@@ -1,4 +1,4 @@
-<div x-data="{ open: false }" class="bg-indigo-900 px-4 py-4">
+<div x-data="{ open: false }" class="sticky top-0 z-50 bg-indigo-900 px-4 py-4">
     <div class="md:w-1xl lg:mx-auto lg:flex md:items-center md:justify-between">
         <div class="flex justify-between items-center">
             <a href="/" class=" {{ request()->routeIs('homepage') ? 'sm:hidden' : '' }} inline-block py-2 text-white text-3xl font-bold">
