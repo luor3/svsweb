@@ -24,13 +24,6 @@
             </x-site-link>
             @if (Route::has('login'))
                 @auth
-                    <x-site-link class="custom-dropdown hidden" href="{{ route('jobs.create') }}" :active="request()->getPathInfo() == '/jobs/create'">
-                        Job Submission
-                    </x-site-link>
-                    <x-site-link class="custom-dropdown hidden" href="{{ route('jobs') }}" :active="request()->getPathInfo() == '/jobs'">
-                        View Jobs
-                    </x-site-link>
-
                     <x-site-link href="{{ url('/userprofile') }}" :active="request()->getPathInfo() == '/userprofile'">
                         Profile Setting
                     </x-site-link>

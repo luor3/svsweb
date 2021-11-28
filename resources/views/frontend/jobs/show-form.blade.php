@@ -1,7 +1,6 @@
 <div>
     
     @if( $jobID === -1)
-
             <div class="{{ $permission == 0 ? 'lg:flex justify-around' : ''}}">
                 @if($permission == 0)
                     @include('frontend.user-profile-card')
@@ -18,6 +17,10 @@
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     User 
+                                </th>
+                                <th
+                                    class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Name
                                 </th>
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -51,9 +54,14 @@
                                 <tr>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->id}}</td>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->user_name}}</td>
+                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->name}}</td>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->progress}}</td>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->created_at}}</td>
-                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->status?'Yes':'No' }}</td>
+                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                        <span class="{{ $job->status?  'bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs': 'bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs' }} py-1 px-3 rounded-full text-xs">
+                                            {{$job->status?'Yes':'No' }}
+                                        </span>
+                                    </td>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
 
                                         <x-jet-secondary-button wire:click="redirecToJob( {{ $job->id }} )" wire:loading.attr="disabled">

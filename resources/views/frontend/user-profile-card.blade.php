@@ -1,5 +1,5 @@
 <div class="my-2 lg:sticky top-1/4 z-51">
-    <div class="bg-white rounded-xl border-4 border-blue-500 border-opacity-50">
+    <div class="bg-white rounded-xl border-4 shadow border-gray-300 border-opacity-50">
         <div class="text-center p-6 border-b">
             <img class="h-24 w-24 object-cover rounded-full mx-auto"
                 src="{{ auth()->user()->profile_photo_url }}" alt="{{ auth()->user()->name }}" />

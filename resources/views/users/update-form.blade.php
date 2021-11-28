@@ -54,7 +54,12 @@
                                 </div>
                             </td>
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$user->email}}</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$user->team_name}}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <span class="{{ $user->team_name?  '': 'bg-red-500 text-white' }} py-1 px-3 rounded-full">
+                                    {{$user->team_name? $user->team_name : 'NONE'}}
+                                </span>
+
+                            </td>
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                 <span class="{{ $user->role == 'user'?  'bg-purple-200 text-purple-600': 'bg-red-200 text-red-600' }} py-1 px-3 rounded-full text-xs">
                                     {{$user->role}}
@@ -72,16 +77,18 @@
                                 </x-jet-secondary-button>
                             </td>
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                <x-jet-danger-button class="ml-2" wire:click="registerUser({{$user->id}},true)"
-                                    wire:loading.attr="disabled">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                    {{ __('Delete') }}
-                                </x-jet-danger-button>
+                                @if(auth()->user()->id !== $user->id)
+                                    <x-jet-danger-button class="ml-2" wire:click="registerUser({{$user->id}},true)"
+                                        wire:loading.attr="disabled">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd"
+                                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ __('Delete') }}
+                                    </x-jet-danger-button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

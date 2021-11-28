@@ -6,7 +6,15 @@
     <div class="min-h-screen flex flex-col">
         @include('partials.site-navigation')
 
-        <div class="flex-grow p-8 text-1xl">          
+        <div class="flex-grow p-8 text-1xl">  
+            <div class="bg-blue-400 rounded-lg flex justify-around mb-5 text-center">
+                <a href="{{ route('jobs.create') }}" class="block px-3 py-2 w-full rounded text-gray-100 hover:bg-blue-900 hover:text-white">
+                    <span>Job Submission</span>
+                </a>
+                <a href="{{ route('jobs') }}" class="block px-3 py-2 w-full rounded text-gray-100 hover:bg-blue-900 hover:text-white">
+                    <span>View Jobs</span>
+                </a>
+            </div>      
             @if (Laravel\Fortify\Features::canUpdateProfileInformation())
                 @livewire('profile.update-profile-information-form')
 
