@@ -5,7 +5,7 @@
                 @if($permission == 0)
                     @include('frontend.user-profile-card')
                 @endif
-                <div class="w-3/4">
+                <div class="{{ $permission == 0 ? 'w-3/4' : ''}}">
                     @include('frontend.jobs.filterBar')
                     <table class="text-center min-w-full leading-normal border-4">
                         <thead>

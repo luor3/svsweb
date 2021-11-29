@@ -251,11 +251,13 @@ class ShowForm extends Component
         
         else
         {            
-            $jobs = Job::leftjoin('users', 'jobs.user','=','users.id')->where('jobs.name', 'like', '%'.$this->nameSearch.'%') ->orWhere('users.name', 'like', '%'.$this->nameSearch.'%');         
-            if(!$this->permission){
-                $jobs = $jobs->where('users.id', $this->userID);
-        }
-        $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
+            $jobs = Job::leftjoin('users', 'jobs.user','=','users.id');         
+            if(auth()->user()->role=='user'|| !$this->permission || $this->pathName===route('jobs')){
+                $jobs = $jobs->where('jobs.user', $this->userID);
+            }
+            $jobs = $jobs->where('jobs.name', 'like', '%'.$this->nameSearch.'%') ->where('users.name', 'like', '%'.$this->nameSearch.'%');
+
+            $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
         }
         return view(self::COMPONENT_TEMPLATE,['jobs' => $jobs]);
     }

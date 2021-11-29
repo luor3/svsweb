@@ -37,6 +37,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'email' => $input['email'],
             ])->save();
         }
+
+        return redirect()->route('userprofile');
     }
 
     /**

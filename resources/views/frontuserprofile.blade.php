@@ -29,10 +29,9 @@
                 <x-jet-section-border />
             @endif
             
-            <form class="block lg:inline-block text-white bg-red-500 hover:bg-red-900 rounded-lg" method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a class="block px-4 py-2" onclick="event.preventDefault();this.closest('form').submit();" href="{{ route('logout') }}">Log Out</a>
-            </form>
+            <div class="mt-10 sm:mt-0">
+                @livewire('profile.logout-other-browser-sessions-form')
+            </div>
 
         </div>
         <div class="bg-indigo-900 text-gray-400 px-4 py-4 font-normal">

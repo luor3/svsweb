@@ -27,6 +27,10 @@
                     <x-site-link href="{{ url('/userprofile') }}" :active="request()->getPathInfo() == '/userprofile'">
                         Profile Setting
                     </x-site-link>
+                    <form class="block lg:inline-block text-white bg-red-500 hover:bg-red-900 rounded-lg mr-3" method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <a class="block px-4 py-2" onclick="event.preventDefault();this.closest('form').submit();" href="{{ route('logout') }}">Log Out</a>
+                    </form>
                     @if(auth()->user()->role == 'admin')
                         <a href="{{ url('/dashboard') }}" class="block lg:inline-block mb-2 lg:mb-0 py-2 px-4 text-gray-700 bg-white hover:bg-gray-300 rounded-lg mr-2">Dashboard</a>
                     @endif    
