@@ -172,7 +172,6 @@ class ShowForm extends Component
             'jobAttr.category_id' => 'required|integer',
             'jobAttr.description' => 'required|max:1024',
             'jobAttr.status' => 'required|boolean',
-            'outputFiles.*' => 'file',       
         ];
     }
 
@@ -282,40 +281,7 @@ class ShowForm extends Component
 
             try 
             {
-                if(isset($this->plotFile))
-                {
-                    if($this->job->plot_path)
-                    {
-                        Storage::disk('public')->delete($this->job->plot_path);
-                  }                
-                    $this->job->plot_path = $this->plotFile->store('jobs/'.$this->job->id,'public');
-
-                    $this->plotFile = null;
-                }        
-
-                if(isset($this->outputFiles))
-                {
-
-                    
-                    foreach ($this->outputFileJson['fileName'] as $fileName)
-                    {
-                        Storage::disk('public')->delete($this->outputFileJson[$fileName]);
-                    } 
-
-                    $output_json = [
-                        'fileName' => [],
-                    ];
-                    foreach ($this->outputFiles as $file)
-                    {
-                        
-                        $uniqueFileName = Str::uuid().$file->getClientOriginalName();
-                        array_push($output_json['fileName'],$uniqueFileName);
-                        $output_json[$uniqueFileName] = $file->store('jobs/'.$this->job->id,'public');
-                    }
-                    $this->job->output_file_json  = json_encode($output_json);
-                    $this->outputFiles = null;
-                }
-          
+                  
                 foreach ($this->inputFiles as $fileType => $file)
                 {
                     if(isset($this->inputFiles[$fileType]))
@@ -366,7 +332,6 @@ class ShowForm extends Component
     {
         if ($this->job && $this->job->id) 
         {
-  
             $deleted = $this->job->delete(); // this will also delete related files through ORM deleting hook function.
             $msg =  $deleted ? 'Job successfully deleted!' : 'Ooops! Something went wrong.';
             $flag = $deleted ? 'success' : 'danger';

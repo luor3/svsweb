@@ -86,8 +86,9 @@ class CreateForm extends Component
     /**
      * 
      * @var boolean
+     * default is 1
      */
-    public $status = 0;
+    public $status = 1;
 
 
     /**
@@ -195,7 +196,6 @@ class CreateForm extends Component
         $this->validate([
             'output_files.*' => 'file',
             'input_files.*' => 'required|file',
-            'plot_file' => 'image|nullable',
             'status' => 'required|boolean'
         ]);
 
@@ -212,6 +212,7 @@ class CreateForm extends Component
         $output_json = [
             'fileName' => [],
         ];
+        /*
         foreach ($this->output_files as $file)
         {
             $uniqueFileName = Str::uuid().$file->getClientOriginalName();
@@ -224,10 +225,10 @@ class CreateForm extends Component
         {
             $this->job->plot_path = $this->plot_file->store('jobs/'.$this->job->id,'public');
         }
-
+        */
         $this->job->configuration = $input_json;
-        //$this->job->configuration = $output_json;
         $this->job->status = $this->status; 
+
         $result = job::find(['id'=>$this->job->id])->toArray();
         $result[0]['configuration'] = json_decode($result[0]['configuration'],true);
         $result[0]['configuration']['input_file_json'] = $input_json;
@@ -267,8 +268,8 @@ class CreateForm extends Component
             'description' => 'required|max:255',
         ]);
         $user = auth()->user();
-        //$data['name'] = $data['user'];
         $data['user'] = $user->id;
+
         try 
         {   
 
@@ -282,13 +283,7 @@ class CreateForm extends Component
             'input_property_json'=>$input_property_json,
            ];
            $data['configuration'] = json_encode($map);
-// exit;
-//             $this->readFileFrom($this->input_file->getRealPath());
-//             $input_file_json = '{ "fileName" : [] }';
-//             $output_file_json = '{ "fileName" : [] }';
-//             $data['user'] = auth()->user()->id;
-//             $input_property_json = json_encode($this->uploadFields);
-//             $data['configuration'] = implode(',',[$input_file_json, $output_file_json, $input_property_json] );
+
                       
         } 
         catch (\Exception $e) 
@@ -299,7 +294,6 @@ class CreateForm extends Component
         }
         unset($data['input_file']);
 
-        //$id = job::insertGetId($data);
         $this->job = job::create($data);
         
         $msg =  $this->job ? 'Job successfully created!' : 'Ooops! Something went wrong.';

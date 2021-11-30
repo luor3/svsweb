@@ -43,17 +43,17 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($jobs as $job)
+            @foreach ($jobs as $MyJob)
                 <tr>
-                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->id}}</td>
-                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->user_name}}</td>
-                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->name}}</td>
-                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->progress}}</td>
-                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->created_at}}</td>
-                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$job->status?'Yes':'No' }}</td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$MyJob->id}}</td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$MyJob->user_name}}</td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$MyJob->name}}</td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$MyJob->progress}}</td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$MyJob->created_at}}</td>
+                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$MyJob->status?'Yes':'No' }}</td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
 
-                        <x-jet-secondary-button wire:click="redirecToJob( {{ $job->id }} )" wire:loading.attr="disabled">
+                        <x-jet-secondary-button wire:click="redirecToJob( {{ $MyJob->id }} )" wire:loading.attr="disabled">
                             <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
                                 <path fill-rule="evenodd"
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -63,7 +63,7 @@
                         </x-jet-secondary-button>
                     </td>
                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                        <x-jet-danger-button class="ml-2" wire:click="registerJob({{$job->id }},true)"
+                        <x-jet-danger-button class="ml-2" wire:click="registerJob({{$MyJob->id }},true)"
                             wire:loading.attr="disabled">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -75,12 +75,12 @@
                         </x-jet-danger-button>
                     </td>
                 </tr>
+            
             @endforeach
         </tbody>
     </table>
-
    <div class="mt-3">
-           {{ $jobs->links() }} 
+         {{ $jobs->links() }}
         </div>
 
         <!-- Delete Page Confirmation Modal -->
