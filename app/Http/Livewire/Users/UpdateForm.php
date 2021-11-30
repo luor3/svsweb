@@ -126,7 +126,7 @@ class UpdateForm extends Component
         return [
             'name' => 'required|max:255',
             'email'=> 'required|email|unique:users,email,'. $this->user_id,
-            'current_team_id' => 'required|numeric',
+            'current_team_id' => 'nullable|numeric',
             'role' =>'required'
         ];
     }

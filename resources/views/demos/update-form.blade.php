@@ -41,7 +41,11 @@
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->id }}</td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->name }}</td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->category_name }}</td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->status?'Yes':'No' }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <span class="{{ $myDemo->status?  'bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs': 'bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs' }} py-1 px-3 rounded-full text-xs">
+                                {{$myDemo->status?'Yes':'No' }}
+                            </span>
+                        </td>
 
                         <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
                             <x-jet-secondary-button wire:click="redirecToDemo( {{ $myDemo->id }} )" wire:loading.attr="disabled">

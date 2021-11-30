@@ -31,7 +31,7 @@ Route::get('/demos', GetstartedController::class)->name('demopage');
 
 Route::get('/input-generator', InputGeneratorController::class)->name('input-generator');
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/userprofile', UsersProfileController::class)->name('userprofile');
+Route::middleware(['auth', 'verified'])->get('/userprofile', UsersProfileController::class)->name('userprofile');
 
 Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->get('/dashboard', function () {
     return view('dashboard');

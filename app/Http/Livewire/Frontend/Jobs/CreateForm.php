@@ -283,7 +283,6 @@ class CreateForm extends Component
             'input_property_json'=>$input_property_json,
            ];
            $data['configuration'] = json_encode($map);
-
                       
         } 
         catch (\Exception $e) 

@@ -90,6 +90,19 @@ class ShowForm extends Component
      * 
      * @var boolean
      */
+    public $confirmingJobWithdraw = false;
+
+
+    /**
+     * 
+     * @var boolean
+     */
+    public $confirmingJobRecover = false;
+
+    /**
+     * 
+     * @var boolean
+     */
     public $displayEditable = false;
 
 
@@ -213,16 +226,14 @@ class ShowForm extends Component
      */
     public function mount()
     { 
-        $this->pathName = request()->route()->getName();;
+        $this->pathName = request()->route()->getName();
         $categories = Category::all();
         foreach ($categories as $category)
         {
             $this->categories[$category->id] =  $category->name;
         }
         $user = auth()->user();
-        //dd($user);
         $this->userID = $user->id; 
-        $this->permission = $user->role == "admin" ? 1 : 0;
         if($this->jobID !== -1)
         {
             $this->registerJob($this->jobID, false);
@@ -237,7 +248,6 @@ class ShowForm extends Component
      */
     public function render()
     {  
-        //dd($this->userID);
         $jobs = [];
         if(isset($this->job) && $this->jobID !== -1)
         {
@@ -253,11 +263,13 @@ class ShowForm extends Component
         
         else
         {            
-            $jobs = Job::leftjoin('users', 'jobs.user','=','users.id')->where('jobs.name', 'like', '%'.$this->nameSearch.'%') ->orWhere('users.name', 'like', '%'.$this->nameSearch.'%');         
-            if(!$this->permission){
-                $jobs = $jobs->where('users.id', $this->userID);
-        }
-        $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
+            $jobs = Job::leftjoin('users', 'jobs.user','=','users.id');         
+            if(auth()->user()->role=='user'|| !$this->permission || $this->pathName===route('jobs')){
+                $jobs = $jobs->where('jobs.user', $this->userID);
+            }
+            $jobs = $jobs->where('jobs.name', 'like', '%'.$this->nameSearch.'%')->where('users.name', 'like', '%'.$this->nameSearch.'%');
+
+            $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
         }
         return view(self::COMPONENT_TEMPLATE,['jobs' => $jobs]);
     }
@@ -386,7 +398,7 @@ class ShowForm extends Component
     }
 
     
-     /**
+    /*
      * call after clicking "back" in job edit page
      * 
      * @return void
@@ -425,6 +437,41 @@ class ShowForm extends Component
     public function redirecToJob($jobID)
     {   
         return redirect()->route($this->pathName , ['jobID' => $jobID]);
+    }
+
+    /*
+     * withdraw Job
+     *
+     */
+    public function withdrawJob($jobID)
+    {
+        $this->job = job::find($jobID);
+        if($this->job->progress === 'Pending'){
+            $this->confirmingJobWithdraw = true;
+        }
+        else if($this->job->progress === 'Cancelled'){
+            $this->confirmingJobWithdraw = false;
+            $this->confirmingJobRecover = true;
+
+            $this->job->progress = 'Pending';
+            $this->job->save();
+        }
+        
+    }
+
+    public function withdraw(){
+        $this->job-> progress = 'Cancelled';
+        $this->job->save();
+        return redirect()->route(self::REDIRECT_ROUTE);
+    }
+    /*
+     * Recover Job
+     */
+    public function recover(){
+        $this->job-> progress = 'Pending';
+        $this->job->save();
+        return redirect()->route(self::REDIRECT_ROUTE);
+
     }
 
 }
