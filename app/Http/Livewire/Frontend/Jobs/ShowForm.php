@@ -69,7 +69,11 @@ class ShowForm extends Component
      */
     public $inputFiles;
 
-
+    /*
+    **
+    **
+    */
+    public $job_status = "All";
 
     public $uploadFields = [];
 
@@ -264,6 +268,14 @@ class ShowForm extends Component
         else
         {            
             $jobs = Job::leftjoin('users', 'jobs.user','=','users.id');         
+            if($this->categorySearch != -1)
+            {
+                $jobs = $jobs->Where('category_id', $this->categorySearch);
+            }
+            if($this->job_status != "All"){
+                $jobs = $jobs->Where('progress', $this->job_status);
+            }
+
             if(auth()->user()->role=='user'|| !$this->permission || $this->pathName===route('jobs')){
                 $jobs = $jobs->where('jobs.user', $this->userID);
             }
@@ -353,7 +365,7 @@ class ShowForm extends Component
                                                   
             if ($deleted) 
             {    
-                return redirect()->route(self::REDIRECT_ROUTE);
+                return redirect()->route($this->pathName);
             }
         }
     }
@@ -462,7 +474,7 @@ class ShowForm extends Component
     public function withdraw(){
         $this->job-> progress = 'Cancelled';
         $this->job->save();
-        return redirect()->route(self::REDIRECT_ROUTE);
+        return redirect()->route($this->pathName);
     }
     /*
      * Recover Job
@@ -470,7 +482,7 @@ class ShowForm extends Component
     public function recover(){
         $this->job-> progress = 'Pending';
         $this->job->save();
-        return redirect()->route(self::REDIRECT_ROUTE);
+        return redirect()->route($this->pathName);
 
     }
 

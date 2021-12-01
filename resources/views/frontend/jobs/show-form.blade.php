@@ -76,18 +76,27 @@
                                     </td>
 
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-
-                                        <button class="bg-red-200 text-gray-800 font-bold rounded hover:border-red-600 hover:bg-red-500 hover:text-white py-1 px-2 inline-flex items-center" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                            <path fill="currentcolor" 
-                                                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-                                        </svg>
+                                    @if($myJob->progress === 'Pending' || $myJob->progress === 'Cancelled')
+                                        <button class="{{ $myJob->progress === 'Pending'?  'bg-red-200 hover:border-red-600 hover:bg-red-500':'bg-green-200 hover:border-green-600 hover:bg-green-500'}} text-gray-800 font-bold rounded hover:text-white py-1 px-2 inline-flex items-center" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
                                             @if($myJob->progress === 'Pending')
-                                                {{ __('Withdraw') }}           
-                                            @elseif ($myJob->progress === 'Cancelled')
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                                    <path fill="currentcolor" 
+                                                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+                                                </svg>
+                                                {{ __('Withdraw') }}
+                                            @elseif($myJob->progress === 'Cancelled')                                            
+                                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                                                        <path style="fill:#030104;" d="M12.229,0.003c-0.01,0-0.014,0-0.018,0c-0.008,0-0.008,0-0.01,0
+                                                            c0,0,0,0-0.003,0l0,0c-0.003,0-0.007,0-0.011,0c-0.002,0-0.002,0-0.002,0s0,0-0.004,0c-0.027-0.006-0.035-0.002-0.055-0.002
+                                                            c-3.203,0-6.319,1.27-8.622,3.503L0.972,0.933c-0.123-0.12-0.309-0.158-0.461-0.094c-0.159,0.068-0.265,0.22-0.265,0.394v8.348
+                                                            c0,0.235,0.191,0.425,0.423,0.425h8.246c0.005,0,0.014,0,0.02,0c0.234,0,0.424-0.189,0.424-0.425c0-0.156-0.085-0.294-0.212-0.367
+                                                            L6.646,6.683c1.483-1.432,3.418-2.216,5.54-2.216c4.33,0.028,7.857,3.573,7.857,7.975c-0.033,4.326-3.58,7.847-7.98,7.847
+                                                            l0.01,4.468h0.061c6.779,0,12.333-5.518,12.377-12.376C24.511,5.606,19.007,0.06,12.229,0.003z"/>
+                                                </svg>
                                                 {{ __('Recover') }}  
-                                            @endif
+                                            @endif                                      
                                         </button>
+                                        @endif
                                     </td>
 
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
