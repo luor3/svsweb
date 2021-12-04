@@ -13,28 +13,35 @@
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     ID 
+                                    @include('backend-order-bar', ['columnName' => 'id'] )
                                 </th>
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     User 
+                                    @include('backend-order-bar', ['columnName' => 'user'] )
                                 </th>
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     Name
+                                    @include('backend-order-bar', ['columnName' => 'name'] )
                                 </th>
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     Progress
+                                    @include('backend-order-bar', ['columnName' => 'progress'] )
                                 </th>
                                     
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     Submission Date 
+                                    @include('backend-order-bar', ['columnName' => 'created_at'] )
+                                    
                                 </th>
 
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     Status
+                                    @include('backend-order-bar', ['columnName' => 'status'] )
                                 </th>
 
                                 <th

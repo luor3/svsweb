@@ -279,6 +279,12 @@ class ShowForm extends Component
             if(auth()->user()->role=='user'|| !$this->permission || $this->pathName===route('jobs')){
                 $jobs = $jobs->where('jobs.user', $this->userID);
             }
+            
+            if(!is_null($this->currentOrderProperty) && $this->currentOrder !== '')
+            {
+                $jobs = $jobs -> orderBy($this->currentOrderProperty,$this->currentOrder);  
+            }
+
             $jobs = $jobs->where('jobs.name', 'like', '%'.$this->nameSearch.'%')->where('users.name', 'like', '%'.$this->nameSearch.'%');
 
             $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
@@ -463,10 +469,7 @@ class ShowForm extends Component
         }
         else if($this->job->progress === 'Cancelled'){
             $this->confirmingJobWithdraw = false;
-            $this->confirmingJobRecover = true;
-
-            $this->job->progress = 'Pending';
-            $this->job->save();
+            $this->confirmingJobRecover = true; 
         }
         
     }
@@ -484,6 +487,19 @@ class ShowForm extends Component
         $this->job->save();
         return redirect()->route($this->pathName);
 
+    }
+
+    public function demoOrder($property)
+    {
+        if($property === $this->currentOrderProperty)
+        {
+           $this->currentOrder = ($this->currentOrder === 'asc') ? 'desc' : (($this->currentOrder === 'desc') ? '' : 'asc');
+        }
+        else
+        {
+            $this->currentOrder = 'asc';
+            $this->currentOrderProperty = $property;
+        }
     }
 
 }
