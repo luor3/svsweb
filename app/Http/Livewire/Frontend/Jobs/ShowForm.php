@@ -471,7 +471,7 @@ class ShowForm extends Component
     }
 
     public function withdraw(){
-        
+        $this->job -> previous_progress = $this->job-> progress;
         $this->job-> progress = 'Cancelled';
         $this->job->save();
         return redirect()->route($this->pathName);
@@ -481,7 +481,7 @@ class ShowForm extends Component
      * Recover Job
      */
     public function recover(){
-        $this->job-> progress = 'Pending';
+        $this->job-> progress = $this->job -> previous_progress;
         $this->job->save();
         return redirect()->route($this->pathName);
 
