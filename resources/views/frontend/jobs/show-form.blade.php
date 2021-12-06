@@ -27,6 +27,11 @@
                                 </th>
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Category
+                                    @include('backend-order-bar', ['columnName' => 'category'] )
+                                </th>
+                                <th
+                                    class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     Progress
                                     @include('backend-order-bar', ['columnName' => 'progress'] )
                                 </th>
@@ -58,11 +63,11 @@
                         </thead>
                         <tbody>
                             @foreach ($jobs as $myJob)
-                                <tr>
-                                    
+                                <tr>                    
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->id}}</td>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->user_name}}</td>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->name}}</td>
+                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$this->categories[$myJob->category_id]}}</td>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->progress}}</td>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->created_at}}</td>
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -83,14 +88,17 @@
                                     </td>
 
                                     <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                    @if($myJob->progress === 'Pending' || $myJob->progress === 'Cancelled')
-                                        <button class="{{ $myJob->progress === 'Pending'?  'bg-red-200 hover:border-red-600 hover:bg-red-500':'bg-green-200 hover:border-green-600 hover:bg-green-500'}} text-gray-800 font-bold rounded hover:text-white py-1 px-2 inline-flex items-center" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
-                                            @if($myJob->progress === 'Pending')
+                                    @if($myJob->progress === 'Pending' || $myJob->progress === 'Cancelled' || $myJob->progress === 'In Progress' )
+                                        <button class="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'?  'bg-red-200 hover:border-red-600 hover:bg-red-500':'bg-green-200 hover:border-green-600 hover:bg-green-500'}} text-gray-800 font-bold rounded hover:text-white py-1 px-2 inline-flex items-center" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
+                                            @if($myJob->progress === 'Pending' || $myJob->progress === 'In Progress')
+                                             
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                                     <path fill="currentcolor" 
                                                         d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
                                                 </svg>
                                                 {{ __('Withdraw') }}
+                                             
+                                          
                                             @elseif($myJob->progress === 'Cancelled')                                            
                                                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
                                                         <path style="fill:#030104;" d="M12.229,0.003c-0.01,0-0.014,0-0.018,0c-0.008,0-0.008,0-0.01,0
@@ -129,7 +137,7 @@
                 </div>
 
             </div>    
-
+            
                 <!-- Delete Page Confirmation Modal -->
                 <x-jet-confirmation-modal wire:model="confirmingJobDeletion">
                     <x-slot name="title">

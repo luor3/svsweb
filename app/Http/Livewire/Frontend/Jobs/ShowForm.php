@@ -77,11 +77,7 @@ class ShowForm extends Component
 
     public $uploadFields = [];
 
-    /**
-     * 
-     * @var File
-     */
-    public $plotFile;
+    public $Previosu_status;
 
 
     /**
@@ -237,7 +233,8 @@ class ShowForm extends Component
             $this->categories[$category->id] =  $category->name;
         }
         $user = auth()->user();
-        $this->userID = $user->id; 
+        $this->userID = $user->id;
+        
         if($this->jobID !== -1)
         {
             $this->registerJob($this->jobID, false);
@@ -286,8 +283,8 @@ class ShowForm extends Component
             }
 
             $jobs = $jobs->where('jobs.name', 'like', '%'.$this->nameSearch.'%')->where('users.name', 'like', '%'.$this->nameSearch.'%');
-
             $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
+           
         }
         return view(self::COMPONENT_TEMPLATE,['jobs' => $jobs]);
     }
@@ -402,11 +399,9 @@ class ShowForm extends Component
                 $this->jobAttr['description'] = $this->job->description;
                 $this->jobAttr['category_id'] = $this->job->category_id;
                 $this->jobAttr['status'] = $this->job->status;
-                $configuration = json_decode($this->job->configuration);
-              //  $this->jobAttr['configuration'] =  $this->configuration;
-                $this->uploadFields = json_decode($configuration->input_property_json,true);
-              //  $this->uploadFields = json_decode($this->job->input_property_json,true);
 
+                $configuration = json_decode($this->job->configuration);
+                $this->uploadFields = json_decode($configuration->input_property_json,true);
                 foreach ($this->uploadFields as $fileType => $extension){
                     $this->inputFiles[$fileType] = null;
                 }       
@@ -464,7 +459,8 @@ class ShowForm extends Component
     public function withdrawJob($jobID)
     {
         $this->job = job::find($jobID);
-        if($this->job->progress === 'Pending'){
+        if($this->job->progress === 'Pending'||$this->job->progress === 'In Progress'){
+            //$this->Previosu_status = $this->job->progress;
             $this->confirmingJobWithdraw = true;
         }
         else if($this->job->progress === 'Cancelled'){
@@ -475,10 +471,12 @@ class ShowForm extends Component
     }
 
     public function withdraw(){
+        
         $this->job-> progress = 'Cancelled';
         $this->job->save();
         return redirect()->route($this->pathName);
     }
+
     /*
      * Recover Job
      */
