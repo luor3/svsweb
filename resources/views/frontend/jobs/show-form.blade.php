@@ -28,7 +28,7 @@
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                     Category
-                                    @include('backend-order-bar', ['columnName' => 'category'] )
+                                    @include('backend-order-bar', ['columnName' => 'category_id'] )
                                 </th>
                                 <th
                                     class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">

@@ -282,7 +282,7 @@ class ShowForm extends Component
                 $jobs = $jobs -> orderBy($this->currentOrderProperty,$this->currentOrder);  
             }
 
-            $jobs = $jobs->where('jobs.name', 'like', '%'.$this->nameSearch.'%')->where('users.name', 'like', '%'.$this->nameSearch.'%');
+            $jobs = $jobs->where('jobs.name', 'like', '%'.$this->nameSearch.'%');//->where('users.name', 'like', '%'.$this->nameSearch.'%');
             $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
            
         }
