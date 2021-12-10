@@ -13,6 +13,7 @@ use App\Http\Controllers\Frontend\InputGeneratorController;
 use App\Http\Controllers\Frontend\UsersProfileController;
 use App\Http\Controllers\Frontend\JobsController;
 use App\Http\Controllers\Frontend\AboutController;
+use App\Models\User;
 
 
 /*
