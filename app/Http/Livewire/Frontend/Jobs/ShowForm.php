@@ -69,15 +69,15 @@ class ShowForm extends Component
      */
     public $inputFiles;
 
-
+    /*
+    **
+    **
+    */
+    public $job_status = "All";
 
     public $uploadFields = [];
 
-    /**
-     * 
-     * @var File
-     */
-    public $plotFile;
+    public $Previosu_status;
 
 
     /**
@@ -85,6 +85,19 @@ class ShowForm extends Component
      * @var boolean
      */
     public $confirmingJobDeletion = false;
+
+    /**
+     * 
+     * @var boolean
+     */
+    public $confirmingJobWithdraw = false;
+
+
+    /**
+     * 
+     * @var boolean
+     */
+    public $confirmingJobRecover = false;
 
     /**
      * 
@@ -172,7 +185,6 @@ class ShowForm extends Component
             'jobAttr.category_id' => 'required|integer',
             'jobAttr.description' => 'required|max:1024',
             'jobAttr.status' => 'required|boolean',
-            'outputFiles.*' => 'file',       
         ];
     }
 
@@ -221,7 +233,8 @@ class ShowForm extends Component
             $this->categories[$category->id] =  $category->name;
         }
         $user = auth()->user();
-        $this->userID = $user->id; 
+        $this->userID = $user->id;
+        
         if($this->jobID !== -1)
         {
             $this->registerJob($this->jobID, false);
@@ -252,12 +265,26 @@ class ShowForm extends Component
         else
         {            
             $jobs = Job::leftjoin('users', 'jobs.user','=','users.id');         
+            if($this->categorySearch != -1)
+            {
+                $jobs = $jobs->Where('category_id', $this->categorySearch);
+            }
+            if($this->job_status != "All"){
+                $jobs = $jobs->Where('progress', $this->job_status);
+            }
+
             if(auth()->user()->role=='user'|| !$this->permission || $this->pathName===route('jobs')){
                 $jobs = $jobs->where('jobs.user', $this->userID);
             }
-            $jobs = $jobs->where('jobs.name', 'like', '%'.$this->nameSearch.'%') ->where('users.name', 'like', '%'.$this->nameSearch.'%');
+            
+            if(!is_null($this->currentOrderProperty) && $this->currentOrder !== '')
+            {
+                $jobs = $jobs -> orderBy($this->currentOrderProperty,$this->currentOrder);  
+            }
 
+            $jobs = $jobs->where('jobs.name', 'like', '%'.$this->nameSearch.'%');//->where('users.name', 'like', '%'.$this->nameSearch.'%');
             $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
+           
         }
         return view(self::COMPONENT_TEMPLATE,['jobs' => $jobs]);
     }
@@ -281,40 +308,7 @@ class ShowForm extends Component
 
             try 
             {
-                if(isset($this->plotFile))
-                {
-                    if($this->job->plot_path)
-                    {
-                        Storage::disk('public')->delete($this->job->plot_path);
-                  }                
-                    $this->job->plot_path = $this->plotFile->store('jobs/'.$this->job->id,'public');
-
-                    $this->plotFile = null;
-                }        
-
-                if(isset($this->outputFiles))
-                {
-
-                    
-                    foreach ($this->outputFileJson['fileName'] as $fileName)
-                    {
-                        Storage::disk('public')->delete($this->outputFileJson[$fileName]);
-                    } 
-
-                    $output_json = [
-                        'fileName' => [],
-                    ];
-                    foreach ($this->outputFiles as $file)
-                    {
-                        
-                        $uniqueFileName = Str::uuid().$file->getClientOriginalName();
-                        array_push($output_json['fileName'],$uniqueFileName);
-                        $output_json[$uniqueFileName] = $file->store('jobs/'.$this->job->id,'public');
-                    }
-                    $this->job->output_file_json  = json_encode($output_json);
-                    $this->outputFiles = null;
-                }
-          
+                  
                 foreach ($this->inputFiles as $fileType => $file)
                 {
                     if(isset($this->inputFiles[$fileType]))
@@ -365,7 +359,6 @@ class ShowForm extends Component
     {
         if ($this->job && $this->job->id) 
         {
-  
             $deleted = $this->job->delete(); // this will also delete related files through ORM deleting hook function.
             $msg =  $deleted ? 'Job successfully deleted!' : 'Ooops! Something went wrong.';
             $flag = $deleted ? 'success' : 'danger';
@@ -375,7 +368,7 @@ class ShowForm extends Component
                                                   
             if ($deleted) 
             {    
-                return redirect()->route(self::REDIRECT_ROUTE);
+                return redirect()->route($this->pathName);
             }
         }
     }
@@ -406,11 +399,9 @@ class ShowForm extends Component
                 $this->jobAttr['description'] = $this->job->description;
                 $this->jobAttr['category_id'] = $this->job->category_id;
                 $this->jobAttr['status'] = $this->job->status;
-                $configuration = json_decode($this->job->configuration);
-              //  $this->jobAttr['configuration'] =  $this->configuration;
-                $this->uploadFields = json_decode($configuration->input_property_json,true);
-              //  $this->uploadFields = json_decode($this->job->input_property_json,true);
 
+                $configuration = json_decode($this->job->configuration);
+                $this->uploadFields = json_decode($configuration->input_property_json,true);
                 foreach ($this->uploadFields as $fileType => $extension){
                     $this->inputFiles[$fileType] = null;
                 }       
@@ -420,7 +411,7 @@ class ShowForm extends Component
     }
 
     
-     /**
+    /*
      * call after clicking "back" in job edit page
      * 
      * @return void
@@ -459,6 +450,54 @@ class ShowForm extends Component
     public function redirecToJob($jobID)
     {   
         return redirect()->route($this->pathName , ['jobID' => $jobID]);
+    }
+
+    /*
+     * withdraw Job
+     *
+     */
+    public function withdrawJob($jobID)
+    {
+        $this->job = job::find($jobID);
+        if($this->job->progress === 'Pending'||$this->job->progress === 'In Progress'){
+            //$this->Previosu_status = $this->job->progress;
+            $this->confirmingJobWithdraw = true;
+        }
+        else if($this->job->progress === 'Cancelled'){
+            $this->confirmingJobWithdraw = false;
+            $this->confirmingJobRecover = true; 
+        }
+        
+    }
+
+    public function withdraw(){
+        $this->job -> previous_progress = $this->job-> progress;
+        $this->job-> progress = 'Cancelled';
+        $this->job->save();
+        return redirect()->route($this->pathName);
+    }
+
+    /*
+     * Recover Job
+     */
+    public function recover(){
+        $this->job-> progress = $this->job -> previous_progress;
+        $this->job->save();
+        return redirect()->route($this->pathName);
+
+    }
+
+    public function demoOrder($property)
+    {
+        if($property === $this->currentOrderProperty)
+        {
+           $this->currentOrder = ($this->currentOrder === 'asc') ? 'desc' : (($this->currentOrder === 'desc') ? '' : 'asc');
+        }
+        else
+        {
+            $this->currentOrder = 'asc';
+            $this->currentOrderProperty = $property;
+        }
     }
 
 }

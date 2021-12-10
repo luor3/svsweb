@@ -86,8 +86,9 @@ class CreateForm extends Component
     /**
      * 
      * @var boolean
+     * default is 1
      */
-    public $status = 0;
+    public $status = 1;
 
 
     /**
@@ -195,7 +196,6 @@ class CreateForm extends Component
         $this->validate([
             'output_files.*' => 'file',
             'input_files.*' => 'required|file',
-            'plot_file' => 'image|nullable',
             'status' => 'required|boolean'
         ]);
 
@@ -212,6 +212,7 @@ class CreateForm extends Component
         $output_json = [
             'fileName' => [],
         ];
+        /*
         foreach ($this->output_files as $file)
         {
             $uniqueFileName = Str::uuid().$file->getClientOriginalName();
@@ -224,9 +225,10 @@ class CreateForm extends Component
         {
             $this->job->plot_path = $this->plot_file->store('jobs/'.$this->job->id,'public');
         }
-
+        */
         $this->job->configuration = $input_json;
         $this->job->status = $this->status; 
+
         $result = job::find(['id'=>$this->job->id])->toArray();
         $result[0]['configuration'] = json_decode($result[0]['configuration'],true);
         $result[0]['configuration']['input_file_json'] = $input_json;
@@ -267,6 +269,7 @@ class CreateForm extends Component
         ]);
         $user = auth()->user();
         $data['user'] = $user->id;
+
         try 
         {   
 
@@ -290,7 +293,6 @@ class CreateForm extends Component
         }
         unset($data['input_file']);
 
-        //$id = job::insertGetId($data);
         $this->job = job::create($data);
         
         $msg =  $this->job ? 'Job successfully created!' : 'Ooops! Something went wrong.';
