@@ -20,6 +20,7 @@
     </head>
     <body>
         <div class="font-sans text-gray-900 antialiased">
+            <x-jet-banner />
             {{ $slot }}
         </div>
         

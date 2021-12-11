@@ -31,7 +31,7 @@ Route::get('/demos', GetstartedController::class)->name('demopage');
 
 Route::get('/input-generator', InputGeneratorController::class)->name('input-generator');
 
-Route::middleware(['auth', 'verified'])->get('/userprofile', UsersProfileController::class)->name('userprofile');
+Route::middleware(['auth', 'verified', 'user.status.check'])->get('/userprofile', UsersProfileController::class)->name('userprofile');
 
 Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->get('/dashboard', function () {
     return view('dashboard');
@@ -65,7 +65,7 @@ Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admi
     Route::get('/', [App\Http\Controllers\JobsController::class, 'show'])->name('jobs.all');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->prefix('jobs')->group(function () {
+Route::middleware(['auth:sanctum', 'verified','user.status.check'])->prefix('jobs')->group(function () {
     Route::get('/', [JobsController::class, 'show'])->name('jobs');
     Route::get('/create', [JobsController::class, 'showCreate'])->name('jobs.create');
 });

@@ -37,6 +37,12 @@ class UpdateForm extends Component
 
     /**
      * 
+     * @var boolean
+     */
+    public $status;
+
+    /**
+     * 
      * @var string
      */
     public $name;
@@ -47,7 +53,6 @@ class UpdateForm extends Component
      * @var string
      */
     public $email;
-
 
     /**
      * 
@@ -74,6 +79,13 @@ class UpdateForm extends Component
      */
     public $role;
 
+
+    // /**
+    //  * 
+    //  * @var string
+    //  */
+    // public $permission;
+
     /**
      * 
      * @var string
@@ -91,6 +103,12 @@ class UpdateForm extends Component
      * @var boolean
      */
     public $confirmingSettingUpdation = false;
+
+    /**
+     * 
+     * @var boolean
+     */
+    public $confirmingPermissionUpdation = false;
 
     /**
      * 
@@ -127,7 +145,8 @@ class UpdateForm extends Component
             'name' => 'required|max:255',
             'email'=> 'required|email|unique:users,email,'. $this->user_id,
             'current_team_id' => 'nullable|numeric',
-            'role' =>'required'
+            'role' =>'required',
+            'status'=>'required|boolean'
         ];
     }
 
@@ -189,7 +208,7 @@ class UpdateForm extends Component
             $user->email = $this->email;
             $user->current_team_id = $this->current_team_id;
             $user->role = $this->role;
-
+            $user->status = $this->status;
 
             $status = $user->save();
             
@@ -209,12 +228,29 @@ class UpdateForm extends Component
         $this->email = $user->email;
         $this->current_team_id = $user->current_team_id;
         $this->role = $user->role;
+        $this->status = $user->status;
 
         if($delete)
             $this->confirmingSettingDeletion = true;
         else{
             $this->confirmingSettingUpdation = true;
         }
+    }
+
+    /**
+     * register user for updation or deletion
+     * 
+     * @return void
+     */
+    public function registerUserPermission(User $user)
+    {
+        $this->user_id = $user->id;
+        $this->name = $user->name;
+        $this->email = $user->email;
+        $this->current_team_id = $user->current_team_id;
+        $this->role = $user->role;
+        $this->status = $user->status;
+        $this->confirmingPermissionUpdation = true;
     }
     
 
