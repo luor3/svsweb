@@ -1,6 +1,6 @@
-        @section('title') {{ $page['title'] }} @yield('title') @stop
-        @section('description') {{ $page['description'] }} @yield('description') @stop
-        @section('keywords') {{ $page['keywords'] }} @yield('keywords') @stop
+        @section('title') {{ $page ['title'] }} @yield('title') @stop
+        @section('description') {{ $page ['description'] }} @yield('description') @stop
+        @section('keywords') {{ $page ['keywords'] }} @yield('keywords') @stop
         @section('facebook_admins') {{ $app->facebookadmins }} @yield('facebook_admins') @stop
         @section('facebook_page_id') {{ $app->facebookpageid }} @yield('facebook_page_id') @stop
         @section('twitter_id') {{ $app->twitterpageid }} @yield('twitter_id') @stop

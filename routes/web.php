@@ -12,6 +12,9 @@ use App\Http\Controllers\Frontend\DynamicPagesController;
 use App\Http\Controllers\Frontend\InputGeneratorController;
 use App\Http\Controllers\Frontend\UsersProfileController;
 use App\Http\Controllers\Frontend\JobsController;
+use App\Http\Controllers\Frontend\AboutController;
+use App\Models\User;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +34,15 @@ Route::get('/demos', GetstartedController::class)->name('demopage');
 
 Route::get('/input-generator', InputGeneratorController::class)->name('input-generator');
 
+Route::get('/about', AboutController::class)->name('aboutpage'); 
+
+Route::get('/about/{name}/{id}', function($name,$id){
+         $user = User::find($id);
+         return view('bio',['user'=>$user]);
+    });
+
 Route::middleware(['auth', 'verified', 'user.status.check'])->get('/userprofile', UsersProfileController::class)->name('userprofile');
+
 
 Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->get('/dashboard', function () {
     return view('dashboard');
@@ -69,6 +80,7 @@ Route::middleware(['auth:sanctum', 'verified','user.status.check'])->prefix('job
     Route::get('/', [JobsController::class, 'show'])->name('jobs');
     Route::get('/create', [JobsController::class, 'showCreate'])->name('jobs.create');
 });
+
 
 //------------------------------------------------------------------------------//
 //-------------------------------- FIND DYNAMIC PAGES --------------------------//
