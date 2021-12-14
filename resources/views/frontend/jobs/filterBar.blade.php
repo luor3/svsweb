@@ -13,7 +13,7 @@
             <select
                 class="appearance-none h-full rounded-r border-t sm:rounded-r-none sm:border-r-0 border-r border-b block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
                 wire:model="categorySearch">
-                <option value="-1">All</option>
+                <option value="-1">All Categories</option>
                 @foreach($categories as $key => $value)
                     <option value="{{$key}}">{{$value}}</option>
                 @endforeach
@@ -22,12 +22,22 @@
         <div class="relative">
             <select
                 class="appearance-none h-full rounded-l border block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                wire:model="job_status">
-                <option>All</option>
+                wire:model="job_progress">
+                <option>All Progresses</option>
                 <option>Pending</option>
                 <option>In Progress</option>
                 <option>Completed</option>
                 <option>Cancelled</option>
+            </select>
+        </div>
+        <div class="relative">
+            <select
+                class="appearance-none h-full rounded-l border block appearance-none w-full bg-white border-gray-400 text-gray-700 py-2 px-4 pr-8 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                wire:model="job_status">
+                <option>All Statuses</option>
+                <option>Yes</option>
+                <option>No</option>
+                
             </select>
         </div>
     </div>
