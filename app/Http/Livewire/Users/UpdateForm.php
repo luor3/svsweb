@@ -80,11 +80,16 @@ class UpdateForm extends Component
     public $role;
 
 
-    // /**
-    //  * 
-    //  * @var string
-    //  */
-    // public $permission;
+    /**
+     * 
+     * @var array
+     */
+    public $permission = [
+        "edit_user" => false,
+        "delete_user" => false,
+        "edit_demo" => false,
+        "delete_demo" => false,
+    ];
 
     /**
      * 
@@ -200,9 +205,16 @@ class UpdateForm extends Component
      */
     public function update()
     {
-        $this->validate();
 
+        if(!auth()->user()->hasPermission(0)){
+            session()->flash('flash.banner', "You do not have permission to edit user!");
+            session()->flash('flash.bannerStyle', 'danger');
+            return redirect()->route(self::REDIRECT_ROUTE);
+        }
+
+        $this->validate();
         $user = User::find($this->user_id);
+
         if ($user) {
             $user->name = $this->name;
             $user->email = $this->email;
@@ -217,21 +229,53 @@ class UpdateForm extends Component
     }
 
     /**
+     * update user
+     * 
+     * @return void
+     */
+    public function updatePermission()
+    {
+        $user = User::find($this->user_id);
+        if ($user) {
+            $user->permission = $this->encodePermission();
+
+            $status = $user->save();
+            
+            $this->emit('saved', $status);
+        }
+    }
+
+    /**
      * register user for updation or deletion
      * 
      * @return void
      */
     public function registerUser(User $user, $delete)
     {
+        if($delete){
+            if(!auth()->user()->hasPermission(1)){
+                session()->flash('flash.banner', "You do not have permission to delete user!");
+                session()->flash('flash.bannerStyle', 'danger');
+                return redirect()->route(self::REDIRECT_ROUTE);
+            }
+        }
+        else{
+            if(!auth()->user()->hasPermission(0)){
+                session()->flash('flash.banner', "You do not have permission to edit user!");
+                session()->flash('flash.bannerStyle', 'danger');
+                return redirect()->route(self::REDIRECT_ROUTE);
+            }
+        }
+
         $this->user_id = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->current_team_id = $user->current_team_id;
         $this->role = $user->role;
         $this->status = $user->status;
-
-        if($delete)
+        if($delete){
             $this->confirmingSettingDeletion = true;
+        }
         else{
             $this->confirmingSettingUpdation = true;
         }
@@ -245,12 +289,25 @@ class UpdateForm extends Component
     public function registerUserPermission(User $user)
     {
         $this->user_id = $user->id;
-        $this->name = $user->name;
-        $this->email = $user->email;
-        $this->current_team_id = $user->current_team_id;
-        $this->role = $user->role;
-        $this->status = $user->status;
+        $permissionNumber = $user->permission;
         $this->confirmingPermissionUpdation = true;
+
+        $this->permission = [
+            "edit_user" => false,
+            "delete_user" => false,
+            "edit_demo" => false,
+            "delete_demo" => false,
+        ];
+
+        $keys = array_keys( $this->permission );
+        $i = 0;
+        while ($permissionNumber > 0)
+        {
+            $this->permission[$keys[$i]] = $permissionNumber % 2;
+            $permissionNumber = (int)($permissionNumber / 2);
+            $i++;
+        }
+
     }
     
 
@@ -261,6 +318,12 @@ class UpdateForm extends Component
      */
     public function delete()
     {           
+        if(!auth()->user()->hasPermission(1)){
+            session()->flash('flash.banner', "You do not have permission to delete user!");
+            session()->flash('flash.bannerStyle', 'danger');
+            return redirect()->route(self::REDIRECT_ROUTE);
+        }
+
         if ($this->user_id) {
             
             $deleted = User::where('id', $this->user_id)->delete();
@@ -316,6 +379,18 @@ class UpdateForm extends Component
             $this->currentOrder = 'asc';
             $this->currentOrderProperty = $property;
         }
+    }
+
+    private function encodePermission(){
+        $encodedPermission = 0;
+        $count = 0;
+        foreach($this->permission as $key=>$value){
+            if($value){
+                $encodedPermission += pow(2, $count);
+            }
+            $count++;
+        }
+        return $encodedPermission;
     }
    
 }

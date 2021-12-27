@@ -286,7 +286,7 @@ class ShowForm extends Component
                 {
                     $this->status = 0;
                 }
-                $jobs = $jobs->Where('status', $this->status);
+                $jobs = $jobs->Where('jobs.status', $this->status);
             }
 
             if(auth()->user()->role=='user'|| !$this->permission || $this->pathName===route('jobs')){

@@ -243,26 +243,26 @@
                     <link rel="stylesheet" href="https://unpkg.com/@themesberg/flowbite@1.1.0/dist/flowbite.min.css" />
 
 
-                        <label for="toggle-1" class="flex items-center cursor-pointer relative mb-4">
-                        <input type="checkbox" id="toggle-1" class="sr-only">
+                        <label for="permission.edit_user" class="flex items-center cursor-pointer relative mb-4">
+                        <input type="checkbox" id="permission.edit_user" class="sr-only" wire:model.defer="permission.edit_user">
                         <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
                         <span class="ml-3 text-gray-900 text-sm font-medium">Edit User Permission</span>
                         </label>
 
-                        <label for="toggle-2" class="flex items-center cursor-pointer relative mb-4">
-                        <input type="checkbox" id="toggle-2" class="sr-only" checked="">
+                        <label for="permission.delete_user" class="flex items-center cursor-pointer relative mb-4">
+                        <input type="checkbox" id="permission.delete_user" class="sr-only" checked="" wire:model.defer="permission.delete_user">
                         <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
                         <span class="ml-3 text-gray-900 text-sm font-medium">Delete User Permission</span>
                         </label>
 
-                        <label for="toggle-3" class="flex items-center cursor-pointer relative mb-4">
-                        <input type="checkbox" id="toggle-3" class="sr-only">
+                        <label for="permission.edit_demo" class="flex items-center cursor-pointer relative mb-4">
+                        <input type="checkbox" id="permission.edit_demo" class="sr-only" wire:model.defer="permission.edit_demo">
                         <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
                         <span class="ml-3 text-gray-900 text-sm font-medium">Edit Demo Permission</span>
                         </label>
 
-                        <label for="toggle-4" class="flex items-center cursor-pointer relative mb-4">
-                        <input type="checkbox" id="toggle-4" class="sr-only">
+                        <label for="permission.delete_demo" class="flex items-center cursor-pointer relative mb-4">
+                        <input type="checkbox" id="permission.delete_demo" class="sr-only" wire:model.defer="permission.delete_demo">
                         <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
                         <span class="ml-3 text-gray-900 text-sm font-medium">Delete Demo Permission</span>
                         </label>
@@ -284,7 +284,7 @@
                         {{ __('Cancel') }}
                     </x-jet-secondary-button>
 
-                    <x-jet-danger-button class="ml-2" wire:click="update" wire:loading.attr="disabled">
+                    <x-jet-danger-button class="ml-2" wire:click="updatePermission" wire:loading.attr="disabled">
                         {{ __('Save') }}
                     </x-jet-danger-button>
           

@@ -58,4 +58,14 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function hasPermission($index){
+        $encodedPermission = $this->permission;
+        if( ($encodedPermission >> $index) & 1 || $this->id == 1){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }
