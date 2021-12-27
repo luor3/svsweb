@@ -220,29 +220,10 @@ class CreateForm extends Component
         $output_json = [
             'fileName' => [],
         ];
-        /*
-        foreach ($this->output_files as $file)
-        {
-            $uniqueFileName = Str::uuid().$file->getClientOriginalName();
-            array_push($output_json['fileName'],$uniqueFileName);
-            $output_json[$uniqueFileName] = $file->store('jobs/'.$this->job->id,'public');
-        }
-        $output_json = json_encode($output_json);
 
-        if(isset($this->plot_file))
-        {
-            $this->job->plot_path = $this->plot_file->store('jobs/'.$this->job->id,'public');
-        }
-        */
         $this->job->configuration = $input_json;
         $this->job->status = $this->status; 
 
-        // $result = job::find(['id'=>$this->job->id])->toArray();
-        // $result[0]['configuration'] = json_decode($result[0]['configuration'],true);
-        // $result[0]['configuration']['input_file_json'] = $input_json;
-        // $result[0]['configuration']['output_file_json'] = $output_json;
-        // $result[0]['configuration'] = json_encode($result[0]['configuration']);
-        // $this->job->configuration = $result[0]['configuration'];
         $status = $this->job->save();   
 
         $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
