@@ -202,15 +202,19 @@ class CreateForm extends Component
         $input_json = [
             'fileName' => []
         ];
+        
+        $input_json = json_decode($this->job->configuration,true);
+
+
         foreach ($this->input_files as $type => $file)
         {
-            $input_json['fileName'][$type] = $file->getClientOriginalName();
+            $input_json['input_file_json']['fileName'][$type] = $file->getClientOriginalName();
             //$path = $file->storeAs('public/jobs/'.$this->job->id, $file->getClientOriginalName());
-            $input_json[$type] = $file->storeAs('public/jobs/'.$this->job->id,$file->getClientOriginalName());
+            $input_json['input_file_json'][$type] = $file->storeAs('public/jobs/'.$this->job->id,$file->getClientOriginalName());
 
             
         }
-        
+        //dd($input_json);
         $input_json = json_encode($input_json);
 
         $output_json = [
@@ -233,12 +237,12 @@ class CreateForm extends Component
         $this->job->configuration = $input_json;
         $this->job->status = $this->status; 
 
-        $result = job::find(['id'=>$this->job->id])->toArray();
-        $result[0]['configuration'] = json_decode($result[0]['configuration'],true);
-        $result[0]['configuration']['input_file_json'] = $input_json;
-        $result[0]['configuration']['output_file_json'] = $output_json;
-        $result[0]['configuration'] = json_encode($result[0]['configuration']);
-        $this->job->configuration = $result[0]['configuration'];
+        // $result = job::find(['id'=>$this->job->id])->toArray();
+        // $result[0]['configuration'] = json_decode($result[0]['configuration'],true);
+        // $result[0]['configuration']['input_file_json'] = $input_json;
+        // $result[0]['configuration']['output_file_json'] = $output_json;
+        // $result[0]['configuration'] = json_encode($result[0]['configuration']);
+        // $this->job->configuration = $result[0]['configuration'];
         $status = $this->job->save();   
 
         $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
@@ -316,7 +320,15 @@ class CreateForm extends Component
         //dd($originalname);
         Storage::disk('public')->makeDirectory('jobs/'.$this->job->id);
         //Storage::disk('public')->put($originalname, $this->input_file,'jobs/'.$this->job->id);
-        $this->input_file->storeAs('public/jobs/'.$this->job->id, $originalname);
+        $input_file_path = $this->input_file->storeAs('public/jobs/'.$this->job->id, $originalname);
+        $input_json = json_decode($this->job->configuration,true);
+        $fileName_json = json_decode($input_json['input_file_json'] , true);
+        $fileName_json["fileName"]["input"] = $originalname;
+        $input_json['input_file_json'] = $fileName_json;
+
+        $input_json['input_file_json']['input'] = $input_file_path;
+        $this->job->configuration = json_encode($input_json);
+        $this->job->save();
     }
 
 
