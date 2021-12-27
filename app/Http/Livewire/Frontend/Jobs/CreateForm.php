@@ -205,8 +205,12 @@ class CreateForm extends Component
         foreach ($this->input_files as $type => $file)
         {
             $input_json['fileName'][$type] = $file->getClientOriginalName();
-            $input_json[$type] = $file->store('jobs/'.$this->job->id,'public');
+            //$path = $file->storeAs('public/jobs/'.$this->job->id, $file->getClientOriginalName());
+            $input_json[$type] = $file->storeAs('public/jobs/'.$this->job->id,$file->getClientOriginalName());
+
+            
         }
+        
         $input_json = json_encode($input_json);
 
         $output_json = [
@@ -272,8 +276,8 @@ class CreateForm extends Component
 
         try 
         {   
-
             $this->readFileFrom($this->input_file->getRealPath());
+            //dd($this->input_file->getClientOriginalName());
             $input_file_json = '{ "fileName" : [] }';
             $output_file_json = '{ "fileName" : [] }';
             $input_property_json = json_encode($this->uploadFields);
@@ -306,8 +310,13 @@ class CreateForm extends Component
             return redirect()->route(self::FAIL_ROUTE);
         }
         $this->initInputFiles();
-        $this->next = true;  
+        $this->next = true; 
+
+        $originalname = $this->input_file->getClientOriginalName();
+        //dd($originalname);
         Storage::disk('public')->makeDirectory('jobs/'.$this->job->id);
+        //Storage::disk('public')->put($originalname, $this->input_file,'jobs/'.$this->job->id);
+        $this->input_file->storeAs('public/jobs/'.$this->job->id, $originalname);
     }
 
 
