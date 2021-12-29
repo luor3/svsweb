@@ -272,6 +272,12 @@ class UpdateForm extends Component
      */
     public function update()
     {
+        if(!auth()->user()->hasPermission(2)){
+            session()->flash('flash.banner', "You do not have permission to do that!");
+            session()->flash('flash.bannerStyle', 'danger');
+            return redirect()->route(self::REDIRECT_ROUTE);
+        }
+
         $this->validate();
     
         if (isset($this->demo)) 
@@ -352,6 +358,12 @@ class UpdateForm extends Component
      */
     public function delete()
     {
+        if(!auth()->user()->hasPermission(3)){
+            session()->flash('flash.banner', "You do not have permission to do that!");
+            session()->flash('flash.bannerStyle', 'danger');
+            return redirect()->route(self::REDIRECT_ROUTE);
+        }
+
         if ($this->demo && $this->demo->id) 
         {
   
@@ -384,10 +396,22 @@ class UpdateForm extends Component
         }
         if($delete)
         {
+            if(!auth()->user()->hasPermission(3)){
+                session()->flash('flash.banner', "You do not have permission to delete demo!");
+                session()->flash('flash.bannerStyle', 'danger');
+                return redirect()->route(self::REDIRECT_ROUTE);
+            }
+
             $this->confirmingDemoDeletion = true;
         }
         else
         {
+            if(!auth()->user()->hasPermission(2)){
+                session()->flash('flash.banner', "You do not have permission to edit demo!");
+                session()->flash('flash.bannerStyle', 'danger');
+                return redirect()->route(self::REDIRECT_ROUTE);
+            }
+
             $this->demoID = $this->demo->id;
             if (isset($this->demo)) 
             {
@@ -443,7 +467,12 @@ class UpdateForm extends Component
      */
     public function redirecToDemo($demoID)
     {
-        //dd(route('demos',['demoID' => $demoID]));
+        if(!auth()->user()->hasPermission(2)){
+            session()->flash('flash.banner', "You do not have permission to edit demo!");
+            session()->flash('flash.bannerStyle', 'danger');
+            return redirect()->route(self::REDIRECT_ROUTE);
+        }
+        
         return redirect()->route('demos',['demoID' => $demoID]);
     }
 

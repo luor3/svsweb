@@ -23,7 +23,7 @@ class Job extends Model
     {
         static::deleting(function ($job) 
         {
-            Storage::disk('public')->deleteDirectory('jobs/'.$job->id);
+            Storage::disk(env('STORAGE_OPTION', 'public'))->deleteDirectory('jobs/'.$job->id);
         });
     }
 }

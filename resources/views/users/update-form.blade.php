@@ -28,11 +28,18 @@
                         </th>
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Status 
+                            @include('backend-order-bar', ['columnName' => 'status'] )
                         </th>
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         </th>
-
+                        <th
+                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        </th>
+                        <th
+                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,6 +74,12 @@
                             </td>
 
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                <span class="{{ $user->status?  'bg-green-200 text-green-600': 'bg-red-200 text-red-600' }} py-1 px-3 rounded-full text-xs">
+                                    {{$user->status? 'active':'inactive'}}
+                                </span>
+                            </td>
+
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                 <x-jet-secondary-button wire:click="registerUser({{$user->id}},false)" wire:loading.attr="disabled">
                                     <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
                                         <path fill-rule="evenodd"
@@ -88,6 +101,18 @@
                                         </svg>
                                         {{ __('Delete') }}
                                     </x-jet-danger-button>
+                                @endif
+                            </td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                @if($user->role == 'admin')
+                                    <x-jet-secondary-button wire:click="registerUserPermission({{$user->id}})" wire:loading.attr="disabled">
+                                        <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
+                                            <path fill-rule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ __('Permission') }}
+                                    </x-jet-secondary-button>
                                 @endif
                             </td>
                         </tr>
@@ -172,6 +197,15 @@
                         <x-jet-input-error for="role" class="mt-2" />
                     </div>
 
+                    <div class="col-span-6 sm:col-span-6 mt-2">
+                        <x-jet-label for="status" value="{{ __('Status') }}" />
+                        <select id="status" wire:model.defer="status" class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg">
+                            <option value="1">active</option>
+                            <option value="0">inactive</option>
+                        </select>
+                        <x-jet-input-error for="status" class="mt-2" />
+                    </div>
+
                 </x-slot>
 
                 <x-slot name="footer">
@@ -186,6 +220,71 @@
                     </x-jet-secondary-button>
 
                     <x-jet-danger-button class="ml-2" wire:click="update" wire:loading.attr="disabled">
+                        {{ __('Save') }}
+                    </x-jet-danger-button>
+          
+                </x-slot>
+            </x-jet-dialog-modal>
+
+            <!-- Updating Confirmation Modal -->
+            <x-jet-dialog-modal wire:model="confirmingPermissionUpdation">
+                <x-slot name="title">
+                    <span class="font-bold uppercase">
+                        {{ __('Updating Admin Permission') }}<br />                       
+                    </span>
+                    <span>
+                        {{__('Unique ID')}}: {{ $user_id }}<br />
+                    </span>
+                </x-slot>
+
+                <x-slot name="content">
+
+                    <div class="max-w-lg mx-auto">
+                    <link rel="stylesheet" href="https://unpkg.com/@themesberg/flowbite@1.1.0/dist/flowbite.min.css" />
+
+
+                        <label for="permission.edit_user" class="flex items-center cursor-pointer relative mb-4">
+                        <input type="checkbox" id="permission.edit_user" class="sr-only" wire:model.defer="permission.edit_user">
+                        <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
+                        <span class="ml-3 text-gray-900 text-sm font-medium">Edit User Permission</span>
+                        </label>
+
+                        <label for="permission.delete_user" class="flex items-center cursor-pointer relative mb-4">
+                        <input type="checkbox" id="permission.delete_user" class="sr-only" checked="" wire:model.defer="permission.delete_user">
+                        <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
+                        <span class="ml-3 text-gray-900 text-sm font-medium">Delete User Permission</span>
+                        </label>
+
+                        <label for="permission.edit_demo" class="flex items-center cursor-pointer relative mb-4">
+                        <input type="checkbox" id="permission.edit_demo" class="sr-only" wire:model.defer="permission.edit_demo">
+                        <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
+                        <span class="ml-3 text-gray-900 text-sm font-medium">Edit Demo Permission</span>
+                        </label>
+
+                        <label for="permission.delete_demo" class="flex items-center cursor-pointer relative mb-4">
+                        <input type="checkbox" id="permission.delete_demo" class="sr-only" wire:model.defer="permission.delete_demo">
+                        <div class="toggle-bg bg-gray-200 border-2 border-gray-200 h-6 w-11 rounded-full"></div>
+                        <span class="ml-3 text-gray-900 text-sm font-medium">Delete Demo Permission</span>
+                        </label>
+
+
+                    </div>     
+                    <script src="https://unpkg.com/@themesberg/flowbite@1.1.0/dist/flowbite.bundle.js"></script>
+
+                </x-slot>
+
+                <x-slot name="footer">
+
+                    <x-jet-action-message class="mr-5 inline-flex font-bold" on="saved">
+                        {{ __('Saved.') }}
+                    </x-jet-action-message>
+
+                    <x-jet-secondary-button wire:click="$toggle('confirmingPermissionUpdation')"
+                        wire:loading.attr="disabled">
+                        {{ __('Cancel') }}
+                    </x-jet-secondary-button>
+
+                    <x-jet-danger-button class="ml-2" wire:click="updatePermission" wire:loading.attr="disabled">
                         {{ __('Save') }}
                     </x-jet-danger-button>
           

@@ -202,39 +202,28 @@ class CreateForm extends Component
         $input_json = [
             'fileName' => []
         ];
+        
+        $input_json = json_decode($this->job->configuration,true);
+
+
         foreach ($this->input_files as $type => $file)
         {
-            $input_json['fileName'][$type] = $file->getClientOriginalName();
-            $input_json[$type] = $file->store('jobs/'.$this->job->id,'public');
+            $input_json['input_file_json']['fileName'][$type] = $file->getClientOriginalName();
+            //$path = $file->storeAs('public/jobs/'.$this->job->id, $file->getClientOriginalName());
+            $input_json['input_file_json'][$type] = $file->storeAs('public/jobs/'.$this->job->id,$file->getClientOriginalName());
+
+            
         }
+        //dd($input_json);
         $input_json = json_encode($input_json);
 
         $output_json = [
             'fileName' => [],
         ];
-        /*
-        foreach ($this->output_files as $file)
-        {
-            $uniqueFileName = Str::uuid().$file->getClientOriginalName();
-            array_push($output_json['fileName'],$uniqueFileName);
-            $output_json[$uniqueFileName] = $file->store('jobs/'.$this->job->id,'public');
-        }
-        $output_json = json_encode($output_json);
 
-        if(isset($this->plot_file))
-        {
-            $this->job->plot_path = $this->plot_file->store('jobs/'.$this->job->id,'public');
-        }
-        */
         $this->job->configuration = $input_json;
         $this->job->status = $this->status; 
 
-        $result = job::find(['id'=>$this->job->id])->toArray();
-        $result[0]['configuration'] = json_decode($result[0]['configuration'],true);
-        $result[0]['configuration']['input_file_json'] = $input_json;
-        $result[0]['configuration']['output_file_json'] = $output_json;
-        $result[0]['configuration'] = json_encode($result[0]['configuration']);
-        $this->job->configuration = $result[0]['configuration'];
         $status = $this->job->save();   
 
         $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
@@ -272,8 +261,8 @@ class CreateForm extends Component
 
         try 
         {   
-
             $this->readFileFrom($this->input_file->getRealPath());
+            //dd($this->input_file->getClientOriginalName());
             $input_file_json = '{ "fileName" : [] }';
             $output_file_json = '{ "fileName" : [] }';
             $input_property_json = json_encode($this->uploadFields);
@@ -306,8 +295,21 @@ class CreateForm extends Component
             return redirect()->route(self::FAIL_ROUTE);
         }
         $this->initInputFiles();
-        $this->next = true;  
+        $this->next = true; 
+
+        $originalname = $this->input_file->getClientOriginalName();
+        //dd($originalname);
         Storage::disk('public')->makeDirectory('jobs/'.$this->job->id);
+        //Storage::disk('public')->put($originalname, $this->input_file,'jobs/'.$this->job->id);
+        $input_file_path = $this->input_file->storeAs('public/jobs/'.$this->job->id, $originalname);
+        $input_json = json_decode($this->job->configuration,true);
+        $fileName_json = json_decode($input_json['input_file_json'] , true);
+        $fileName_json["fileName"]["input"] = $originalname;
+        $input_json['input_file_json'] = $fileName_json;
+
+        $input_json['input_file_json']['input'] = $input_file_path;
+        $this->job->configuration = json_encode($input_json);
+        $this->job->save();
     }
 
 

@@ -73,11 +73,15 @@ class ShowForm extends Component
     **
     **
     */
-    public $job_status = "All";
+    public $job_status = "All Statuses";
+
+    public $job_progress = "All Progresses";
+
+    public $status; // temporary variable to record the status of job 
 
     public $uploadFields = [];
 
-    public $Previosu_status;
+    public $Previosu_status; //used for recording previous progress
 
 
     /**
@@ -254,9 +258,9 @@ class ShowForm extends Component
         {
             $data = Job::find($this->jobID)->toArray();
             $configuration = json_decode($data['configuration']);
-            $this->outputFileJson = json_decode( $configuration->output_file_json, true);
+            //$this->outputFileJson = json_decode( $configuration->output_file_json, true);
             $this->inputFileJson = json_decode( $configuration->input_file_json, true); 
-            (count($this->outputFileJson['fileName']) >= 1  &&
+            (
             count($this->uploadFields) == count($this->inputFileJson['fileName']))?
             $this->displayEditable = true : $this->displayEditable = false;  
 
@@ -269,8 +273,20 @@ class ShowForm extends Component
             {
                 $jobs = $jobs->Where('category_id', $this->categorySearch);
             }
-            if($this->job_status != "All"){
-                $jobs = $jobs->Where('progress', $this->job_status);
+
+            if($this->job_progress != "All Progresses"){
+                $jobs = $jobs->Where('progress', $this->job_progress);
+            }
+
+            if($this->job_status != "All Statuses"){
+                if($this->job_status == 'Yes'){
+                    $this->status = 1;
+                }
+                else
+                {
+                    $this->status = 0;
+                }
+                $jobs = $jobs->Where('jobs.status', $this->status);
             }
 
             if(auth()->user()->role=='user'|| !$this->permission || $this->pathName===route('jobs')){
