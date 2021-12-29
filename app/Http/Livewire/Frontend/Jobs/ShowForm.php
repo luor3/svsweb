@@ -257,11 +257,11 @@ class ShowForm extends Component
         if(isset($this->job) && $this->jobID !== -1)
         {
             $data = Job::find($this->jobID)->toArray();
-            $configuration = json_decode($data['configuration']);
+            $configuration = json_decode($data['configuration'],true);
             //$this->outputFileJson = json_decode( $configuration->output_file_json, true);
-            $this->inputFileJson = json_decode( $configuration->input_file_json, true); 
+            $this->inputFileJson =  json_decode($configuration['input_file_json'],true); 
             (
-            count($this->uploadFields) == count($this->inputFileJson['fileName']))?
+            count($this->uploadFields) == count($this->inputFileJson['fileName'])-1)?
             $this->displayEditable = true : $this->displayEditable = false;  
 
         }
