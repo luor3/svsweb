@@ -34,24 +34,36 @@ class AboutController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function __invoke(Request $request) {
+    public function show(Request $request) {
         // page info
         $findPage = Page::where([['link', '=', $request->getPathInfo()], ['status', '=', 1]])->get()->first();
         $page = !empty($findPage) ? $findPage : self::PAGE_INFO;
-        $students = User::leftjoin('teams', 'users.current_team_id','=','teams.id')->where('teams.id', '=', 1)->get(['users.*','teams.name as team_name']);
-        $supervisors = User::leftjoin('teams', 'users.current_team_id','=','teams.id')->where('teams.id', '=', 2)->get(['users.*','teams.name as team_name']);
+        $students = User::leftjoin('teams', 'users.current_team_id', '=', 'teams.id')->where('teams.id', '=', 1)->get(['users.*', 'teams.name as team_name']);
+        $supervisors = User::leftjoin('teams', 'users.current_team_id', '=', 'teams.id')->where('teams.id', '=', 2)->get(['users.*', 'teams.name as team_name']);
         //dd($users);
         return view(
                 self::TEMPLATE_FILE,
                 [
-                    'students'=>$students,
-                    'supervisors'=>$supervisors,
-                    'app'  => new App(),
-                    'page'=>$page
+                    'students' => $students,
+                    'supervisors' => $supervisors,
+                    'app' => new App(),
+                    'page' => $page
                 ],
         );
     }
-    
-    
 
+    public function getBio(Request $request, $name, $id) {
+        // page info
+        $findPage = Page::where([['link', '=', $request->getPathInfo()], ['status', '=', 1]])->get()->first();
+        $page = !empty($findPage) ? $findPage : self::PAGE_INFO;
+        $user = User::find($id);
+        return view('bio',
+                [
+                    'user' => $user,
+                    'app' => new App(),
+                    'page' => $page
+                ],
+        );
     }
+
+}

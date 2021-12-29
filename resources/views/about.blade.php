@@ -9,7 +9,7 @@
         <div class="flex flex-wrap m-auto"> 
             @foreach ($supervisors as $supervisor)
             <div class="flex flex-col m-5">
-                <a href="/about/{{$supervisor->id}}">
+                <a href="/about/{{Str::slug($supervisor->name)}}/{{$supervisor->id}}">
                     @if($supervisor->profile_photo_path)
                     <img class=""
                          src="{{ asset(Storage::disk('local')->url($supervisor->profile_photo_path)) }}"
@@ -32,10 +32,10 @@
             <div class="flex flex-col m-5">
                 <a href="/about/{{Str::slug($student->name)}}/{{$student->id}}">
                     @if($student->profile_photo_path)
-                    <img class=""
+                    <img class="object-contain"
                          src="{{ asset(Storage::disk('local')->url($student->profile_photo_path)) }}"
                          alt=""
-                         style="width:250px">
+                         style="width:250px; height:375px">
                     @else
                     <img class=""
                          src="https://ui-avatars.com/api/?name={{$student->name}}&color=7F9CF5&background=EBF4FF"

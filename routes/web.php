@@ -34,12 +34,9 @@ Route::get('/demos', GetstartedController::class)->name('demopage');
 
 Route::get('/input-generator', InputGeneratorController::class)->name('input-generator');
 
-Route::get('/about', AboutController::class)->name('aboutpage'); 
+Route::get('/about', [AboutController::class,'show'])->name('aboutpage'); 
 
-Route::get('/about/{name}/{id}', function($name,$id){
-         $user = User::find($id);
-         return view('bio',['user'=>$user]);
-    });
+Route::get('/about/{name}/{id}', [AboutController::class,'getBio'])->name('biopage');
 
 Route::middleware(['auth', 'verified'])->get('/userprofile', UsersProfileController::class)->name('userprofile');
 
