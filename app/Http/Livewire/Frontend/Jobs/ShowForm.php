@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\Category;
 use Livewire\WithPagination;
-
+use App\Http\Controllers\JobsController;
+use App\Models\Settings;
+use SSH;
 class ShowForm extends Component
 {
 
@@ -258,8 +260,10 @@ class ShowForm extends Component
         {
             $data = Job::find($this->jobID)->toArray();
             $configuration = json_decode($data['configuration'],true);
+                        // dd($configuration['input_file_json']);
+
             //$this->outputFileJson = json_decode( $configuration->output_file_json, true);
-            $this->inputFileJson =  json_decode($configuration['input_file_json'],true); 
+            $this->inputFileJson =  $configuration['input_file_json'];
             (
             count($this->uploadFields) == count($this->inputFileJson['fileName'])-1)?
             $this->displayEditable = true : $this->displayEditable = false;  
@@ -474,6 +478,7 @@ class ShowForm extends Component
      */
     public function withdrawJob($jobID)
     {
+        
         $this->job = job::find($jobID);
         if($this->job->progress === 'Pending'||$this->job->progress === 'In Progress'){
             //$this->Previosu_status = $this->job->progress;
@@ -484,11 +489,31 @@ class ShowForm extends Component
             $this->confirmingJobRecover = true; 
         }
         
+        
     }
 
-    public function withdraw(){
+    public function withdraw(){  
         $this->job -> previous_progress = $this->job-> progress;
         $this->job-> progress = 'Cancelled';
+        try {
+            $id =  $this->job->id;
+            $shell_template = Settings::where('name','=','find_solver')->first();
+            // dd($shell->value);
+            $pid_shell = sprintf($shell_template->value, $id);
+            // $id);
+            SSH::run([
+                $pid_shell
+            ], function($line)
+            {
+                SSH::run([
+                    sprintf('kill %s', $line)
+                ], function($line2) {
+                });
+            }
+            );
+        } catch(Exception $e) {
+            dd($e->getMessage());
+        }
         $this->job->save();
         return redirect()->route($this->pathName);
     }
