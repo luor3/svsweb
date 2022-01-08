@@ -1,6 +1,6 @@
 <div>
     @if( $jobID === -1)
-        <div class="{{ $permission == 0 ? 'w-3/4' : ''}}">
+        <div class="mx-auto">
             @include('frontend.jobs.filterBar')
             <table class="text-center min-w-full leading-normal border-4">
                 <thead>

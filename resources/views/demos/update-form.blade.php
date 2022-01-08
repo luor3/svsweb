@@ -226,14 +226,14 @@
                     </svg> 
                     {{ __('Save') }}
                 </x-jet-button>
-            </x-slot>
-        </x-jet-form-section>
+                <div style="text-align: left">
+                    <x-jet-button class="ml-2" onclick="event.preventDefault();" wire:click="clearDemo" wire:loading.attr="disabled">
+                            {{ __('Back') }}
+                    </x-jet-button> 
+                </div> 
 
-        <div>
-           <x-jet-button class="ml-2" wire:click="clearDemo" wire:loading.attr="disabled">
-                    {{ __('Back') }}
-            </x-jet-button> 
-        </div>     
+            </x-slot>
+        </x-jet-form-section> 
     @endif
 </div>
 
