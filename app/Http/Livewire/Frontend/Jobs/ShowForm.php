@@ -233,6 +233,11 @@ class ShowForm extends Component
     public function mount()
     { 
         $this->pathName = request()->route()->getName();
+
+        if($this->pathName != "jobs" && $this->pathName != "jobs.all") {
+            $this->pathName = 'userprofile';
+        }
+
         $categories = Category::all();
         foreach ($categories as $category)
         {
@@ -339,7 +344,8 @@ class ShowForm extends Component
                         $this->inputFileJson[$fileType] = $file->store('jobs/'.$this->job->id,'public');
                     }
                 }
-                $this->job->input_file_json = json_encode($this->inputFileJson);
+                //dd($this->inputFileJson);
+                //$this->job->input_file_json = json_encode($this->inputFileJson);
                 
                 
             } 
@@ -352,8 +358,8 @@ class ShowForm extends Component
             }
             $data = job::find($this->job->id)->toArray();
             $data['configuration'] = json_decode($data['configuration'],true);
-            $data['configuration']['input_file_json'] = $this->job->input_file_json;
-            unset($this->job->input_file_json);
+            $data['configuration']['input_file_json'] = $this->inputFileJson;
+            unset($this->inputFileJson);
 
             if(!empty($this->job->output_file_json)){
             //  $data['configuration'] = json_decode($data['configuration'],true);
@@ -386,7 +392,10 @@ class ShowForm extends Component
                                                   
             if ($deleted) 
             {    
-                return redirect()->route($this->pathName);
+                if($this->pathName == 'userprofile')
+                    return redirect()->route($this->pathName, ['currentModule' => "jobs"]);
+                else
+                    return redirect()->route($this->pathName);
             }
         }
     }
@@ -418,8 +427,8 @@ class ShowForm extends Component
                 $this->jobAttr['category_id'] = $this->job->category_id;
                 $this->jobAttr['status'] = $this->job->status;
 
-                $configuration = json_decode($this->job->configuration);
-                $this->uploadFields = json_decode($configuration->input_property_json,true);
+                $configuration = json_decode($this->job->configuration, true);
+                $this->uploadFields = $configuration["input_property_json"];
                 foreach ($this->uploadFields as $fileType => $extension){
                     $this->inputFiles[$fileType] = null;
                 }       
@@ -467,7 +476,19 @@ class ShowForm extends Component
      */
     public function redirecToJob($jobID)
     {   
-        return redirect()->route($this->pathName , ['jobID' => $jobID]);
+        // $this->job = job::find($jobID);
+        // $this->jobID = $jobID;
+        // $this->mount();
+        //dd($this->pathName);
+
+        $parameter = [
+            'currentModule' => "jobs",
+            'jobID' => $jobID
+        ];
+        if($this->pathName == 'userprofile')
+            return redirect()->route($this->pathName , $parameter);
+        else
+            return redirect()->route($this->pathName , ['jobID' => $jobID]);
     }
 
     /*

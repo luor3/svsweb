@@ -262,14 +262,12 @@ class CreateForm extends Component
         try 
         {   
             $this->readFileFrom($this->input_file->getRealPath());
-            //dd($this->input_file->getClientOriginalName());
             $input_file_json = '{ "fileName" : [] }';
             $output_file_json = '{ "fileName" : [] }';
-            $input_property_json = json_encode($this->uploadFields);
             $map = [
             'input_file_json'=>$input_file_json,
             'output_file_json'=>$output_file_json,
-            'input_property_json'=>$input_property_json,
+            'input_property_json'=>$this->uploadFields,
            ];
            $data['configuration'] = json_encode($map);
                       
