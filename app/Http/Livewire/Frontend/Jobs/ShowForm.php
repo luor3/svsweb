@@ -260,9 +260,7 @@ class ShowForm extends Component
         {
             $data = Job::find($this->jobID)->toArray();
             $configuration = json_decode($data['configuration'],true);
-                        // dd($configuration['input_file_json']);
 
-            //$this->outputFileJson = json_decode( $configuration->output_file_json, true);
             $this->inputFileJson =  $configuration['input_file_json'];
             (
             count($this->uploadFields) == count($this->inputFileJson['fileName'])-1)?
