@@ -233,6 +233,11 @@ class ShowForm extends Component
     public function mount()
     { 
         $this->pathName = request()->route()->getName();
+
+        if($this->pathName != "jobs" && $this->pathName != "jobs.all") {
+            $this->pathName = 'userprofile';
+        }
+
         $categories = Category::all();
         foreach ($categories as $category)
         {
@@ -387,7 +392,10 @@ class ShowForm extends Component
                                                   
             if ($deleted) 
             {    
-                return redirect()->route($this->pathName);
+                if($this->pathName == 'userprofile')
+                    return redirect()->route($this->pathName, ['currentModule' => "jobs"]);
+                else
+                    return redirect()->route($this->pathName);
             }
         }
     }
@@ -468,7 +476,19 @@ class ShowForm extends Component
      */
     public function redirecToJob($jobID)
     {   
-        return redirect()->route($this->pathName , ['jobID' => $jobID]);
+        // $this->job = job::find($jobID);
+        // $this->jobID = $jobID;
+        // $this->mount();
+        //dd($this->pathName);
+
+        $parameter = [
+            'currentModule' => "jobs",
+            'jobID' => $jobID
+        ];
+        if($this->pathName == 'userprofile')
+            return redirect()->route($this->pathName , $parameter);
+        else
+            return redirect()->route($this->pathName , ['jobID' => $jobID]);
     }
 
     /*
