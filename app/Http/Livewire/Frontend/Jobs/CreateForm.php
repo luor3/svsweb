@@ -123,13 +123,13 @@ class CreateForm extends Component
     /**
      * @var string Redirect parent route name
      */
-    const REDIRECT_ROUTE = 'jobs';
+    const REDIRECT_ROUTE = 'userprofile';
 
 
     /**
      * @var string Redirect to itself
      */
-    const FAIL_ROUTE = 'jobs.create';
+    const FAIL_ROUTE = 'userprofile';
 
     /**
      * initilize properties
@@ -234,7 +234,7 @@ class CreateForm extends Component
         
         if ($status) 
         {    
-            return redirect()->route(self::REDIRECT_ROUTE);
+            return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
         }
 
     }
