@@ -93,7 +93,7 @@
                                 <button class="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'?  'bg-red-200 hover:border-red-600 hover:bg-red-500':'bg-green-200 hover:border-green-600 hover:bg-green-500'}} text-gray-800 font-bold rounded hover:text-white py-1 px-2 inline-flex items-center" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
                                     @if($myJob->progress === 'Pending' || $myJob->progress === 'In Progress')
                                         
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <svg xmlns="htdeletetp://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                             <path fill="currentcolor" 
                                                 d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
                                         </svg>
@@ -126,6 +126,22 @@
                                     </svg>
                                     {{ __('Delete') }}
                                 </x-jet-danger-button>
+                            </td>
+
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            @if($myJob->progress === 'Completed')
+                                <x-jet-button class="ml-2" wire:click="downloadFile({{$myJob->id }}, false)"
+                                    wire:loading.attr="disabled"
+                                    style="background-color:green" >
+                                    {{ __('Downloads') }}
+                                </x-jet-button>
+                            @else
+                            <x-jet-button class="ml-2"
+                                    wire:loading.attr="disabled"
+                                    style="background-color:gray" disabled>
+                                    {{ __('Downloads') }}
+                                </x-jet-button>
+                            @endif
                             </td>
                         </tr>
                     @endforeach

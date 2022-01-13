@@ -12,6 +12,9 @@ use App\Models\Category;
 use Livewire\WithPagination;
 use App\Http\Controllers\JobsController;
 use App\Models\Settings;
+use phpseclib\Net\SFTP;
+use \ZipStream\Option\Archive;
+use \ZipStream\ZipStream;
 use SSH;
 class ShowForm extends Component
 {
@@ -560,4 +563,57 @@ class ShowForm extends Component
         }
     }
 
+    public function downloadFile($jobID, $isInput)
+    {
+
+        // dd($jobID);
+        try {
+            $this->job = job::find($jobID);
+            if($this->job->progress == 'Completed') {
+                $output_name = sprintf("%d_output.zip", $jobID);
+
+                $sftp = new SFTP('ece-e3-516-f.eng.umanitoba.ca');
+                if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
+                    exit('Login Failed');
+                }
+                $path = '/home/mohamm60/solver/__OUTPUT';
+                $sftp->chdir($path);
+                $files = $sftp->nlist(".");
+                $local_path = "public";
+                foreach ($files as $file) {
+                    if($file != ".." && $file != ".") {
+                        $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
+                    }
+                }
+                return response()->streamDownload(function () use($output_name, $local_path, $files)
+                {
+                    $options = new Archive();
+                    $options->setSendHttpHeaders(false);
+                    $zip = new ZipStream( $output_name, $options);
+                    foreach ($files as $file) {
+                        if($file != ".." && $file != ".") {
+                            $zip->addFileFromPath($file,$local_path);
+                        }
+                    }
+                    $zip->finish();
+                }, $output_name);
+            }
+        }
+        catch(Exception $e) {
+            dd($e->getMessage());
+        }
+        // return response()->streamDownload(function () use($file_json,$isInput) 
+        // {
+        //     $options = new Archive();
+        //     $options->setSendHttpHeaders(false);
+        //     $zip = new ZipStream( $isInput ? "input.zip" : "output.zip", $options);
+        //     foreach ($file_json['fileName'] as $fileType => $fileName)
+        //     {
+        //         $zip->addFileFromPath($isInput ? $fileName : substr($fileName, 36), 
+        //             Storage::disk('public')->path($file_json[$isInput ? $fileType : $fileName])
+        //         );
+        //     }
+        //     $zip->finish();
+        // }, $isInput ? "input.zip" : "output.zip");
+    }
 }
