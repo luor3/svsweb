@@ -31,12 +31,10 @@ class Kernel extends ConsoleKernel
             $sftp = new SFTP('ece-e3-516-f.eng.umanitoba.ca');
             if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
                 exit('Login Failed');
-            }
-            //DB::enableQueryLog();
+            }          
             //$files = Job::where('progress','=','pending')->orderBy('created_at')->get();
             $files = Job::where('progress', '=', 'pending')->orderBy('created_at', 'desc')->get();
             //$files = Job::all();
-            //dd($files);
             foreach ($files as $f) {
                 $file = $f->configuration;
                 $data = json_decode($file, true);

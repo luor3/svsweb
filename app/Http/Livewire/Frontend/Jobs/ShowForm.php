@@ -576,7 +576,7 @@ class ShowForm extends Component
                 if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
                     exit('Login Failed');
                 }
-                $path = '/home/mohamm60/solver/__OUTPUT';
+                $path = '/home/mohamm60/solver/_OUTPUT';
                 $sftp->chdir($path);
                 $files = $sftp->nlist(".");
                 $local_path = "public";
