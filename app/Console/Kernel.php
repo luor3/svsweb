@@ -69,23 +69,26 @@ class Kernel extends ConsoleKernel
                     $sftp->mkdir($wave_dir);
                     $sftp->put($wave_dir.'/'.$fileName, $file, 8);
                 }
-                //dd($filename);
+                
                 if (isset($filename['mlr'])) {
                     $filePath = storage_path('app/' . $filename['mlr']);
                     $file = fopen($filePath, 'r');
                     $fileName = basename($filePath);
-                    $sftp->put($fileName, $file, 8);
+                    $mlr_dir = 'mlr';
+                    $sftp->mkdir($mlr_dir);                
+                    $sftp->put($mlr_dir.'/'.$fileName, $file, 8);
                 }
                 if (isset($filename['FieldPoints'])) {
                     $filePath = storage_path('app/' . $filename['FieldPoints']);
                     $file = fopen($filePath, 'r');
                     $fileName = basename($filePath);
-                    $sftp->put($fileName, $file, 8);
+                    $FieldPoints_dir = 'FieldPoints';
+                    $sftp->mkdir($FieldPoints_dir);
+                    $sftp->put( $FieldPoints_dir.'/'.$fileName, $file, 8);
                 }
                 if ($filename['input']) {
 
                     $sftp->chdir("..");
-
                     $filePath = storage_path('app/' . $filename['input']);
                     $file = fopen($filePath, 'r');
                     $fileName = basename($filePath);
@@ -95,7 +98,7 @@ class Kernel extends ConsoleKernel
 
                 $f->progress = 'In Progress';
                 $f->save();
-                //dd($f->progress);
+                
             }
         })->everyMinute();
     }
