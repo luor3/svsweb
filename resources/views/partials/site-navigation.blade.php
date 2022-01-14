@@ -25,7 +25,7 @@
             @if (Route::has('login'))
                 @auth
                     <x-site-link href="{{ url('/userprofile') }}" :active="request()->getPathInfo() == '/userprofile'">
-                        Profile Setting
+                        User Home
                     </x-site-link>
                     <form class="block lg:inline-block text-white bg-red-500 hover:bg-red-900 rounded-lg mr-3" method="POST" action="{{ route('logout') }}">
                         @csrf

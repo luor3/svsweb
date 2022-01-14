@@ -123,13 +123,13 @@ class CreateForm extends Component
     /**
      * @var string Redirect parent route name
      */
-    const REDIRECT_ROUTE = 'jobs';
+    const REDIRECT_ROUTE = 'userprofile';
 
 
     /**
      * @var string Redirect to itself
      */
-    const FAIL_ROUTE = 'jobs.create';
+    const FAIL_ROUTE = 'userprofile';
 
     /**
      * initilize properties
@@ -234,7 +234,7 @@ class CreateForm extends Component
         
         if ($status) 
         {    
-            return redirect()->route(self::REDIRECT_ROUTE);
+            return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
         }
 
     }
@@ -262,14 +262,12 @@ class CreateForm extends Component
         try 
         {   
             $this->readFileFrom($this->input_file->getRealPath());
-            //dd($this->input_file->getClientOriginalName());
             $input_file_json = '{ "fileName" : [] }';
             $output_file_json = '{ "fileName" : [] }';
-            $input_property_json = json_encode($this->uploadFields);
             $map = [
             'input_file_json'=>$input_file_json,
             'output_file_json'=>$output_file_json,
-            'input_property_json'=>$input_property_json,
+            'input_property_json'=>$this->uploadFields,
            ];
            $data['configuration'] = json_encode($map);
                       

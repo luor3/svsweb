@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\Category;
 use Livewire\WithPagination;
-
+use App\Http\Controllers\JobsController;
+use App\Models\Settings;
+use phpseclib\Net\SFTP;
+use \ZipStream\Option\Archive;
+use \ZipStream\ZipStream;
+use SSH;
 class ShowForm extends Component
 {
 
@@ -231,6 +236,11 @@ class ShowForm extends Component
     public function mount()
     { 
         $this->pathName = request()->route()->getName();
+
+        if($this->pathName != "jobs" && $this->pathName != "jobs.all") {
+            $this->pathName = 'userprofile';
+        }
+
         $categories = Category::all();
         foreach ($categories as $category)
         {
@@ -258,8 +268,8 @@ class ShowForm extends Component
         {
             $data = Job::find($this->jobID)->toArray();
             $configuration = json_decode($data['configuration'],true);
-            //$this->outputFileJson = json_decode( $configuration->output_file_json, true);
-            $this->inputFileJson =  json_decode($configuration['input_file_json'],true); 
+
+            $this->inputFileJson =  $configuration['input_file_json'];
             (
             count($this->uploadFields) == count($this->inputFileJson['fileName'])-1)?
             $this->displayEditable = true : $this->displayEditable = false;  
@@ -337,7 +347,8 @@ class ShowForm extends Component
                         $this->inputFileJson[$fileType] = $file->store('jobs/'.$this->job->id,'public');
                     }
                 }
-                $this->job->input_file_json = json_encode($this->inputFileJson);
+                //dd($this->inputFileJson);
+                //$this->job->input_file_json = json_encode($this->inputFileJson);
                 
                 
             } 
@@ -350,8 +361,8 @@ class ShowForm extends Component
             }
             $data = job::find($this->job->id)->toArray();
             $data['configuration'] = json_decode($data['configuration'],true);
-            $data['configuration']['input_file_json'] = $this->job->input_file_json;
-            unset($this->job->input_file_json);
+            $data['configuration']['input_file_json'] = $this->inputFileJson;
+            unset($this->inputFileJson);
 
             if(!empty($this->job->output_file_json)){
             //  $data['configuration'] = json_decode($data['configuration'],true);
@@ -384,7 +395,10 @@ class ShowForm extends Component
                                                   
             if ($deleted) 
             {    
-                return redirect()->route($this->pathName);
+                if($this->pathName == 'userprofile')
+                    return redirect()->route($this->pathName, ['currentModule' => "jobs"]);
+                else
+                    return redirect()->route($this->pathName);
             }
         }
     }
@@ -416,8 +430,8 @@ class ShowForm extends Component
                 $this->jobAttr['category_id'] = $this->job->category_id;
                 $this->jobAttr['status'] = $this->job->status;
 
-                $configuration = json_decode($this->job->configuration);
-                $this->uploadFields = json_decode($configuration->input_property_json,true);
+                $configuration = json_decode($this->job->configuration, true);
+                $this->uploadFields = $configuration["input_property_json"];
                 foreach ($this->uploadFields as $fileType => $extension){
                     $this->inputFiles[$fileType] = null;
                 }       
@@ -465,7 +479,19 @@ class ShowForm extends Component
      */
     public function redirecToJob($jobID)
     {   
-        return redirect()->route($this->pathName , ['jobID' => $jobID]);
+        // $this->job = job::find($jobID);
+        // $this->jobID = $jobID;
+        // $this->mount();
+        //dd($this->pathName);
+
+        $parameter = [
+            'currentModule' => "jobs",
+            'jobID' => $jobID
+        ];
+        if($this->pathName == 'userprofile')
+            return redirect()->route($this->pathName , $parameter);
+        else
+            return redirect()->route($this->pathName , ['jobID' => $jobID]);
     }
 
     /*
@@ -474,6 +500,7 @@ class ShowForm extends Component
      */
     public function withdrawJob($jobID)
     {
+        
         $this->job = job::find($jobID);
         if($this->job->progress === 'Pending'||$this->job->progress === 'In Progress'){
             //$this->Previosu_status = $this->job->progress;
@@ -484,11 +511,31 @@ class ShowForm extends Component
             $this->confirmingJobRecover = true; 
         }
         
+        
     }
 
-    public function withdraw(){
+    public function withdraw(){  
         $this->job -> previous_progress = $this->job-> progress;
         $this->job-> progress = 'Cancelled';
+        try {
+            $id =  $this->job->id;
+            $shell_template = Settings::where('name','=','find_solver')->first();
+            // dd($shell->value);
+            $pid_shell = sprintf($shell_template->value, $id);
+            // $id);
+            SSH::run([
+                $pid_shell
+            ], function($line)
+            {
+                SSH::run([
+                    sprintf('kill %s', $line)
+                ], function($line2) {
+                });
+            }
+            );
+        } catch(Exception $e) {
+            dd($e->getMessage());
+        }
         $this->job->save();
         return redirect()->route($this->pathName);
     }
@@ -516,4 +563,57 @@ class ShowForm extends Component
         }
     }
 
+    public function downloadFile($jobID, $isInput)
+    {
+
+        // dd($jobID);
+        try {
+            $this->job = job::find($jobID);
+            if($this->job->progress == 'Completed') {
+                $output_name = sprintf("%d_output.zip", $jobID);
+
+                $sftp = new SFTP('ece-e3-516-f.eng.umanitoba.ca');
+                if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
+                    exit('Login Failed');
+                }
+                $path = '/home/mohamm60/solver/_OUTPUT';
+                $sftp->chdir($path);
+                $files = $sftp->nlist(".");
+                $local_path = "public";
+                foreach ($files as $file) {
+                    if($file != ".." && $file != ".") {
+                        $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
+                    }
+                }
+                return response()->streamDownload(function () use($output_name, $local_path, $files)
+                {
+                    $options = new Archive();
+                    $options->setSendHttpHeaders(false);
+                    $zip = new ZipStream( $output_name, $options);
+                    foreach ($files as $file) {
+                        if($file != ".." && $file != ".") {
+                            $zip->addFileFromPath($file,$local_path);
+                        }
+                    }
+                    $zip->finish();
+                }, $output_name);
+            }
+        }
+        catch(Exception $e) {
+            dd($e->getMessage());
+        }
+        // return response()->streamDownload(function () use($file_json,$isInput) 
+        // {
+        //     $options = new Archive();
+        //     $options->setSendHttpHeaders(false);
+        //     $zip = new ZipStream( $isInput ? "input.zip" : "output.zip", $options);
+        //     foreach ($file_json['fileName'] as $fileType => $fileName)
+        //     {
+        //         $zip->addFileFromPath($isInput ? $fileName : substr($fileName, 36), 
+        //             Storage::disk('public')->path($file_json[$isInput ? $fileType : $fileName])
+        //         );
+        //     }
+        //     $zip->finish();
+        // }, $isInput ? "input.zip" : "output.zip");
+    }
 }

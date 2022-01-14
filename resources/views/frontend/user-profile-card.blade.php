@@ -39,34 +39,6 @@
                     <p class="text-xs text-gray-500">Submit your jobs now!</p>
                 </div>
             </a>
-            <!-- <a href="#" class="px-4 py-2 hover:bg-gray-100 flex">
-                <div class="text-gray-800">
-                    <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                        strokeWidth="1" viewBox="0 0 24 24" class="w-5 h-5">
-                        <path
-                            d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="pl-3">
-                    <p class="text-sm font-medium text-gray-800 leading-none">Personal settings</p>
-                    <p class="text-xs text-gray-500">Email, profile, notifications</p>
-                </div>
-            </a>
-            <a href="#" class="px-4 py-2 hover:bg-gray-100 flex">
-                <div class="text-green-600">
-                    <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                        strokeWidth="1" viewBox="0 0 24 24" class="w-5 h-5">
-                        <path
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                    </svg>
-                </div>
-                <div class="pl-3">
-                    <p class="text-sm font-medium text-gray-800 leading-none">
-                        Apps &amp; integrations
-                    </p>
-                    <p class="text-xs text-gray-500">Google, slack, mail</p>
-                </div>
-            </a> -->
         </div>
         <div class="p-1 text-center">
             <form class="block lg:inline-block text-white bg-red-500 hover:bg-red-900 rounded-lg" method="POST" action="{{ route('logout') }}">
