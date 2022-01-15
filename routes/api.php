@@ -65,19 +65,12 @@ Route::get('/users', function (Request $request) {
         $file = $f->configuration;
         $data = json_decode($file, true);
         $filename = $data['input_file_json'];
-        $dir = $f->id;
+        //$dir = $f->id;
+        $dir = 'solver/__INPUT';
         $sftp->mkdir("$dir");
         $sftp->chdir("$dir");
 
 
-        if($filename['input']){
-
-            $filePath = storage_path('app/'.$filename['input']);
-            $file = fopen($filePath, 'r');
-            $fileName = basename($filePath);
-            $sftp->put($fileName, $file, 8);
-
-        }
         if($filename['materials']){
             $filePath = storage_path('app/'.$filename['materials']);
             $file = fopen($filePath, 'r');
@@ -113,6 +106,16 @@ Route::get('/users', function (Request $request) {
             $fileName = basename($filePath);
             $sftp->put($fileName, $file, 8);
 
+
+        }
+        if($filename['input']){
+            
+            $sftp->chdir("..");
+            
+            $filePath = storage_path('app/'.$filename['input']);
+            $file = fopen($filePath, 'r');
+            $fileName = basename($filePath);
+            $sftp->put($fileName, $file, 8);
 
         }
         $sftp->chdir('..');

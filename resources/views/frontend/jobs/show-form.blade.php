@@ -88,9 +88,7 @@
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="20" viewBox="0 0 20 20">
                                                 <path fill="currentcolor" 
                                                     d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-                                            </svg>
-                                            
-                                            
+                                            </svg>                     
                                         
                                         @elseif($myJob->progress === 'Cancelled')                                            
                                             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="20" viewBox="0 0 20 20">
@@ -116,6 +114,20 @@
                                     </svg>
                                    
                                 </x-jet-danger-button>
+
+                                @if($myJob->progress === 'Completed')
+                                <x-jet-button class="ml-2" wire:click="downloadFile({{$myJob->id }}, false)"
+                                    wire:loading.attr="disabled"
+                                    style="background-color:green" >
+                                    {{ __('Downloads') }}
+                                </x-jet-button>
+                                @else
+                                <x-jet-button class="ml-2"
+                                        wire:loading.attr="disabled"
+                                        style="background-color:gray" disabled>
+                                        {{ __('Downloads') }}
+                                    </x-jet-button>
+                                @endif
 
                             </td>
                         </tr>
