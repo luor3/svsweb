@@ -48,6 +48,7 @@
                         </td>
 
                         <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
+                            @if(auth()->user()->hasPermission(2))
                             <x-jet-secondary-button wire:click="redirecToDemo( {{ $myDemo->id }} )" wire:loading.attr="disabled">
                                 <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
                                     <path fill-rule="evenodd"
@@ -56,8 +57,10 @@
                                 </svg>
                                 {{ __('Edit') }}
                             </x-jet-secondary-button>
+                            @endif
                         </td>
                         <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
+                            @if(auth()->user()->hasPermission(3))
                             <x-jet-danger-button class="ml-2" wire:click="registerDemo({{ $myDemo->id }},true)"
                                 wire:loading.attr="disabled">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
@@ -68,6 +71,7 @@
                                 </svg>
                                 {{ __('Delete') }}
                             </x-jet-danger-button>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

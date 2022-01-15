@@ -80,6 +80,7 @@
                             </td>
 
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                @if(auth()->user()->hasPermission(0))
                                 <x-jet-secondary-button wire:click="registerUser({{$user->id}},false)" wire:loading.attr="disabled">
                                     <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
                                         <path fill-rule="evenodd"
@@ -88,9 +89,10 @@
                                     </svg>
                                     {{ __('Edit') }}
                                 </x-jet-secondary-button>
+                                @endif
                             </td>
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                @if(auth()->user()->id !== $user->id)
+                                @if(auth()->user()->id !== $user->id && auth()->user()->hasPermission(1))
                                     <x-jet-danger-button class="ml-2" wire:click="registerUser({{$user->id}},true)"
                                         wire:loading.attr="disabled">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
