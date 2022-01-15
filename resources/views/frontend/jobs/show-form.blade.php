@@ -1,6 +1,6 @@
 <div>
     @if( $jobID === -1)
-        <div class="mx-auto">
+        <div class="mx-auto overflow-auto">
             @include('frontend.jobs.filterBar')
             <table class="text-center min-w-full leading-normal border-4">
                 <thead>
@@ -51,12 +51,6 @@
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         </th>
-                        <th
-                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        </th>
-                        <th
-                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        </th>
 
                     </tr>
                 </thead>
@@ -76,56 +70,53 @@
                                     {{$myJob->status?'Yes':'No' }}
                                 </span>
                             </td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <td class="flex justify-around px-5 py-5 border-b border-gray-200 bg-white text-sm">
 
-                                <x-jet-secondary-button wire:click="redirecToJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
-                                    <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
+                                <x-jet-secondary-button title="Edit" wire:click="redirecToJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
+                                    <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
                                         <path fill-rule="evenodd"
                                             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                             clip-rule="evenodd"></path>
                                     </svg>
-                                    {{ __('Edit') }}
-                                </x-jet-secondary-button>
-                            </td>
-
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            @if($myJob->progress === 'Pending' || $myJob->progress === 'Cancelled' || $myJob->progress === 'In Progress' )
-                                <button class="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'?  'bg-red-200 hover:border-red-600 hover:bg-red-500':'bg-green-200 hover:border-green-600 hover:bg-green-500'}} text-gray-800 font-bold rounded hover:text-white py-1 px-2 inline-flex items-center" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
-                                    @if($myJob->progress === 'Pending' || $myJob->progress === 'In Progress')
-                                        
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                            <path fill="currentcolor" 
-                                                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-                                        </svg>
-                                        {{ __('Withdraw') }}
-                                        
                                     
-                                    @elseif($myJob->progress === 'Cancelled')                                            
-                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                                                <path style="fill:#030104;" d="M12.229,0.003c-0.01,0-0.014,0-0.018,0c-0.008,0-0.008,0-0.01,0
-                                                    c0,0,0,0-0.003,0l0,0c-0.003,0-0.007,0-0.011,0c-0.002,0-0.002,0-0.002,0s0,0-0.004,0c-0.027-0.006-0.035-0.002-0.055-0.002
-                                                    c-3.203,0-6.319,1.27-8.622,3.503L0.972,0.933c-0.123-0.12-0.309-0.158-0.461-0.094c-0.159,0.068-0.265,0.22-0.265,0.394v8.348
-                                                    c0,0.235,0.191,0.425,0.423,0.425h8.246c0.005,0,0.014,0,0.02,0c0.234,0,0.424-0.189,0.424-0.425c0-0.156-0.085-0.294-0.212-0.367
-                                                    L6.646,6.683c1.483-1.432,3.418-2.216,5.54-2.216c4.33,0.028,7.857,3.573,7.857,7.975c-0.033,4.326-3.58,7.847-7.98,7.847
-                                                    l0.01,4.468h0.061c6.779,0,12.333-5.518,12.377-12.376C24.511,5.606,19.007,0.06,12.229,0.003z"/>
-                                        </svg>
-                                        {{ __('Recover') }}  
-                                    @endif                                      
-                                </button>
-                                @endif
-                            </td>
+                                </x-jet-secondary-button>
 
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                <x-jet-danger-button class="ml-2" wire:click="registerJob({{$myJob->id }},true)"
+                                @if($myJob->progress === 'Pending' || $myJob->progress === 'Cancelled' || $myJob->progress === 'In Progress' )
+                                    <x-jet-secondary-button title="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'? 'Withdraw Job' : 'Recover Job' }}" class="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'?  'bg-red-200 hover:border-red-600 hover:bg-red-500':'bg-green-200 hover:border-green-600 hover:bg-green-500'}} text-gray-800 font-bold rounded hover:text-white py-1 px-2 inline-flex items-center" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
+                                        @if($myJob->progress === 'Pending' || $myJob->progress === 'In Progress')
+                                            
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="20" viewBox="0 0 20 20">
+                                                <path fill="currentcolor" 
+                                                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+                                            </svg>
+                                            
+                                            
+                                        
+                                        @elseif($myJob->progress === 'Cancelled')                                            
+                                            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="20" viewBox="0 0 20 20">
+                                                    <path style="fill:#030104;" d="M12.229,0.003c-0.01,0-0.014,0-0.018,0c-0.008,0-0.008,0-0.01,0
+                                                        c0,0,0,0-0.003,0l0,0c-0.003,0-0.007,0-0.011,0c-0.002,0-0.002,0-0.002,0s0,0-0.004,0c-0.027-0.006-0.035-0.002-0.055-0.002
+                                                        c-3.203,0-6.319,1.27-8.622,3.503L0.972,0.933c-0.123-0.12-0.309-0.158-0.461-0.094c-0.159,0.068-0.265,0.22-0.265,0.394v8.348
+                                                        c0,0.235,0.191,0.425,0.423,0.425h8.246c0.005,0,0.014,0,0.02,0c0.234,0,0.424-0.189,0.424-0.425c0-0.156-0.085-0.294-0.212-0.367
+                                                        L6.646,6.683c1.483-1.432,3.418-2.216,5.54-2.216c4.33,0.028,7.857,3.573,7.857,7.975c-0.033,4.326-3.58,7.847-7.98,7.847
+                                                        l0.01,4.468h0.061c6.779,0,12.333-5.518,12.377-12.376C24.511,5.606,19.007,0.06,12.229,0.003z"/>
+                                            </svg>
+                                             
+                                        @endif                                      
+                                    </x-jet-secondary-button>
+                                @endif
+
+                                <x-jet-danger-button title="Delete This Job" wire:click="registerJob({{$myJob->id }},true)"
                                     wire:loading.attr="disabled">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
+                                    <svg fill="currentColor" width="20" height="20" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd"
                                             d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                                             clip-rule="evenodd"></path>
                                     </svg>
-                                    {{ __('Delete') }}
+                                   
                                 </x-jet-danger-button>
+
                             </td>
                         </tr>
                     @endforeach

@@ -32,7 +32,7 @@
         </x-slot>
     </x-jet-form-section>
     @else
-    <x-jet-form-section submit="registerJob">
+    <x-form-section submit="registerJob">
         
         <x-slot name="title">
             {{ __('New Job') }}
@@ -91,6 +91,6 @@
                 {{ __('Next') }}
             </x-jet-button>
         </x-slot>
-    </x-jet-form-section>
+    </x-form-section>
     @endif
 </div>
