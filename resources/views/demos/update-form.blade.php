@@ -29,49 +29,44 @@
                     <th
                         class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     </th>
-                    <th
-                        class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    </th>
 
                 </tr>
             </thead>
             <tbody>
                 @foreach ($demos as $myDemo)
-                    <tr>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->id }}</td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->name }}</td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $myDemo->category_name }}</td>
-                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <tr class="bg-white">
+                        <td class="px-5 py-5 border-b border-gray-200 text-sm">{{ $myDemo->id }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 text-sm">{{ $myDemo->name }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 text-sm">{{ $myDemo->category_name }}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 text-sm">
                             <span class="{{ $myDemo->status?  'bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs': 'bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs' }} py-1 px-3 rounded-full text-xs">
                                 {{$myDemo->status?'Yes':'No' }}
                             </span>
                         </td>
 
-                        <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
-                            @if(auth()->user()->hasPermission(2))
-                            <x-jet-secondary-button wire:click="redirecToDemo( {{ $myDemo->id }} )" wire:loading.attr="disabled">
-                                <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                {{ __('Edit') }}
-                            </x-jet-secondary-button>
-                            @endif
-                        </td>
-                        <td class="px-1 py-5 border-b border-gray-200 bg-white text-sm">
-                            @if(auth()->user()->hasPermission(3))
-                            <x-jet-danger-button class="ml-2" wire:click="registerDemo({{ $myDemo->id }},true)"
-                                wire:loading.attr="disabled">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                {{ __('Delete') }}
-                            </x-jet-danger-button>
-                            @endif
+                        <td class="px-5 py-5 border-b border-gray-200 text-sm">
+
+
+                            <div class="flex justify-center">
+
+                                @if(auth()->user()->hasPermission(2))
+                                <button class="inline-flex items-center px-1 py-1 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition" title="Edit Demo" wire:click="redirecToDemo( {{ $myDemo->id }} )" wire:loading.attr="disabled">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </button>
+                                @endif
+
+                                @if(auth()->user()->hasPermission(3))
+                                <button class="ml-2 inline-flex items-center px-1 py-1 border border-red-300 rounded-md bg-red-500 font-semibold text-xs text-white tracking-widest shadow-sm hover:bg-red-300 focus:outline-none focus:ring disabled:opacity-25 transition" title="Delete This Demo" wire:click="registerDemo({{ $myDemo->id }},true)"
+                                    wire:loading.attr="disabled">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                                @endif
+
+                            </div>
                         </td>
                     </tr>
                 @endforeach

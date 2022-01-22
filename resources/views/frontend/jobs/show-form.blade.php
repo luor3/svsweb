@@ -56,79 +56,73 @@
                 </thead>
                 <tbody>
                     @foreach ($jobs as $myJob)
-                        <tr>                    
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->id}}</td>
+                        <tr class="bg-white">                    
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">{{$myJob->id}}</td>
                             @if($permission == 1)
-                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->user_name}}</td>
+                                <td class="px-5 py-5 border-b border-gray-200 text-sm">{{$myJob->user_name}}</td>
                             @endif
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->name}}</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$this->categories[$myJob->category_id]}}</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->progress}}</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{$myJob->created_at}}</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">{{$myJob->name}}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">{{$this->categories[$myJob->category_id]}}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">{{$myJob->progress}}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">{{$myJob->created_at}}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">
                                 <span class="{{ $myJob->status?  'bg-green-200 text-green-600 py-1 px-3 rounded-full text-xs': 'bg-red-200 text-red-600 py-1 px-3 rounded-full text-xs' }} py-1 px-3 rounded-full text-xs">
                                     {{$myJob->status?'Yes':'No' }}
                                 </span>
                             </td>
-                            <td class="flex justify-around px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">
+                                <div class="flex justify-around">
 
-                                <x-jet-secondary-button title="Edit" wire:click="redirecToJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
-                                    <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
-                                        <path fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd"></path>
+                                    <button class="inline-flex items-center px-1 py-1 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:ring focus:ring-blue-200 active:text-gray-800 active:bg-gray-50 disabled:opacity-25 transition" title="Edit" wire:click="redirecToJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
-                                    
-                                </x-jet-secondary-button>
-
-                                @if($myJob->progress === 'Pending' || $myJob->progress === 'Cancelled' || $myJob->progress === 'In Progress' )
-                                    <x-jet-secondary-button title="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'? 'Withdraw Job' : 'Recover Job' }}" class="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'?  'bg-red-200 hover:border-red-600 hover:bg-red-500':'bg-green-200 hover:border-green-600 hover:bg-green-500'}} text-gray-800 font-bold rounded hover:text-white py-1 px-2 inline-flex items-center" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
-                                        @if($myJob->progress === 'Pending' || $myJob->progress === 'In Progress')
-                                            
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="20" viewBox="0 0 20 20">
-                                                <path fill="currentcolor" 
-                                                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-                                            </svg>                     
                                         
-                                        @elseif($myJob->progress === 'Cancelled')                                            
-                                            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="20" height="20" viewBox="0 0 20 20">
-                                                    <path style="fill:#030104;" d="M12.229,0.003c-0.01,0-0.014,0-0.018,0c-0.008,0-0.008,0-0.01,0
-                                                        c0,0,0,0-0.003,0l0,0c-0.003,0-0.007,0-0.011,0c-0.002,0-0.002,0-0.002,0s0,0-0.004,0c-0.027-0.006-0.035-0.002-0.055-0.002
-                                                        c-3.203,0-6.319,1.27-8.622,3.503L0.972,0.933c-0.123-0.12-0.309-0.158-0.461-0.094c-0.159,0.068-0.265,0.22-0.265,0.394v8.348
-                                                        c0,0.235,0.191,0.425,0.423,0.425h8.246c0.005,0,0.014,0,0.02,0c0.234,0,0.424-0.189,0.424-0.425c0-0.156-0.085-0.294-0.212-0.367
-                                                        L6.646,6.683c1.483-1.432,3.418-2.216,5.54-2.216c4.33,0.028,7.857,3.573,7.857,7.975c-0.033,4.326-3.58,7.847-7.98,7.847
-                                                        l0.01,4.468h0.061c6.779,0,12.333-5.518,12.377-12.376C24.511,5.606,19.007,0.06,12.229,0.003z"/>
+                                    </button>
+
+                                    @if($myJob->progress === 'Pending' || $myJob->progress === 'Cancelled' || $myJob->progress === 'In Progress' )
+                                        <button class="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'?  'bg-black hover:bg-gray-500':'bg-green-400 hover:border-green-500 hover:bg-green-500'}} ml-2 inline-flex items-center px-1 py-1 border text-white border-gray-300 rounded-md font-semibold tracking-widest shadow-sm focus:outline-none focus:border-black focus:ring focus:ring-black-200 active:bg-gray-50 disabled:opacity-25 transition" title="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'? 'Withdraw Job' : 'Recover Job' }}" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
+                                            @if($myJob->progress === 'Pending' || $myJob->progress === 'In Progress')
+                                                
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                             </svg>
-                                             
-                                        @endif                                      
-                                    </x-jet-secondary-button>
-                                @endif
+                                            
+                                            @elseif($myJob->progress === 'Cancelled')                                            
+                                            
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                            </svg>
+                                                
+                                            @endif                                      
+                                        </button>
+                                    @endif
 
-                                <x-jet-danger-button title="Delete This Job" wire:click="registerJob({{$myJob->id }},true)"
-                                    wire:loading.attr="disabled">
-                                    <svg fill="currentColor" width="20" height="20" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
-                                   
-                                </x-jet-danger-button>
+                                    <button class="ml-2 inline-flex items-center px-1 py-1 border border-red-300 rounded-md bg-red-500 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-red-300 focus:outline-none focus:ring disabled:opacity-25 transition" title="Delete This Job" wire:click="registerJob({{$myJob->id }},true)"
+                                        wire:loading.attr="disabled">
 
-                                @if($myJob->progress === 'Completed')
-                                <x-jet-button class="ml-2" wire:click="downloadFile({{$myJob->id }}, false)"
-                                    wire:loading.attr="disabled"
-                                    style="background-color:green" >
-                                    {{ __('Downloads') }}
-                                </x-jet-button>
-                                @else
-                                <x-jet-button class="ml-2"
-                                        wire:loading.attr="disabled"
-                                        style="background-color:gray" disabled>
-                                        {{ __('Downloads') }}
-                                    </x-jet-button>
-                                @endif
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
 
+                                    </button>
+
+                                    @if($myJob->progress === 'Completed')
+                                    <button class="ml-2 inline-flex items-center px-1 py-1 border border-green-200 rounded-md bg-green-500 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-green-300 focus:outline-none focus:ring transition" wire:click="downloadFile({{$myJob->id }}, false)" wire:loading.attr="disabled">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                    </button>
+                                    @else
+                                    <button title="Not Available" class="ml-2 inline-flex items-center px-1 py-1 border border-blue-300 rounded-md bg-blue-400 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-blue-200 focus:outline-none focus:ring disabled:opacity-25 transition" wire:loading.attr="disabled" disabled>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                        </svg>
+                                    </button>
+                                    @endif
+
+                                </div>
                             </td>
                         </tr>
                     @endforeach
