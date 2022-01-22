@@ -38,7 +38,7 @@ Route::get('/about', [AboutController::class,'show'])->name('aboutpage');
 
 Route::get('/about/{name}/{id}', [AboutController::class,'getBio'])->name('biopage');
 
-Route::middleware(['auth', 'verified', 'user.status.check'])->get('/userprofile', UsersProfileController::class)->name('userprofile');
+Route::middleware(['auth', 'verified', 'user.status.check'])->get('/user-profile', UsersProfileController::class)->name('userprofile');
 
 
 Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->get('/dashboard', function () {
