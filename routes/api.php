@@ -5,10 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JobsController;
 use App\Models\User;
 use App\Models\Job;
+use App\Models\remotejob;
 use App\Models\Settings;
 use Hamcrest\Type\IsResource;
 use Illuminate\Support\Facades\Storage;
 use phpseclib\Net\SFTP;
+use Collective\Remote\RemoteFacade as SSH;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -52,10 +54,12 @@ Route::get('/users', function (Request $request) {
     // {
     //     dd($e->getMessage());
     // }
-    $sftp = new SFTP('ece-e3-516-f.eng.umanitoba.ca');
-        if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
-            exit('Login Failed');
-        }
+    //$sftp = new SFTP('ece-e3-516-f.eng.umanitoba.ca');
+    $sftp = new SFTP('130.179.128.26');
+    //if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
+    if (!$sftp->login('ruoyuanluo', 'ruoyuanluo123')) {
+        exit('Login Failed');
+    }  
     //DB::enableQueryLog();
     //$files = Job::where('progress','=','pending')->orderBy('created_at')->get();
     $files = Job::where('progress','=','pending')->orderBy('created_at','desc')->get();
@@ -66,7 +70,8 @@ Route::get('/users', function (Request $request) {
         $data = json_decode($file, true);
         $filename = $data['input_file_json'];
         //$dir = $f->id;
-        $dir = 'solver/__INPUT';
+        //$dir = 'solver/__INPUT';
+        $dir = 'home/ruoyuanluo/__INPUT';
         $sftp->mkdir("$dir");
         $sftp->chdir("$dir");
 
@@ -121,23 +126,38 @@ Route::get('/users', function (Request $request) {
         $sftp->chdir('..');
         
         $f->progress = 'In Progress';
-        $f->save();
-        //dd($f->progress);
-    }
-
-
-
-    SSH::run([
-             'ls'
-        ], function($line)
+        $app = "a.sh";
+        $command = "qsub";
+        SSH::run([sprintf("%s %s",$command, $app)], function($line) use ($f)
         {
             echo $line.PHP_EOL;
-        }
-
-        );
+            $new_job = new remotejob();
+            $new_job->job_id  = $f->id;
+            $new_job->remote_job_id = str_replace(array("\n", "\r"), '', $line.PHP_EOL);
+            $new_job->save();
+            $f->save();
+ 
+        });
+        //dd($f->progress);
+    }
 });
 Route::get('/users1', function (Request $request) {
-    try {
+        $command_template =
+        "qstat -f %s | grep job_state | awk -F ' ' '{print \$NF}'";
+       $jobs = remotejob::where('job_state','!=','E')->orderBy('created_at','desc')->get();
+        echo $jobs;
+        foreach($jobs as $j) {
+            $command = sprintf($command_template, str_replace(array("\n", "\r"), '', $j->remote_job_id));
+            SSH::run([$command], function($line) use ($j)
+            {
+                echo $j;
+                $j->job_state = str_replace(array("\n", "\r"), '', $line.PHP_EOL);
+                echo $j;
+                $j->save();
+           });
+        }
+
+
         // http://phpseclib.sourceforge.net/sftp/examples.html#put
         /* SSH Put Method => works
         $filePath = __DIR__.'/../composer.lock';
@@ -145,10 +165,12 @@ Route::get('/users1', function (Request $request) {
         die;
         */
 
-        $sftp = new SFTP('ece-e3-516-f.eng.umanitoba.ca');
-        if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
-            exit('Login Failed');
-        }
+
+
+        //$sftp = new SFTP('130.179.128.26');
+        //if (!$sftp->login('ruoyuanluo', 'ruoyuanluo123')) {
+         //   exit('Login Failed');
+       // }
         /*
          *  Get Method => works
          */
@@ -170,10 +192,6 @@ Route::get('/users1', function (Request $request) {
             $sftp->put($fileName, $content, 8);
         }
          */
-
-    } catch(Exception $e) {
-        //dd($e->getMessage());
-    }
 });
 
 Route::get('/jobs/{id}', function (Request $request, $id) {
