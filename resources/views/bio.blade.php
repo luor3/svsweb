@@ -6,9 +6,8 @@
     <div class="min-h-screen flex flex-col">
         @include('partials.site-navigation')
         <div class="max-w-4xl flex items-center h-auto lg:h-screen flex-wrap mx-auto my-32 lg:my-0">
-            <div id="profile" class="w-full lg:w-3/5 rounded-lg lg:rounded-l-lg lg:rounded-r-none shadow-2xl bg-white opacity-75 mx-6 lg:mx-0">
-
-
+            <div id="profile" class="w-full lg:w-3/5 rounded-lg lg:rounded-l-lg lg:rounded-r-none shadow-xl bg-white opacity-90 mx-6 lg:mx-0">
+                
                 <div class="p-4 md:p-12 text-center lg:text-left">
                     <!-- Image for mobile view-->
                     @if($user->profile_photo_path)
@@ -19,7 +18,8 @@
                     <!-- Image for mobile view-->
                     <h1 class="text-3xl font-bold pt-8 lg:pt-0">{{$user -> name}}</h1>
                     <p>Email: {{$user -> email}}</p>
-                    <p class="pt-8 text-sm"></p>
+                    <p class="pt-8 text-sm">
+                        </p>
 
                     <div class="pt-12 pb-8">
                         <a href="mailto:{{$user -> email}}">
@@ -35,18 +35,20 @@
 
             <div class="w-full lg:w-2/5">
                 <!-- Big profile image for side bar (desktop) -->
-                <div class="rounded-none lg:rounded-lg shadow-2xl hidden lg:block">
+                <div class="h-80 w-80 rounded-none lg:rounded-lg shadow-2xl hidden lg:block">
+                    
                     @if($user->profile_photo_path)
-                    <img class="object-cover w-full"
+                    <img class="w-80 h-80 object-cover"
                          src="{{ asset(Storage::disk('local')->url($user->profile_photo_path)) }}"
                          alt=""
-                         style="width:400px"
+                         
                          >
+                    
                     @else
-                    <img class="w-full"
+                    <img class="w-80 h-80 object-cover"
                          src="https://ui-avatars.com/api/?name={{$user->name}}&color=7F9CF5&background=EBF4FF"
                          alt="{{$user->name}}"
-                         style="width:430px"
+                         
                          >
                     @endif
                 </div>
