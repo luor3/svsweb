@@ -71,7 +71,7 @@ Route::get('/users', function (Request $request) {
         $filename = $data['input_file_json'];
         //$dir = $f->id;
         //$dir = 'solver/__INPUT';
-        $dir = 'home/ruoyuanluo/__INPUT';
+        $dir = '/home/ruoyuanluo/_INPUT';
         $sftp->mkdir("$dir");
         $sftp->chdir("$dir");
 

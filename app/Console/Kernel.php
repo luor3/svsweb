@@ -8,6 +8,8 @@ use phpseclib\Net\SFTP;
 use App\Models\remotejob;
 use App\Models\Job;
 use Collective\Remote\RemoteFacade as SSH;
+
+
 class Kernel extends ConsoleKernel
 {
     /**
@@ -15,6 +17,8 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
+    public const app = "b.sh";
+
     protected $commands = [
         //
     ];
@@ -30,22 +34,17 @@ class Kernel extends ConsoleKernel
         $schedule->command('inspire')->everyMinute();
         $schedule->call(function () {
             $sftp = new SFTP('130.179.128.26');
-            //if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
             if (!$sftp->login('ruoyuanluo', 'ruoyuanluo123')) {
                 exit('Login Failed');
-            }  
-            //DB::enableQueryLog();
-            //$files = Job::where('progress','=','pending')->orderBy('created_at')->get();
+            } 
             $files = Job::where('progress','=','pending')->orderBy('created_at','desc')->get();
-            //$files = Job::all();
-            //dd($files);
+
             foreach($files as $f){
                 $file = $f->configuration;
                 $data = json_decode($file, true);
                 $filename = $data['input_file_json'];
-                //$dir = $f->id;
-                //$dir = 'solver/__INPUT';
-                $dir = 'home/ruoyuanluo/__INPUT';
+                
+                $dir = '/home/ruoyuanluo/_INPUT';
                 $sftp->mkdir("$dir");
                 $sftp->chdir("$dir");
         
@@ -67,18 +66,14 @@ class Kernel extends ConsoleKernel
                     $file = fopen($filePath, 'r');
                     $fileName = basename($filePath);
                     $sftp->put($fileName, $file, 8);
-        
-        
+
                 }
-                //dd($filename);
                 if(isset($filename['mlr'])){
                     $filePath = storage_path('app/'.$filename['mlr']);
                     $file = fopen($filePath, 'r');
                     $fileName = basename($filePath);
                     $sftp->put($fileName, $file, 8);
-        
-                    
-        
+
                 }if(isset($filename['FieldPoints'])){
                     $filePath = storage_path('app/'.$filename['FieldPoints']);
                     $file = fopen($filePath, 'r');
@@ -100,11 +95,11 @@ class Kernel extends ConsoleKernel
                 $sftp->chdir('..');
                 
                 $f->progress = 'In Progress';
-                $app = "a.sh";
                 $command = "qsub";
-                SSH::run([sprintf("%s %s",$command, $app)], function($line) use ($f)
+                $args = "1"; ##todo
+                SSH::run([sprintf("%s -v qsub-args=%s %s",$command, $args, Kernel::app)], function($line) use ($f)
                 {
-                    echo $line.PHP_EOL;
+                    
                     $new_job = new remotejob();
                     $new_job->job_id  = $f->id;
                     $new_job->remote_job_id = str_replace(array("\n", "\r"), '', $line.PHP_EOL);
@@ -112,24 +107,60 @@ class Kernel extends ConsoleKernel
                     $f->save();
          
                 });
-                //dd($f->progress);
+                
             }
         })->everyMinute();
         $schedule->call(function () {
             $command_template =
             "qstat -f %s | grep job_state | awk -F ' ' '{print \$NF}'";
-           $jobs = remotejob::where('job_state','!=','E')->orderBy('created_at','desc')->get();
-            echo $jobs;
-            foreach($jobs as $j) {
-                $command = sprintf($command_template, str_replace(array("\n", "\r"), '', $j->remote_job_id));
-                SSH::run([$command], function($line) use ($j)
+            $pattern = "/^[0-9]+/";
+            $remote_jobs = remotejob::where('job_state','!=','E')->orderBy('created_at','desc')->get();
+            
+            foreach($remote_jobs as $rj) {
+                $command = sprintf($command_template, str_replace(array("\n", "\r"), '',$rj->remote_job_id ));
+                SSH::run([$command], function($line) use ($rj,$pattern)
                 {
-                    $j->job_state = str_replace(array("\n", "\r"), '', $line.PHP_EOL);
-                    $j->save();
+                    # get return from std out;
+                    $result = $line.PHP_EOL;
+                    
+                    # not found job id with qstat means job is  complete or delete;
+                    if (str_contains($result, 'Unknown')) {
+                       
+                        if (preg_match($pattern, $rj->remote_job_id, $real_remote_id)) {
+                        #check job is complete with file like a.sh.o$job_id 
+                            $filename = Kernel::app.".o".strval($real_remote_id[0]);
+                            $cc = "ls ".$filename;
+                            
+                            SSH::run( [$cc], function($l) use($rj,$filename) {
+
+                                if(strcmp($l.PHP_EOL,$filename)) {
+                                    
+                                    $j = job::find($rj->job_id);
+                                   
+                                    $j->previous_progress = $j->progress;
+                                    $j->progress = "Completed";
+                                    
+                                    $j->save();
+                                    $rj->job_state = "E";
+                                    $rj->save();
+                                } else {
+                                    $j = job::find($rj->job_id);
+                                    $j->previos_progress = $j->progress;
+                                    $j->progress = "Canceled";
+                                    $j->save();
+                                    $rj->job_state = "S";
+                                    $rj->save();
+                                }
+                            });
+                        }
+                    } else {
+                        # found job id with qstat means job is not complete or delete;
+                        $rj->job_state = str_replace(array("\n", "\r"), '', $result);
+                        $rj->save();
+                    }
                });
             }
             
-            //dd($f->progress);
         })->everyMinute();
 
     }
