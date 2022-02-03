@@ -16,6 +16,7 @@ use phpseclib\Net\SFTP;
 use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
 use SSH;
+use Collective\Remote\Connection;
 class ShowForm extends Component
 {
 
@@ -275,7 +276,6 @@ class ShowForm extends Component
             $this->displayEditable = true : $this->displayEditable = false;  
 
         }
-        
         else
         {            
             $jobs = Job::leftjoin('users', 'jobs.user','=','users.id');         
@@ -312,6 +312,7 @@ class ShowForm extends Component
             $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
            
         }
+        
         return view(self::COMPONENT_TEMPLATE,['jobs' => $jobs]);
     }
 
@@ -479,7 +480,7 @@ class ShowForm extends Component
         // $this->job = job::find($jobID);
         // $this->jobID = $jobID;
         // $this->mount();
-        //dd($this->pathName);
+    
 
         $parameter = [
             'currentModule' => "jobs",
@@ -515,16 +516,16 @@ class ShowForm extends Component
         $this->job -> previous_progress = $this->job-> progress;
         $this->job-> progress = 'Cancelled';
         try {
-            $id =  $this->job->id;
-            $shell_template = Settings::where('name','=','find_solver')->first();
-            // dd($shell->value);
-            $pid_shell = sprintf($shell_template->value, $id);
+            $remote_id =  $this->job->remotejob->remote_job_id;
+            $pid_shell = sprintf("qsig -s SIGKILL %s" ,$remote_id );
             // $id);
-            SSH::run([
+            $server = $this->job->sshserver[0];
+            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+            $c->run([
                 $pid_shell
-            ], function($line)
+            ], function($line) use($c)
             {
-                SSH::run([
+                $c->run([
                     sprintf('kill %s', $line)
                 ], function($line2) {
                 });
@@ -567,11 +568,11 @@ class ShowForm extends Component
             $this->job = job::find($jobID);
             if($this->job->progress == 'Completed') {
                 $output_name = sprintf("%d_output.zip", $jobID);
-
-                $sftp = new SFTP('130.179.128.26');
-                if (!$sftp->login('ruoyuanluo', 'ruoyuanluo123')) {
+                $server = $this->job->sshserver();
+                $sftp = new SFTP($server->host, $server->port);
+                if (!$sftp->login($server->username, $server->password)) {
                     exit('Login Failed');
-                }
+                } 
 
                 $path = '/home/ruoyuan/_OUTPUT';
                 $sftp->chdir($path);

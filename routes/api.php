@@ -11,6 +11,8 @@ use Hamcrest\Type\IsResource;
 use Illuminate\Support\Facades\Storage;
 use phpseclib\Net\SFTP;
 use Collective\Remote\RemoteFacade as SSH;
+use Collective\Remote\Connection;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -55,17 +57,23 @@ Route::get('/users', function (Request $request) {
     //     dd($e->getMessage());
     // }
     //$sftp = new SFTP('ece-e3-516-f.eng.umanitoba.ca');
-    $sftp = new SFTP('130.179.128.26');
+    //$sftp = new SFTP('130.179.128.26');
     //if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
-    if (!$sftp->login('ruoyuanluo', 'ruoyuanluo123')) {
-        exit('Login Failed');
-    }  
+        //if (!$sftp->login('ruoyuanluo', 'ruoyuanluo123')) {
+        //exit('Login Failed');
+    //}  
     //DB::enableQueryLog();
     //$files = Job::where('progress','=','pending')->orderBy('created_at')->get();
     $files = Job::where('progress','=','pending')->orderBy('created_at','desc')->get();
     //$files = Job::all();
     //dd($files);
     foreach($files as $f){
+        $server = $f->sshserver[0];
+        
+        $sftp = new SFTP($server->host, $server->port);
+        if (!$sftp->login($server->username, $server->password)) {
+            exit('Login Failed');
+        } 
         $file = $f->configuration;
         $data = json_decode($file, true);
         $filename = $data['input_file_json'];
@@ -128,7 +136,8 @@ Route::get('/users', function (Request $request) {
         $f->progress = 'In Progress';
         $app = "a.sh";
         $command = "qsub";
-        SSH::run([sprintf("%s %s",$command, $app)], function($line) use ($f)
+        $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+        $c->run([$command." ".$app], function($line) use ($f)
         {
             echo $line.PHP_EOL;
             $new_job = new remotejob();

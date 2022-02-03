@@ -8,7 +8,7 @@ use phpseclib\Net\SFTP;
 use App\Models\remotejob;
 use App\Models\Job;
 use Collective\Remote\RemoteFacade as SSH;
-
+use Collective\Remote\Connection;
 
 class Kernel extends ConsoleKernel
 {
@@ -33,13 +33,16 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('inspire')->everyMinute();
         $schedule->call(function () {
-            $sftp = new SFTP('130.179.128.26');
-            if (!$sftp->login('ruoyuanluo', 'ruoyuanluo123')) {
-                exit('Login Failed');
-            } 
+           
             $files = Job::where('progress','=','pending')->orderBy('created_at','desc')->get();
-
+           
             foreach($files as $f){
+                $server = $f->sshserver[0];
+                
+                $sftp = new SFTP($server->host, $server->port);
+                if (!$sftp->login($server->username, $server->password)) {
+                    exit('Login Failed');
+                } 
                 $file = $f->configuration;
                 $data = json_decode($file, true);
                 $filename = $data['input_file_json'];
@@ -97,9 +100,10 @@ class Kernel extends ConsoleKernel
                 $f->progress = 'In Progress';
                 $command = "qsub";
                 $args = "1"; ##todo
-                SSH::run([sprintf("%s -v qsub-args=%s %s",$command, $args, Kernel::app)], function($line) use ($f)
+                $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+                $c->run([sprintf("%s -v qsub-args=%s %s",$command, $args, Kernel::app)], function($line) use ($f)
                 {
-                    
+                    echo($line);
                     $new_job = new remotejob();
                     $new_job->job_id  = $f->id;
                     $new_job->remote_job_id = str_replace(array("\n", "\r"), '', $line.PHP_EOL);
@@ -118,21 +122,22 @@ class Kernel extends ConsoleKernel
             
             foreach($remote_jobs as $rj) {
                 $command = sprintf($command_template, str_replace(array("\n", "\r"), '',$rj->remote_job_id ));
-                SSH::run([$command], function($line) use ($rj,$pattern)
+                $server =  $rj->job->sshserver[0];
+                $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+                $c->run([$command], function($line) use ($server, $rj,$pattern)
                 {
                     # get return from std out;
                     $result = $line.PHP_EOL;
                     
                     # not found job id with qstat means job is  complete or delete;
                     if (str_contains($result, 'Unknown')) {
-                       
                         if (preg_match($pattern, $rj->remote_job_id, $real_remote_id)) {
                         #check job is complete with file like a.sh.o$job_id 
                             $filename = Kernel::app.".o".strval($real_remote_id[0]);
                             $cc = "ls ".$filename;
-                            
-                            SSH::run( [$cc], function($l) use($rj,$filename) {
+                            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
 
+                            $c->run( [$cc], function($l) use($rj,$filename) {
                                 if(strcmp($l.PHP_EOL,$filename)) {
                                     
                                     $j = job::find($rj->job_id);

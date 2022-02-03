@@ -6,6 +6,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\DemosController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\SshserversController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\GetstartedController;
 use App\Http\Controllers\Frontend\DynamicPagesController;
@@ -71,6 +72,11 @@ Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admi
 
 Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admin/jobs')->group(function () {
     Route::get('/', [App\Http\Controllers\JobsController::class, 'show'])->name('jobs.all');
+});
+
+Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admin/sshservers')->group(function () {
+    Route::get('/', [SshserversController::class, 'show'])->name('sshservers');
+    Route::get('/create', [SshserversController::class, 'showCreate'])->name('sshservers.create');
 });
 
 Route::middleware(['auth:sanctum', 'verified','user.status.check'])->prefix('jobs')->group(function () {

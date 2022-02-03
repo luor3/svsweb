@@ -50,6 +50,24 @@
 
                         <th
                             class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Server_name
+                            @include('backend-order-bar', ['columnName' => 'ssh_server'] )
+                        </th>
+
+                        <th
+                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            remote_job_id
+                            @include('backend-order-bar', ['columnName' => 'remote_job_id'] )
+                        </th>
+                        <th
+                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            remote_status
+                            @include('backend-order-bar', ['columnName' => 'remote_job_status'] )
+                        </th>
+
+
+                        <th
+                            class="px-5 py-3 border-b-2 border-gray-300 bg-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         </th>
 
                     </tr>
@@ -70,6 +88,10 @@
                                     {{$myJob->status?'Yes':'No' }}
                                 </span>
                             </td>
+                            
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">@if ($myJob->sshserver){{ $myJob->sshserver[0]->server_name}} @endif</td>
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">@if ($myJob->remotejob){{ $myJob->remotejob->remote_job_id}} @endif</td>
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">@if ($myJob->remotejob){{ $myJob->remotejob->job_state}} @endif</td>
                             <td class="px-5 py-5 border-b border-gray-200 text-sm">
                                 <div class="flex justify-around">
 
@@ -124,6 +146,7 @@
 
                                 </div>
                             </td>
+                       
                         </tr>
                     @endforeach
                 </tbody>

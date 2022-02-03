@@ -55,4 +55,10 @@ class JobsController extends Controller
             $job->save();
         }
     }
+
+    public function GetSshServer()
+    {
+
+    }
+
 }
