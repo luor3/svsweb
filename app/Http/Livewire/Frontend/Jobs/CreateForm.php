@@ -7,6 +7,8 @@ use Livewire\WithFileUploads;
 use Illuminate\Http\Request;
 use App\Models\Job;
 use App\Models\sshservers;
+
+use App\Models\jobs_sshservers;
 use Illuminate\Support\Str;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
@@ -240,7 +242,7 @@ class CreateForm extends Component
             $ssh_server = new jobs_sshservers();
             $ssh_server->job_id = $this->job->id;
             $ssh_server->sshserver_id = $server->id;
-            $status = $model->save();
+            $status = $ssh_server->save();
         }
 
         $status = $this->job->save();

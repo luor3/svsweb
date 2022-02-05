@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use App\Models\Category;
 use Livewire\WithPagination;
 use App\Http\Controllers\JobsController;
-use App\Models\Settings;
+use App\Models\sshservers;
 use phpseclib\Net\SFTP;
 use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
@@ -515,14 +515,14 @@ class ShowForm extends Component
         
     }
 
-    public function withdraw($server_id){
+    public function withdraw(){
         $this->job -> previous_progress = $this->job-> progress;
         $this->job-> progress = 'Cancelled';
         try {
             $remote_id =  $this->job->remotejob->remote_job_id;
             $pid_shell = sprintf("qsig -s SIGKILL %s" ,$remote_id );
             // $id);
-            $server = sshserver::find($server_id);
+            $server = sshservers::find($this->server_id);
             $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
             $c->run([
                 $pid_shell
@@ -566,12 +566,11 @@ class ShowForm extends Component
 
     public function downloadFile($jobID, $server_id, $isInput)
     {
-        dd($this);
         try {
             $this->job = job::find($jobID);
             if($this->job->progress == 'Completed') {
                 $output_name = sprintf("%d_output.zip", $jobID);
-                $server = sshserver::find($server_id);
+                $server = sshservers::find($server_id);
                 $sftp = new SFTP($server->host, $server->port);
                 if (!$sftp->login($server->username, $server->password)) {
                     exit('Login Failed');
