@@ -84,19 +84,6 @@
                 <x-jet-input-error for="input_file" class="mt-2" />
             </div>
 
-            <div class="col-span-6 sm:col-span-3">
-                <x-jet-label for="sshserver_id" value="{{ __('SSH Server') }}" />
-                <select
-                    class="block mt-1 w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg"
-                    id="sshserver_id" wire:model.defer="sshserver_id">
-                    @foreach($sshservers as $index=>$sshserver)
-                    <option value="{{$sshserver->id}}" @if($index==0) selected @endif>
-                        {{$sshserver->server_name}}</option>
-                    @endforeach
-                </select>
-                <x-jet-input-error for="sshserver_id" class="mt-2" />
-            </div>
-
         </x-slot>
 
         <x-slot name="actions">

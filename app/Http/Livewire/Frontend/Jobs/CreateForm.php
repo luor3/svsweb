@@ -158,11 +158,7 @@ class CreateForm extends Component
         }
         if(count($categories) != 0)
             $this->category_id = $categories[0]->id; 
-        $this->sshservers = sshservers::all();
-        if(count($this->sshservers) != 0)
-            $this->sshserver_id = $this->sshservers[0]->id; 
-
-        
+        $this->sshservers = sshservers::where("active", "=","1")->get();
     }
 
 
@@ -240,6 +236,13 @@ class CreateForm extends Component
         $this->job->configuration = $input_json;
         $this->job->status = $this->status;
 
+        foreach($this->sshservers as $server) {
+            $ssh_server = new jobs_sshservers();
+            $ssh_server->job_id = $this->job->id;
+            $ssh_server->sshserver_id = $server->id;
+            $status = $model->save();
+        }
+
         $status = $this->job->save();
 
         $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
@@ -270,7 +273,6 @@ class CreateForm extends Component
             'category_id' => 'required|integer',
             'input_file' => 'file',
             'description' => 'required|max:255',
-            'sshserver_id' => 'required'
         ]);
         $user = auth()->user();
         $data['user'] = $user->id;

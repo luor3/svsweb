@@ -34,22 +34,19 @@ class Job extends Model
         return $data;
     }
 
-    public function sshserver()
+    public function sshservers()
     {
         $data = $this->belongsToMany(sshservers::class, 'jobs_sshservers','job_id', 'sshserver_id');
         return $data;
     }
 
-    public static function create(array $attributes = [])
-    {
-        $sshserver_id = $attributes['sshserver_id'];
-        unset($attributes['sshserver_id']);
-        $model = static::query()->create($attributes);
-        $ssh_server = new jobs_sshservers();
-        $ssh_server->job_id = $model->id;
-        $ssh_server->sshserver_id = $sshserver_id;
-        $model->save();
-        $ssh_server->save();
-        return $model;
-    }
+    // public static function create(array $attributes = [])
+    // {
+    //     $sshserver_id = $attributes['sshserver_id'];
+    //     unset($attributes['sshserver_id']);
+    //     $model = static::query()->create($attributes);
+       
+    //     $ssh_server->save();
+    //     return $model;
+    // }
 }

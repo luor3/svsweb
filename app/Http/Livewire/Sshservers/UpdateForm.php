@@ -39,7 +39,14 @@ class UpdateForm extends Component
      */
     public $password = '';
 
-     /**
+
+    /**
+     * 
+     * @var boolean
+     */
+    public $active = false;
+
+    /**
      * 
      * @var string
      */
@@ -71,6 +78,7 @@ class UpdateForm extends Component
             $this->port = $this->sshserver->port;
             $this->username = $this->sshserver->username;
             $this->password = $this->sshserver->password;
+            $this->active = $this->sshserver->active;
             $this->sid = $this->sshserver->id;
 
         }
@@ -90,6 +98,7 @@ class UpdateForm extends Component
             $this->sshserver->port = $this->port;
             $this->sshserver->username = $this->username;
             $this->sshserver->password = $this->password;
+            $this->sshserver->active = $this->active;
             $status = $this->sshserver->save();
             
             $this->emit('saved', $status);
@@ -125,6 +134,7 @@ class UpdateForm extends Component
             'port' => 'nullable|string',
             'username' => 'required',
             'password' => 'required',
+            'active' => 'nullable|boolean',
         ];
     }
 }

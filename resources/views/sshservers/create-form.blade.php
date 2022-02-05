@@ -39,6 +39,17 @@
             <x-jet-input id="password" type="text" class="mt-1 block w-full" wire:model.defer="password" />
             <x-jet-input-error for="password" class="mt-2" />
         </div>
+
+        <div class="col-span-6 sm:col-span-6">
+            <x-jet-label for="active" value="{{ __('Active') }}" />
+            <select
+                    class="block mt-1 w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg"
+                    id="active" wire:model.defer="active">
+                    <option value="0" selected>inactive</option>
+                    <option value="1">active</option>
+            </select>
+            <x-jet-input-error for="active" class="mt-2" />
+        </div>
     </x-slot>
 
     <x-slot name="actions">

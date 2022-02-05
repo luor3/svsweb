@@ -24,7 +24,7 @@ class CreateForm extends Component
         'port' => 'nullable|string',
         'username' => 'required',
         'password' => 'required',
-
+        'active' => 'nullable|boolean',
     ];
     
     /**
@@ -54,6 +54,11 @@ class CreateForm extends Component
      */
     public $password = '';
 
+    /**
+     * 
+     * @var boolean
+     */
+    public $active = false;
     
     /**
      * 

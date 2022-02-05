@@ -47,6 +47,18 @@
                 wire:model.defer="password" />
             <x-jet-input-error for="Password" class="mt-2" />
         </div>
+
+        <div class="col-span-7 sm:col-span-1">
+            <x-jet-label for="active" value="{{ __('Active') }}" />
+            <select
+                id="active" type="text" 
+                class="mt-1 block w-full border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
+                wire:model.defer="active" >
+                <option value="0" selected>inactive</option>
+                    <option value="1">active</option>
+                </select>
+            <x-jet-input-error for="active" class="mt-2" />
+        </div>
         
         <!-- Delete Setting Confirmation Modal -->
         <x-jet-confirmation-modal wire:model="confirmingSshserverDeletion">

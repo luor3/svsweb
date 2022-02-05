@@ -74,6 +74,8 @@
                 </thead>
                 <tbody>
                     @foreach ($jobs as $myJob)
+                        @foreach ($myJob->sshservers as $server)
+
                         <tr class="bg-white">                    
                             <td class="px-5 py-5 border-b border-gray-200 text-sm">{{$myJob->id}}</td>
                             @if($permission == 1)
@@ -89,7 +91,7 @@
                                 </span>
                             </td>
                             
-                            <td class="px-5 py-5 border-b border-gray-200 text-sm">@if ($myJob->sshserver){{ $myJob->sshserver[0]->server_name}} @endif</td>
+                            <td class="px-5 py-5 border-b border-gray-200 text-sm">{{ $server->server_name}}</td>
                             <td class="px-5 py-5 border-b border-gray-200 text-sm">@if ($myJob->remotejob){{ $myJob->remotejob->remote_job_id}} @endif</td>
                             <td class="px-5 py-5 border-b border-gray-200 text-sm">@if ($myJob->remotejob){{ $myJob->remotejob->job_state}} @endif</td>
                             <td class="px-5 py-5 border-b border-gray-200 text-sm">
@@ -104,7 +106,7 @@
                                     </button>
 
                                     @if($myJob->progress === 'Pending' || $myJob->progress === 'Cancelled' || $myJob->progress === 'In Progress' )
-                                        <button class="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'?  'bg-black hover:bg-gray-500':'bg-green-400 hover:border-green-500 hover:bg-green-500'}} ml-2 inline-flex items-center px-1 py-1 border text-white border-gray-300 rounded-md font-semibold tracking-widest shadow-sm focus:outline-none focus:border-black focus:ring focus:ring-black-200 active:bg-gray-50 disabled:opacity-25 transition" title="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'? 'Withdraw Job' : 'Recover Job' }}" wire:click="withdrawJob( {{ $myJob->id }} )" wire:loading.attr="disabled">
+                                        <button class="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'?  'bg-black hover:bg-gray-500':'bg-green-400 hover:border-green-500 hover:bg-green-500'}} ml-2 inline-flex items-center px-1 py-1 border text-white border-gray-300 rounded-md font-semibold tracking-widest shadow-sm focus:outline-none focus:border-black focus:ring focus:ring-black-200 active:bg-gray-50 disabled:opacity-25 transition" title="{{ $myJob->progress === 'Pending'|| $myJob->progress === 'In Progress'? 'Withdraw Job' : 'Recover Job' }}" wire:click="withdrawJob( {{ $myJob->id }}, {{$server->id}} )" wire:loading.attr="disabled">
                                             @if($myJob->progress === 'Pending' || $myJob->progress === 'In Progress')
                                                 
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,7 +123,7 @@
                                         </button>
                                     @endif
 
-                                    <button class="ml-2 inline-flex items-center px-1 py-1 border border-red-300 rounded-md bg-red-500 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-red-300 focus:outline-none focus:ring disabled:opacity-25 transition" title="Delete This Job" wire:click="registerJob({{$myJob->id }},true)"
+                                    <button class="ml-2 inline-flex items-center px-1 py-1 border border-red-300 rounded-md bg-red-500 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-red-300 focus:outline-none focus:ring disabled:opacity-25 transition" title="Delete This Job" wire:click="registerJob({{$myJob->id}},true)"
                                         wire:loading.attr="disabled">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,7 +133,7 @@
                                     </button>
 
                                     @if($myJob->progress === 'Completed')
-                                    <button class="ml-2 inline-flex items-center px-1 py-1 border border-green-200 rounded-md bg-green-500 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-green-300 focus:outline-none focus:ring transition" wire:click="downloadFile({{$myJob->id }}, false)" wire:loading.attr="disabled">
+                                    <button class="ml-2 inline-flex items-center px-1 py-1 border border-green-200 rounded-md bg-green-500 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-green-300 focus:outline-none focus:ring transition" wire:click="downloadFile({{$myJob->id}}, {{$server->id}}, false)" wire:loading.attr="disabled">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                         </svg>
@@ -148,6 +150,7 @@
                             </td>
                        
                         </tr>
+                        @endforeach
                     @endforeach
                 </tbody>
             </table>

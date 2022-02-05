@@ -10,6 +10,6 @@ class sshservers extends Model
     use HasFactory;
 
     protected $fillable = [
-        'server_name', 'host', 'port', 'username', 'password'
+        'server_name', 'host', 'port', 'username', 'password','active'
     ];
 }

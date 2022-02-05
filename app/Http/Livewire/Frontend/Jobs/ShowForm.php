@@ -49,6 +49,8 @@ class ShowForm extends Component
 
     public $pathName;
 
+    public $server_id;
+
     /**
      * 
      * @var Job id
@@ -496,7 +498,7 @@ class ShowForm extends Component
      * withdraw Job
      *
      */
-    public function withdrawJob($jobID)
+    public function withdrawJob($jobID, $server_id)
     {
         
         $this->job = job::find($jobID);
@@ -508,18 +510,19 @@ class ShowForm extends Component
             $this->confirmingJobWithdraw = false;
             $this->confirmingJobRecover = true; 
         }
+        $this->$server_id = $server_id;
         
         
     }
 
-    public function withdraw(){  
+    public function withdraw($server_id){
         $this->job -> previous_progress = $this->job-> progress;
         $this->job-> progress = 'Cancelled';
         try {
             $remote_id =  $this->job->remotejob->remote_job_id;
             $pid_shell = sprintf("qsig -s SIGKILL %s" ,$remote_id );
             // $id);
-            $server = $this->job->sshserver[0];
+            $server = sshserver::find($server_id);
             $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
             $c->run([
                 $pid_shell
@@ -561,14 +564,14 @@ class ShowForm extends Component
         }
     }
 
-    public function downloadFile($jobID, $isInput)
+    public function downloadFile($jobID, $server_id, $isInput)
     {
-
+        dd($this);
         try {
             $this->job = job::find($jobID);
             if($this->job->progress == 'Completed') {
                 $output_name = sprintf("%d_output.zip", $jobID);
-                $server = $this->job->sshserver();
+                $server = sshserver::find($server_id);
                 $sftp = new SFTP($server->host, $server->port);
                 if (!$sftp->login($server->username, $server->password)) {
                     exit('Login Failed');
