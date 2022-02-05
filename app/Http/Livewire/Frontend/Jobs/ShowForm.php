@@ -519,21 +519,23 @@ class ShowForm extends Component
         $this->job -> previous_progress = $this->job-> progress;
         $this->job-> progress = 'Cancelled';
         try {
-            $remote_id =  $this->job->remotejob->remote_job_id;
-            $pid_shell = sprintf("qsig -s SIGKILL %s" ,$remote_id );
-            // $id);
-            $server = sshservers::find($this->server_id);
-            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-            $c->run([
-                $pid_shell
-            ], function($line) use($c)
-            {
+                if ($this->job->remotejob && $this->job->remotejob->remote_job_id) {
+                $remote_id =  $this->job->remotejob->remote_job_id;
+                $pid_shell = sprintf("qsig -s SIGKILL %s" ,$remote_id );
+                // $id);
+                $server = sshservers::find($this->server_id);
+                $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
                 $c->run([
-                    sprintf('kill %s', $line)
-                ], function($line2) {
-                });
+                    $pid_shell
+                ], function($line) use($c)
+                {
+                    $c->run([
+                        sprintf('kill %s', $line)
+                    ], function($line2) {
+                    });
+                }
+                );
             }
-            );
         } catch(Exception $e) {
             dd($e->getMessage());
         }
