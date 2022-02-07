@@ -22,7 +22,7 @@ class CreateJobsTable extends Migration
             $table->unsignedBigInteger('user');
             $table->foreign('user')->references('id')->on('users')->onDelete('cascade');
             $table->text('configuration')->nullable();
-            $table->boolean('status')->default(1);
+            $table->boolean('status')->default(0);
             $table->enum('progress', ['Pending', 'In Progress', 'Completed','Cancelled'])->default('Pending');
             $table->timestamps();
         });

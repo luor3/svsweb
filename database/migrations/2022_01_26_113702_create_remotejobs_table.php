@@ -8,6 +8,15 @@ class CreateRemotejobsTable extends Migration
 {
     /**
      * Run the migrations.
+     * -  the job state:
+     * E -  Job is exiting after having run.
+     * H -  Job is held.
+     * Q -  job is queued, eligable to run or routed.
+     * R -  job is running.
+     * T -  job is being moved to new location.
+     * W -  job is waiting for its execution time
+     *   (-a option) to be reached.
+     * S -  (Unicos only) job is suspend.
      *
      * @return void
      */

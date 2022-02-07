@@ -55,4 +55,5 @@ class JobsController extends Controller
             $job->save();
         }
     }
+
 }
