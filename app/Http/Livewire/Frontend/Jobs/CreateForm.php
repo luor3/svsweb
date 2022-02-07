@@ -6,6 +6,9 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Http\Request;
 use App\Models\Job;
+use App\Models\sshservers;
+
+use App\Models\jobs_sshservers;
 use Illuminate\Support\Str;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
@@ -47,6 +50,11 @@ class CreateForm extends Component
      */
     public $category_id;
 
+     /**
+     * 
+     * @var integer
+     */
+    public $sshserver_id;
 
     /**
      * 
@@ -82,6 +90,12 @@ class CreateForm extends Component
      */
     public $categories = [];
 
+     /**
+     * for displying only
+     * @var sshservers array
+     */
+    public $sshservers = [];
+
 
     /**
      * 
@@ -107,6 +121,7 @@ class CreateForm extends Component
      */
     public $job;
 
+    
     /**
      * 
      * @var boolean
@@ -145,6 +160,7 @@ class CreateForm extends Component
         }
         if(count($categories) != 0)
             $this->category_id = $categories[0]->id; 
+        $this->sshservers = sshservers::where("active", "=","1")->get();
     }
 
 
@@ -167,10 +183,11 @@ class CreateForm extends Component
      */
     public function add(Request $request)
     {
+        
         $this->validate([
             'output_files.*' => 'file',
             'input_files.*' => 'required|file',
-            'status' => 'required|boolean'
+            'status' => 'required|boolean',
         ]);
 
         $input_json = [
@@ -185,8 +202,6 @@ class CreateForm extends Component
             $input_json['input_file_json']['fileName'][$type] = $file->getClientOriginalName();
             //$path = $file->storeAs('public/jobs/'.$this->job->id, $file->getClientOriginalName());
             $input_json['input_file_json'][$type] = $file->storeAs('public/jobs/'.$this->job->id,$file->getClientOriginalName());
-
-            
         }
         //dd($input_json);
         $input_json = json_encode($input_json);
@@ -196,9 +211,16 @@ class CreateForm extends Component
         ];
 
         $this->job->configuration = $input_json;
-        $this->job->status = $this->status; 
+        $this->job->status = $this->status;
 
-        $status = $this->job->save();   
+        foreach($this->sshservers as $server) {
+            $ssh_server = new jobs_sshservers();
+            $ssh_server->job_id = $this->job->id;
+            $ssh_server->sshserver_id = $server->id;
+            $status = $ssh_server->save();
+        }
+
+        $status = $this->job->save();
 
         $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
         $flag = $status ? 'success' : 'danger';
@@ -222,7 +244,6 @@ class CreateForm extends Component
      */
     public function registerJob(Request $request)
     {    
-        
         $data = $this->validate([
             'name'=>'required|max:255',  
             'description' => 'required|max:255',
@@ -232,7 +253,6 @@ class CreateForm extends Component
         ]);
         $user = auth()->user();
         $data['user'] = $user->id;
-
         try 
         {   
             $this->readFileFrom($this->input_file->getRealPath());
@@ -244,7 +264,7 @@ class CreateForm extends Component
             'input_property_json'=>$this->uploadFields,
            ];
            $data['configuration'] = json_encode($map);
-                      
+
         } 
         catch (\Exception $e) 
         {
@@ -255,10 +275,9 @@ class CreateForm extends Component
         unset($data['input_file']);
 
         $this->job = job::create($data);
-        
         $msg =  $this->job ? 'Job successfully created!' : 'Ooops! Something went wrong.';
         $flag = $this->job ? 'success' : 'danger';
-
+    
         session()->flash('flash.banner', $msg);
         session()->flash('flash.bannerStyle', $flag);
         
@@ -270,7 +289,7 @@ class CreateForm extends Component
         $this->next = true; 
 
         $originalname = $this->input_file->getClientOriginalName();
-        //dd($originalname);
+        
         Storage::disk('public')->makeDirectory('jobs/'.$this->job->id);
         //Storage::disk('public')->put($originalname, $this->input_file,'jobs/'.$this->job->id);
         $input_file_path = $this->input_file->storeAs('public/jobs/'.$this->job->id, $originalname);

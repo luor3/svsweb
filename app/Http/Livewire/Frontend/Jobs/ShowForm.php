@@ -11,11 +11,12 @@ use Illuminate\Support\Str;
 use App\Models\Category;
 use Livewire\WithPagination;
 use App\Http\Controllers\JobsController;
-use App\Models\Settings;
+use App\Models\sshservers;
 use phpseclib\Net\SFTP;
 use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
 use SSH;
+use Collective\Remote\Connection;
 class ShowForm extends Component
 {
 
@@ -47,6 +48,8 @@ class ShowForm extends Component
    
 
     public $pathName;
+
+    public $server_id;
 
     /**
      * 
@@ -275,7 +278,6 @@ class ShowForm extends Component
             $this->displayEditable = true : $this->displayEditable = false;  
 
         }
-        
         else
         {            
             $jobs = Job::leftjoin('users', 'jobs.user','=','users.id');         
@@ -312,6 +314,7 @@ class ShowForm extends Component
             $jobs = $jobs -> paginate($this->pageNum,['jobs.*','users.name AS user_name']);
            
         }
+        
         return view(self::COMPONENT_TEMPLATE,['jobs' => $jobs]);
     }
 
@@ -489,7 +492,7 @@ class ShowForm extends Component
         // $this->job = job::find($jobID);
         // $this->jobID = $jobID;
         // $this->mount();
-        //dd($this->pathName);
+    
 
         $parameter = [
             'currentModule' => "jobs",
@@ -505,7 +508,7 @@ class ShowForm extends Component
      * withdraw Job
      *
      */
-    public function withdrawJob($jobID)
+    public function withdrawJob($jobID, $server_id)
     {
         
         $this->job = job::find($jobID);
@@ -517,29 +520,32 @@ class ShowForm extends Component
             $this->confirmingJobWithdraw = false;
             $this->confirmingJobRecover = true; 
         }
+        $this->$server_id = $server_id;
         
         
     }
 
-    public function withdraw(){  
+    public function withdraw(){
         $this->job -> previous_progress = $this->job-> progress;
         $this->job-> progress = 'Cancelled';
         try {
-            $id =  $this->job->id;
-            $shell_template = Settings::where('name','=','find_solver')->first();
-            // dd($shell->value);
-            $pid_shell = sprintf($shell_template->value, $id);
-            // $id);
-            SSH::run([
-                $pid_shell
-            ], function($line)
-            {
-                SSH::run([
-                    sprintf('kill %s', $line)
-                ], function($line2) {
-                });
+                if ($this->job->remotejob && $this->job->remotejob->remote_job_id) {
+                $remote_id =  $this->job->remotejob->remote_job_id;
+                $pid_shell = sprintf("qsig -s SIGKILL %s" ,$remote_id );
+                // $id);
+                $server = sshservers::find($this->server_id);
+                $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+                $c->run([
+                    $pid_shell
+                ], function($line) use($c)
+                {
+                    $c->run([
+                        sprintf('kill %s', $line)
+                    ], function($line2) {
+                    });
+                }
+                );
             }
-            );
         } catch(Exception $e) {
             dd($e->getMessage());
         }
@@ -570,23 +576,23 @@ class ShowForm extends Component
         }
     }
 
-    public function downloadFile($jobID, $isInput)
+    public function downloadFile($jobID, $server_id, $isInput)
     {
-
-        // dd($jobID);
         try {
             $this->job = job::find($jobID);
             if($this->job->progress == 'Completed') {
                 $output_name = sprintf("%d_output.zip", $jobID);
-
-                $sftp = new SFTP('ece-e3-516-f.eng.umanitoba.ca');
-                if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
+                $server = sshservers::find($server_id);
+                $sftp = new SFTP($server->host, $server->port);
+                if (!$sftp->login($server->username, $server->password)) {
                     exit('Login Failed');
-                }
-                $path = '/home/mohamm60/solver/_OUTPUT';
+                } 
+
+                $path = '/home/ruoyuan/_OUTPUT';
                 $sftp->chdir($path);
                 $files = $sftp->nlist(".");
                 $local_path = "public";
+
                 foreach ($files as $file) {
                     if($file != ".." && $file != ".") {
                         $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
@@ -609,18 +615,6 @@ class ShowForm extends Component
         catch(Exception $e) {
             dd($e->getMessage());
         }
-        // return response()->streamDownload(function () use($file_json,$isInput) 
-        // {
-        //     $options = new Archive();
-        //     $options->setSendHttpHeaders(false);
-        //     $zip = new ZipStream( $isInput ? "input.zip" : "output.zip", $options);
-        //     foreach ($file_json['fileName'] as $fileType => $fileName)
-        //     {
-        //         $zip->addFileFromPath($isInput ? $fileName : substr($fileName, 36), 
-        //             Storage::disk('public')->path($file_json[$isInput ? $fileType : $fileName])
-        //         );
-        //     }
-        //     $zip->finish();
-        // }, $isInput ? "input.zip" : "output.zip");
+        
     }
 }
