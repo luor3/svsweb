@@ -28,9 +28,9 @@ return [
 
     'connections' => [
         'production' => [
-            'host'      => 'ece-e3-516-f.eng.umanitoba.ca',
-            'username'  => 'mohamm60',
-            'password'  => '1ldg4DC2p5',
+            'host'      => '130.179.128.26',
+            'username'  => 'ruoyuanluo',
+            'password'  => 'ruoyuanluo123',
             'key'       => '',
             'keytext'   => '',
             'keyphrase' => '',
