@@ -6,32 +6,15 @@
                 <div class="my-10 bg-blue-600 h-1"></div>
     
                 <div class="grid grid-cols-12 gap-x-4">        
-                    @foreach($inputInfo['properties'] as $key => $property)
+                    @foreach($propertyWindow as $key => $property)
                     <div class="text-center col-span-12 {{ isset($property['children']) ? 'md:place-self-center' : 'md:col-span-4'}}">
                         @if( (isset($enableSeq[$key]['main']) && $enableSeq[$key]['main']) || (!isset($enableSeq[$key]['main'])) ) 
                             <div x-data="{ open: false }">
                                 <x-jet-label class="lg:h-10 inline-block mt-5 text-gray-700" for="{{ $key }}" value="{{ $property['title'] }}" />
                                 @if(isset($property['hint']))
-                                    <button type="button" class="w-4 h-4 inline-block" @click="open = ! open">
-                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                            viewBox="0 0 422.686 422.686" style="enable-background:new 0 0 422.686 422.686;" xml:space="preserve">
-                                        <g>
-                                            <g>
-                                                <path style="fill:#010002;" d="M211.343,422.686C94.812,422.686,0,327.882,0,211.343C0,94.812,94.812,0,211.343,0
-                                                    s211.343,94.812,211.343,211.343C422.694,327.882,327.882,422.686,211.343,422.686z M211.343,16.257
-                                                    c-107.565,0-195.086,87.52-195.086,195.086s87.52,195.086,195.086,195.086c107.574,0,195.086-87.52,195.086-195.086
-                                                    S318.917,16.257,211.343,16.257z"/>
-                                            </g>
-                                            <g>
-                                                <g>
-                                                    <path style="fill:#010002;" d="M192.85,252.88l-0.569-7.397c-1.707-15.371,3.414-32.149,17.647-49.227
-                                                        c12.811-15.078,19.923-26.182,19.923-38.985c0-14.51-9.112-24.182-27.044-24.467c-10.242,0-21.622,3.414-28.735,8.819
-                                                        l-6.828-17.924c9.388-6.828,25.605-11.38,40.692-11.38c32.726,0,47.52,20.2,47.52,41.83c0,19.346-10.811,33.295-24.483,49.511
-                                                        c-12.51,14.794-17.07,27.312-16.216,41.83l0.284,7.397H192.85V252.88z M186.583,292.718c0-10.526,7.121-17.923,17.078-17.923
-                                                        c9.966,0,16.785,7.397,16.785,17.924c0,9.957-6.544,17.639-17.07,17.639C193.419,310.349,186.583,302.667,186.583,292.718z"/>
-                                                </g>
-                                            </g>
-                                        </g>
+                                    <button type="button" @click="open = ! open">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </button>
                                         
@@ -78,26 +61,9 @@
                                                     <div x-data="{ open: false }">
                                                         <x-jet-label class="inline-block mt-5 text-gray-700" for="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" value="{{ $cProperty['title'] }}" />
                                                         @if(isset($cProperty['hint']))
-                                                            <button type="button" class="inline-block w-4 h-4" @click="open = ! open">
-                                                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                                                    viewBox="0 0 422.686 422.686" style="enable-background:new 0 0 422.686 422.686;" xml:space="preserve">
-                                                                <g>
-                                                                    <g>
-                                                                        <path style="fill:#010002;" d="M211.343,422.686C94.812,422.686,0,327.882,0,211.343C0,94.812,94.812,0,211.343,0
-                                                                            s211.343,94.812,211.343,211.343C422.694,327.882,327.882,422.686,211.343,422.686z M211.343,16.257
-                                                                            c-107.565,0-195.086,87.52-195.086,195.086s87.52,195.086,195.086,195.086c107.574,0,195.086-87.52,195.086-195.086
-                                                                            S318.917,16.257,211.343,16.257z"/>
-                                                                    </g>
-                                                                    <g>
-                                                                        <g>
-                                                                            <path style="fill:#010002;" d="M192.85,252.88l-0.569-7.397c-1.707-15.371,3.414-32.149,17.647-49.227
-                                                                                c12.811-15.078,19.923-26.182,19.923-38.985c0-14.51-9.112-24.182-27.044-24.467c-10.242,0-21.622,3.414-28.735,8.819
-                                                                                l-6.828-17.924c9.388-6.828,25.605-11.38,40.692-11.38c32.726,0,47.52,20.2,47.52,41.83c0,19.346-10.811,33.295-24.483,49.511
-                                                                                c-12.51,14.794-17.07,27.312-16.216,41.83l0.284,7.397H192.85V252.88z M186.583,292.718c0-10.526,7.121-17.923,17.078-17.923
-                                                                                c9.966,0,16.785,7.397,16.785,17.924c0,9.957-6.544,17.639-17.07,17.639C193.419,310.349,186.583,302.667,186.583,292.718z"/>
-                                                                        </g>
-                                                                    </g>
-                                                                </g>
+                                                            <button type="button" class="inline-block" @click="open = ! open">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                                 </svg>
                                                             </button>
                                                             <div class="mb-2 h-5 leading-5">
@@ -139,9 +105,17 @@
                     </div>
                     @endforeach
                 </div>
-            </div> 
 
-        <button type="submit" wire:loading.remove class="block mx-auto bg-purple-600 text-white text-base font-semibold mt-5 py-2 px-4 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200">Generate Input File</button>
+            </div> 
+        <button type="submit" class="block mx-auto bg-purple-600 text-white font-semibold mt-5 py-2 px-4 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200">Generate Input File</button>
     </form>
+
+    <div class="flex flex-wrap justify-center">
+    @for($i = 0; $i < $totalSize/$windowSize; $i++)
+        <a href="javascript: void(0)" wire:click="setCurrentWindow({{ $i }})" class="{{ $currentWindow === $i ? 'bg-blue-500':'bg-blue-300' }} mt-5 mx-2 bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded hover:bg-blue-500">
+            {{ $i }}
+        </a>
+    @endfor
+    </div>
 
 </div>

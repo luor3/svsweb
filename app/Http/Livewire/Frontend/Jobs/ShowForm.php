@@ -347,9 +347,6 @@ class ShowForm extends Component
                         $this->inputFileJson[$fileType] = $file->store('jobs/'.$this->job->id,'public');
                     }
                 }
-                //dd($this->inputFileJson);
-                //$this->job->input_file_json = json_encode($this->inputFileJson);
-                
                 
             } 
 
@@ -362,13 +359,23 @@ class ShowForm extends Component
             $data = job::find($this->job->id)->toArray();
             $data['configuration'] = json_decode($data['configuration'],true);
             $data['configuration']['input_file_json'] = $this->inputFileJson;
-            unset($this->inputFileJson);
+            
+            if(count($this->inputFileJson['fileName']) - 1 == count($this->uploadFields))
+            {
+                $this->job->status = 1;
+                foreach($this->uploadFields as $fType => $extension)
+                {
+                    if(!array_key_exists($fType, $this->inputFileJson['fileName']))
+                    {
+                        $this->job->status = 0;
+                        break;
+                    }
+                }
 
-            if(!empty($this->job->output_file_json)){
-            //  $data['configuration'] = json_decode($data['configuration'],true);
-            $data['configuration']['output_file_json'] = $this->job->output_file_json;
-            unset($this->job->output_file_json);
             }
+            
+            unset($this->inputFileJson);
+        
             $this->job->configuration = json_encode($data['configuration']);
 
             $status = $this->job->save();           

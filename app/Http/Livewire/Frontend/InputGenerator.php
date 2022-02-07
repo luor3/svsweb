@@ -41,7 +41,31 @@ class InputGenerator extends Component
      * 
      * @return array
      */
+    public $propertyWindow=[];
+
+    /**
+     * 
+     * @return int
+     */
+    public $currentWindow = 0;
+
+
+    /**
+     * 
+     * @return int
+     */
+    public $windowSize = 6;
+
+
+    public $totalSize = 0;
+
+    /**
+     * 
+     * @return array
+     */
     public $validationRules;
+
+
 
     /**
      * 
@@ -61,7 +85,8 @@ class InputGenerator extends Component
     {
         $this->loadInputInfo();
         $this->initSys();
-        //dd($this->validationRules);
+        $this->totalSize = count($this->inputInfo['properties']);
+        $this->windowUpdate();
     }
 
 
@@ -71,10 +96,28 @@ class InputGenerator extends Component
      */
     public function render()
     {
-        //dd($this->inputValue);
+        //dd($this->propertyWindow);
         return view('frontend.input-generator');
     }
 
+
+
+    public function windowUpdate(){
+        //dd($this->inputInfo);
+
+        $offset = $this->currentWindow * $this->windowSize;
+        $keys = array_keys( $this->inputInfo['properties'] );
+        for($i = $offset;  $i < $this->totalSize && $i < $this->windowSize + $offset; $i++){
+            $this->propertyWindow[$keys[$i]] = $this->inputInfo['properties'][$keys[$i]];
+        }
+
+    }
+
+    public function setCurrentWindow($current){
+        $this->currentWindow = $current;
+        $this->propertyWindow = [];
+        $this->windowUpdate();
+    }
 
     /**
      * load the input-template.json file

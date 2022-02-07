@@ -155,33 +155,7 @@ class CreateForm extends Component
      */
     public function render()
     {
-        $output_file_names = [];
-        if($this->next)
-        {
-            for ($x = 0; $x < count($this->output_files); $x++) 
-            {
-                $output_file_names[$x] = $this->output_files[$x]->getClientOriginalName();
-            }
-
-            $this-> displayEditable = true;
-            foreach ($this->input_files as $fileType => $file)
-            {
-                if(!isset($this->input_files[$fileType]))
-                {
-                    $this->displayEditable = false;
-                    break;
-                }         
-            }
-            if(count($output_file_names) < 1)
-            {
-                $this->displayEditable = false;
-            }
-
-        }
-
-        return view(self::COMPONENT_TEMPLATE, [
-            'output_file_names' => $output_file_names
-        ]);
+        return view(self::COMPONENT_TEMPLATE);
     }
 
 

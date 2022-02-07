@@ -1,15 +1,4 @@
 <div class="flex-grow p-3 text-1xl bg-gray-100">  
-    <!-- <div class="rounded-lg flex justify-around mb-5 text-center">
-        <a href="javascript: void(0)" wire:click="setPath('userprofile')" class="{{ $currentModule == 'userprofile' ? 'bg-blue-900 text-white':  'bg-blue-400'}} block px-3 py-2 w-1/4 rounded-xl text-gray-100 hover:bg-blue-900 hover:text-white">
-            <span>Profile Setting</span>
-        </a>
-        <a href="javascript: void(0)" wire:click="setPath('jobs.create')" class="{{ $currentModule == 'jobs.create' ? 'bg-blue-900 text-white':  'bg-blue-400'}} block px-3 py-2 w-1/4 rounded-xl text-gray-100 hover:bg-blue-900 hover:text-white">
-            <span>Job Submission</span>
-        </a>
-        <a href="javascript: void(0)" wire:click="setPath('jobs')" class="{{ $currentModule == 'jobs' ? 'bg-blue-900 text-white':  'bg-blue-400'}} block px-3 py-2 w-1/4 rounded-xl text-gray-100 hover:bg-blue-900 hover:text-white">
-            <span>View Jobs</span>
-        </a>
-    </div>   -->
     
     <div class="lg:flex flex-wrap justify-around">
 
