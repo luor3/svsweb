@@ -74,8 +74,8 @@
                 class="block mt-1 w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg"
                 id="sshserver_id" wire:model="sshserver_id">
                 @foreach($sshservers as $index=>$sshserver)
-                <option value="{{$sshserver->id}}" @if($index==0) selected @endif>
-                    {{$sshserver->server_name}}</option>
+                <option value="{{$sshserver['sshserver']->id}}" @if($index==0) selected @endif>
+                    {{$sshserver['sshserver']->server_name}} cpu: {{$sshserver['cpu']}} memory: {{$sshserver['memory']}}</option>
                 @endforeach
                 <option value="custom">custon server</option>
             </select>

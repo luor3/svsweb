@@ -9,6 +9,7 @@ use App\Models\Job;
 use App\Models\sshservers;
 
 use App\Models\jobs_sshservers;
+use Collective\Remote\Connection;
 
 use Illuminate\Support\Str;
 use App\Models\Category;
@@ -169,20 +170,29 @@ class CreateForm extends Component
         }
         if(count($categories) != 0)
             $this->category_id = $categories[0]->id; 
-        $sshservers = sshservers::where("active", "=","1")->get();
-        foreach(sshservers as $server) {
+        $servers = sshservers::where("active", "=","1")->get();
+        foreach($servers as $server) {
             $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-            $command = "vmstat";
+            $commands =[ "top -b -n 1 | head -n 4"];
             $that = $this;
-            $c->run([$command], function($line) use ($that) {
-                $output = $line.PHP_EOL;
-                $that->sshservers[] = array(
-                    "sshserver" => $c,
-                    "output" => $output
-                );
+            $cpu= '';
+            $memory = "";
+            $c->run($commands, function($line) use (&$cpu) {
+                $output = explode("\n" ,$line);
+                $cpu =  explode(" " ,substr($output[2],7,strlen($output[2])-7))[2];
             });
+            $c->run(["free -k"], function($line) use (&$memory) {
+                $output = explode("\n" ,$line);
+                $memorys =  preg_split("/[ ]+/" ,$output[1]);
+                $memory = number_format($memorys[2]/ $memorys[1] * 100,2)."%";
+            });
+            $that->sshservers[] = array(
+                "sshserver" => $server,
+                "cpu" => $cpu,
+                "memory" => $memory,
+            );
         }
-        if(!count($sshservers)){
+        if(!count($servers)){
             $this->sshserver_id = "custom";
         }
     }
