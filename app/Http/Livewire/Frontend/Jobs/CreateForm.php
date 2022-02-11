@@ -170,6 +170,9 @@ class CreateForm extends Component
         if(count($categories) != 0)
             $this->category_id = $categories[0]->id; 
         $this->sshservers = sshservers::where("active", "=","1")->get();
+        if(!count($this->sshservers)){
+            $this->sshserver_id = "custom";
+        }
     }
 
 
