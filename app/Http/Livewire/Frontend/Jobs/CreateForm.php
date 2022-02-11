@@ -169,8 +169,20 @@ class CreateForm extends Component
         }
         if(count($categories) != 0)
             $this->category_id = $categories[0]->id; 
-        $this->sshservers = sshservers::where("active", "=","1")->get();
-        if(!count($this->sshservers)){
+        $sshservers = sshservers::where("active", "=","1")->get();
+        foreach(sshservers as $server) {
+            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+            $command = "vmstat";
+            $that = $this;
+            $c->run([$command], function($line) use ($that) {
+                $output = $line.PHP_EOL;
+                $that->sshservers[] = array(
+                    "sshserver" => $c,
+                    "output" => $output
+                );
+            });
+        }
+        if(!count($sshservers)){
             $this->sshserver_id = "custom";
         }
     }
@@ -227,31 +239,54 @@ class CreateForm extends Component
 
         $server_id = $this->sshserver_id;
         if(!strcmp($server_id,"custom")) {
-            $ssh_server = new sshservers();
-            $ssh_server->server_name = $this->server_name;
-            $ssh_server->host = $this->host;
-            $ssh_server->port = $this->port;
-            $ssh_server->username = $this->username;
-            $ssh_server->password = $this->password;
-            $ssh_server->save();
-            $server_id = $ssh_server->id;
-        } 
-        $jobs_ssh_server = new jobs_sshservers();
-        $jobs_ssh_server->job_id = $this->job->id;
-        $jobs_ssh_server->sshserver_id = $server_id;
-        $status = $jobs_ssh_server->save();
+            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+            $command = "vmstat";
+            $that = $this;
+            $c->run([$command], function($line) use ($that) {
+                $ssh_server = new sshservers();
+                $ssh_server->server_name = $that->server_name;
+                $ssh_server->host = $that->host;
+                $ssh_server->port = $that->port;
+                $ssh_server->username = $that->username;
+                $ssh_server->password = $that->password;
+                $ssh_server->save();
+                $server_id = $ssh_server->id;
+                $jobs_ssh_server = new jobs_sshservers();
+                $jobs_ssh_server->job_id = $that->job->id;
+                $jobs_ssh_server->sshserver_id = $server_id;
+                $status = $jobs_ssh_server->save();
+                $status = $that->job->save();
 
-        $status = $this->job->save();
-
-        $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
-        $flag = $status ? 'success' : 'danger';
-
-        session()->flash('flash.banner', $msg);
-        session()->flash('flash.bannerStyle', $flag);
+                $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
+                $flag = $status ? 'success' : 'danger';
+    
+                session()->flash('flash.banner', $msg);
+                session()->flash('flash.bannerStyle', $flag);
+                
+                if ($status) 
+                {    
+                    return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
+                }
+            });
         
-        if ($status) 
-        {    
-            return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
+        } else {
+            $jobs_ssh_server = new jobs_sshservers();
+            $jobs_ssh_server->job_id = $this->job->id;
+            $jobs_ssh_server->sshserver_id = $server_id;
+            $status = $jobs_ssh_server->save();
+            $status = $this->job->save();
+
+
+            $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
+            $flag = $status ? 'success' : 'danger';
+
+            session()->flash('flash.banner', $msg);
+            session()->flash('flash.bannerStyle', $flag);
+            
+            if ($status) 
+            {    
+                return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
+            }
         }
 
     }
@@ -376,11 +411,5 @@ class CreateForm extends Component
             }
         }
     }
-
-    public function a()
-    {
-        dd($this->sshserver_id);
-    }
-   
 
 }
