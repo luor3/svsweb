@@ -9,6 +9,7 @@ use App\Models\Job;
 use App\Models\sshservers;
 
 use App\Models\jobs_sshservers;
+
 use Illuminate\Support\Str;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
@@ -111,6 +112,13 @@ class CreateForm extends Component
      */
     public $next = false;
     
+    public $server_name = '';
+    public $host = '';
+    public $port = '';
+    public $username = '';
+    public $password = '';
+
+    
 
     public $uploadFields = [];
 
@@ -120,6 +128,7 @@ class CreateForm extends Component
      * @var Job
      */
     public $job;
+    
 
     
     /**
@@ -213,12 +222,21 @@ class CreateForm extends Component
         $this->job->configuration = $input_json;
         $this->job->status = $this->status;
 
-        foreach($this->sshservers as $server) {
-            $ssh_server = new jobs_sshservers();
-            $ssh_server->job_id = $this->job->id;
-            $ssh_server->sshserver_id = $server->id;
-            $status = $ssh_server->save();
-        }
+        $server_id = $this->sshserver_id;
+        if(!strcmp($server_id,"custom")) {
+            $ssh_server = new sshservers();
+            $ssh_server->server_name = $this->server_name;
+            $ssh_server->host = $this->host;
+            $ssh_server->port = $this->port;
+            $ssh_server->username = $this->username;
+            $ssh_server->password = $this->password;
+            $ssh_server->save();
+            $server_id = $ssh_server->id;
+        } 
+        $jobs_ssh_server = new jobs_sshservers();
+        $jobs_ssh_server->job_id = $this->job->id;
+        $jobs_ssh_server->sshserver_id = $server_id;
+        $status = $jobs_ssh_server->save();
 
         $status = $this->job->save();
 
@@ -354,6 +372,11 @@ class CreateForm extends Component
                 $this->input_files[$fileType] = null;
             }
         }
+    }
+
+    public function a()
+    {
+        dd($this->sshserver_id);
     }
    
 
