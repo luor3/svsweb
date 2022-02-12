@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\solver;
+use App\Models\solvers;
 use Illuminate\Http\Request;
 
 class SolverController extends Controller
@@ -10,20 +10,14 @@ class SolverController extends Controller
     /**
      * @var string
      */
-    const PAGE_TEMPLATE = 'solver.show';
+    const PAGE_TEMPLATE = 'solvers.show';
     
     /**
      * @var string
      */
-    const CREATE_TEMPLATE = 'solver.create';
+    const CREATE_TEMPLATE = 'solvers.create';
     
-    /**
-     * Selected DB columns
-     *
-     * @var type 
-     */
-    private static $fields = ['solver.*'];
-    
+
     
     /**
      * 
@@ -34,7 +28,7 @@ class SolverController extends Controller
     {
         return view(
             self::PAGE_TEMPLATE, 
-            ['solver' => solver::all()]
+            ['solvers' => solvers::all()]
         );
     }
     

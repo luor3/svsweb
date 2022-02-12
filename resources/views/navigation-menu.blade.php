@@ -108,13 +108,13 @@
                 </div>
 
                 <div class="custom-dropdown hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-jet-nav-link href="{{ route('solver') }}" :active="request()->routeIs('solver') || request()->routeIs('solver.create')">
+                    <x-jet-nav-link href="{{ route('solvers') }}" :active="request()->routeIs('solvers') || request()->routeIs('solvers.create')">
                         {{ __('Solver') }}
                     </x-jet-nav-link>
                     <div class="dropdown-menu absolute hidden h-auto flex pt-4 mt-14">
                         <ul class="block w-full bg-white shadow">
                             <li class="py-2 px-5">
-                                <x-jet-nav-link href="{{ route('solver.create') }}">
+                                <x-jet-nav-link href="{{ route('solvers.create') }}">
                                     Add solver
                                 </x-jet-nav-link>
                             </li>

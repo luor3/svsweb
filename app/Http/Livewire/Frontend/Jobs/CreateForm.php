@@ -14,6 +14,7 @@ use Collective\Remote\Connection;
 use Illuminate\Support\Str;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
+use App\Models\solvers;
 
 
 class CreateForm extends Component
@@ -56,14 +57,14 @@ class CreateForm extends Component
      * 
      * @var integer
      */
-    public $solver_id;
+    public $jobs_solvers;
 
 
      /**
      * 
      * @var integer
      */
-    public $sshserver_id;
+    public $sshserver_id = '';
 
     /**
      * 
@@ -110,7 +111,7 @@ class CreateForm extends Component
      * for displying only
      * @var sshservers array
      */
-    public $sshservers = [];
+    public $sshservers;
 
 
     /**
@@ -178,6 +179,7 @@ class CreateForm extends Component
     public function mount()
     {
         $categories = Category::all();
+        $this->sshservers = [];
         foreach ($categories as $category)
         {
             $this->categories[$category->id] =  $category->name;
@@ -188,7 +190,6 @@ class CreateForm extends Component
         foreach($servers as $server) {
             $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
             $commands =[ "top -b -n 1 | head -n 4"];
-            $that = $this;
             $cpu= '';
             $memory = "";
             $c->run($commands, function($line) use (&$cpu) {
@@ -200,17 +201,23 @@ class CreateForm extends Component
                 $memorys =  preg_split("/[ ]+/" ,$output[1]);
                 $memory = number_format($memorys[2]/ $memorys[1] * 100,2)."%";
             });
-            $that->sshservers[] = array(
+           array_push( $this->sshservers, array(
                 "sshserver" => $server,
                 "cpu" => $cpu,
                 "memory" => $memory,
-            );
+           ));
         }
         if(!count($servers)){
             $this->sshserver_id = "custom";
+        }       
+        if(count( $this->sshservers)>0)
+        {
+            $this->sshserver_id = $this->sshservers[0]['sshserver']['id'];
         }
 
-        $this->solvers = solver::all();
+        $this->solvers = solvers::all();
+        if(count( $this->solvers) > 0)
+            $this->jobs_solvers = $this->solvers[0]->id; 
     }
 
 
@@ -265,35 +272,41 @@ class CreateForm extends Component
 
         $server_id = $this->sshserver_id;
         if(!strcmp($server_id,"custom")) {
-            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-            $command = "vmstat";
-            $that = $this;
-            $c->run([$command], function($line) use ($that) {
-                $ssh_server = new sshservers();
-                $ssh_server->server_name = $that->server_name;
-                $ssh_server->host = $that->host;
-                $ssh_server->port = $that->port;
-                $ssh_server->username = $that->username;
-                $ssh_server->password = $that->password;
-                $ssh_server->save();
-                $server_id = $ssh_server->id;
-                $jobs_ssh_server = new jobs_sshservers();
-                $jobs_ssh_server->job_id = $that->job->id;
-                $jobs_ssh_server->sshserver_id = $server_id;
-                $status = $jobs_ssh_server->save();
-                $status = $that->job->save();
+            try {
+                $c = new Connection($this->server_name, $this->host.":".$this->port, $this->username,["password"=>$this->password]);
+                $command = "vmstat";
+                $that = $this;
+                $c->run([$command], function($line) use ($that) {
+                    $ssh_server = new sshservers();
+                    $ssh_server->server_name = $that->server_name;
+                    $ssh_server->host = $that->host;
+                    $ssh_server->port = $that->port;
+                    $ssh_server->username = $that->username;
+                    $ssh_server->password = $that->password;
+                    $ssh_server->save();
+                    $server_id = $ssh_server->id;
+                    $jobs_ssh_server = new jobs_sshservers();
+                    $jobs_ssh_server->job_id = $that->job->id;
+                    $jobs_ssh_server->sshserver_id = $server_id;
+                    $status = $jobs_ssh_server->save();
+                    $status = $that->job->save();
 
-                $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
-                $flag = $status ? 'success' : 'danger';
-    
-                session()->flash('flash.banner', $msg);
-                session()->flash('flash.bannerStyle', $flag);
-                
-                if ($status) 
-                {    
-                    return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
-                }
-            });
+                    $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
+                    $flag = $status ? 'success' : 'danger';
+        
+                    session()->flash('flash.banner', $msg);
+                    session()->flash('flash.bannerStyle', $flag);
+                    
+                    if ($status) 
+                    {    
+                        return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
+                    }
+                });
+            } catch(\Exception $e) {
+                session()->flash('flash.banner', $e->getMessage());
+                session()->flash('flash.bannerStyle', 'danger');
+                return redirect()->route(self::FAIL_ROUTE);
+            }
         
         } else {
             $jobs_ssh_server = new jobs_sshservers();
@@ -330,7 +343,7 @@ class CreateForm extends Component
             'name'=>'required|max:255',  
             'description' => 'required|max:255',
             'category_id' => 'required|integer',
-            'solver_id' => 'required|integer',
+            'jobs_solvers' => 'required|integer',
             'input_file' => 'file',
             'description' => 'required|max:255',
         ]);

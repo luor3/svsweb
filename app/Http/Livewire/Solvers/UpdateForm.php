@@ -1,59 +1,76 @@
 <?php
 
-namespace App\Http\Livewire\Solver;
+namespace App\Http\Livewire\Solvers;
 
 use Livewire\Component;
 
 class UpdateForm extends Component
 {
+ 
+    
     /**
      * 
-     * @var auth()->user()
+     * @var integer
      */
-    public $user;
+    public $cid;
     
-     /**
+    /**
      * 
      * @var string
      */
-    public $name = '';
+    public $name;
+
+    public $description = '';
+
 
     /**
      * 
      * @var string
      */
-    public $args = '';
+    public $args;
     
+    /**
+     * 
+     * @var solver
+     */
     public $solver;
-
     
     /**
      * 
      * @var boolean
      */
-    public $confirmingSshserverDeletion = false;
+    public $confirmingSettingDeletion = false;
+    
 
     /**
      * 
-     * @return view
+     * @return array
      */
+    protected function rules()
+    {
+        return [
+            'name' => 'required|max:255|unique:solvers,name,'.$this->cid,
+            'args' => 'required',
+        ];
+    }
+
+
+
     public function render()
     {
-        $this->user = auth()->user();
         if (isset($this->solver)) {
             $this->name = $this->solver->name;
             $this->args = $this->solver->args;
         }
-        
-        return view('solver.update-form');
+
+        return view('solvers.update-form');
     }
-    
-    /**
-     * add new setting
-     */
+
+
     public function update()
-    {   
-        $validatedData = $this->validate();
+    {
+        $this->validate();
+        
         if ($this->solver) {
             $this->solver->name = $this->name;
             $this->solver->args = $this->args;
@@ -75,25 +92,8 @@ class UpdateForm extends Component
             session()->flash('flash.bannerStyle', $flag);
             
             if ($deleted) {    
-                return redirect()->route('solver');
+                return redirect()->route('categories');
             }
         }
     }
-    
-    /**
-     * 
-     * @return array
-     */
-    protected function rules()
-    {
-        return [
-            'server_name' => 'required|max:255|unique:sshservers,server_name,'.$this->sid,
-            'host' => 'required',
-            'port' => 'nullable|string',
-            'username' => 'required',
-            'password' => 'required',
-            'active' => 'nullable|boolean',
-        ];
-    }
 }
-

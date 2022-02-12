@@ -70,23 +70,24 @@
 
         <div class="col-span-6 sm:col-span-6">
             <x-jet-label for="sshserver_id" value="{{ __('SSH Server') }}" />
+           
             <select
                 class="block mt-1 w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg"
                 id="sshserver_id" wire:model="sshserver_id">
                 @foreach($sshservers as $index=>$sshserver)
-                <option value="{{$sshserver['sshserver']->id}}" @if($index==0) selected @endif>
-                    {{$sshserver['sshserver']->server_name}} cpu: {{$sshserver['cpu']}} memory: {{$sshserver['memory']}}</option>
+                <option value="{{$sshserver['sshserver']['id']}}" @if($index==0 ) selected @endif>
+                    {{$sshserver['sshserver']['server_name']}} cpu: {{$sshserver['cpu']}} memory: {{$sshserver['memory']}}</option>
                 @endforeach
-                <option value="custom">custon server</option>
+                <option value="custom">custom server</option>
             </select>
             <x-jet-input-error for="sshserver_id" class="mt-2" />
         </div>
 
         <div class="col-span-6 sm:col-span-6">
-                <x-jet-label for="solver_id" value="{{ __('Solver') }}" />
+                <x-jet-label for="jobs_solvers" value="{{ __('Solver') }}" />
                 <select
                     class="block mt-1 w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg"
-                    id="solver_id" wire:model.defer="solver_id">
+                    id="jobs_solvers" wire:model.defer="jobs_solvers">
                     @foreach($solvers as $index=>$solver)
                     <option value="{{$solver->id}}" @if($index==0) selected @endif>{{$solver->name}}</option>
                     @endforeach

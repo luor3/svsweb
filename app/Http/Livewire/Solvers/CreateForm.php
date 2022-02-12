@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Livewire\Solver;
+namespace App\Http\Livewire\Solvers;
 
 use Livewire\Component;
-use App\Models\solver;
+use App\Models\solvers;
 
 class CreateForm extends Component
 {
@@ -19,7 +19,7 @@ class CreateForm extends Component
      * @var type
      */
     protected $rules = [
-        'name' => 'required|unique:solver|max:255',
+        'name' => 'required|unique:solvers|max:255',
         'args' => 'required',
     ];
     
@@ -29,6 +29,12 @@ class CreateForm extends Component
      */
     public $name = '';
 
+     /**
+     * 
+     * @var string
+     */
+    public $description = '';
+
     /**
      * 
      * @var string
@@ -37,7 +43,7 @@ class CreateForm extends Component
     
     /**
      * 
-     * @var sshserver
+     * @var solver
      */
     protected $solver;
 
@@ -49,7 +55,7 @@ class CreateForm extends Component
     {
         $this->user = auth()->user();
         
-        return view('solver.create-form');
+        return view('solvers.create-form');
     }
     
     /**
@@ -58,11 +64,12 @@ class CreateForm extends Component
     public function add()
     {   
         $data = $this->validate();
-        $status = solver::create($data);
+
+        $status = solvers::create($data);
        
         $msg =  $status ? 'Setting successfully added!' : 'Ooops! Something went wrong.';
         $flag = $status ? 'success' : 'danger';
-        $redirect = $status ? 'solver' : 'solver.create';
+        $redirect = $status ? 'solvers' : 'solvers.create';
 
         session()->flash('flash.banner', $msg);
         session()->flash('flash.bannerStyle', $flag);

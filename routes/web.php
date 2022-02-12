@@ -80,9 +80,9 @@ Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admi
     Route::get('/create', [SshserversController::class, 'showCreate'])->name('sshservers.create');
 });
 
-Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admin/solver')->group(function () {
-    Route::get('/', [SolverController::class, 'show'])->name('solver');
-    Route::get('/create', [SolverController::class, 'showCreate'])->name('solver.create');
+Route::middleware(['auth:sanctum', 'verified', 'rolecheck:admin'])->prefix('admin/solvers')->group(function () {
+    Route::get('/', [SolverController::class, 'show'])->name('solvers');
+    Route::get('/create', [SolverController::class, 'showCreate'])->name('solvers.create');
 });
 
 Route::middleware(['auth:sanctum', 'verified','user.status.check'])->prefix('jobs')->group(function () {
