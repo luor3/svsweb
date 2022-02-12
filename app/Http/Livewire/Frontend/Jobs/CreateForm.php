@@ -56,6 +56,13 @@ class CreateForm extends Component
      * 
      * @var integer
      */
+    public $solver_id;
+
+
+     /**
+     * 
+     * @var integer
+     */
     public $sshserver_id;
 
     /**
@@ -91,6 +98,13 @@ class CreateForm extends Component
      * @var Category array
      */
     public $categories = [];
+
+
+    /**
+     * for displying only
+     * @var Category array
+     */
+    public $solvers = [];
 
      /**
      * for displying only
@@ -195,6 +209,8 @@ class CreateForm extends Component
         if(!count($servers)){
             $this->sshserver_id = "custom";
         }
+
+        $this->solvers = solver::all();
     }
 
 
@@ -314,6 +330,7 @@ class CreateForm extends Component
             'name'=>'required|max:255',  
             'description' => 'required|max:255',
             'category_id' => 'required|integer',
+            'solver_id' => 'required|integer',
             'input_file' => 'file',
             'description' => 'required|max:255',
         ]);

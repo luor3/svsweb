@@ -81,6 +81,18 @@
             </select>
             <x-jet-input-error for="sshserver_id" class="mt-2" />
         </div>
+
+        <div class="col-span-6 sm:col-span-6">
+                <x-jet-label for="solver_id" value="{{ __('Solver') }}" />
+                <select
+                    class="block mt-1 w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg"
+                    id="solver_id" wire:model.defer="solver_id">
+                    @foreach($solvers as $index=>$solver)
+                    <option value="{{$solver->id}}" @if($index==0) selected @endif>{{$solver->name}}</option>
+                    @endforeach
+                </select>
+                <x-jet-input-error for="category_id" class="mt-2" />
+        </div>
         @if(!strcmp($sshserver_id,"custom"))
             <div class="col-span-6 sm:col-span-6" id="sshserver-form">
                 <div class="col-span-6 sm:col-span-6">
