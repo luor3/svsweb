@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use App\Models\solvers;
-
+use Exception;
 
 class CreateForm extends Component
 {
@@ -58,6 +58,8 @@ class CreateForm extends Component
      * @var integer
      */
     public $jobs_solvers;
+
+    public $confirmingJobDeletion = false;
 
 
      /**
@@ -171,6 +173,15 @@ class CreateForm extends Component
      */
     const FAIL_ROUTE = 'userprofile';
 
+    public function updatingConfirmingJobDeletion()
+    {
+        if($this->confirmingJobDeletion == true){
+            $this->confirmingJobDeletion = false;
+            return redirect()->route(self::FAIL_ROUTE);
+        }
+    }
+
+
     /**
      * initilize properties
      * 
@@ -192,15 +203,23 @@ class CreateForm extends Component
             $commands =[ "top -b -n 1 | head -n 4"];
             $cpu= '';
             $memory = "";
-            $c->run($commands, function($line) use (&$cpu) {
-                $output = explode("\n" ,$line);
-                $cpu =  explode(" " ,substr($output[2],7,strlen($output[2])-7))[2];
-            });
-            $c->run(["free -k"], function($line) use (&$memory) {
-                $output = explode("\n" ,$line);
-                $memorys =  preg_split("/[ ]+/" ,$output[1]);
-                $memory = number_format($memorys[2]/ $memorys[1] * 100,2)."%";
-            });
+            try{
+                $c->run($commands, function($line) use (&$cpu) {
+                    $output = explode("\n" ,$line);
+                    $cpu =  explode(" " ,substr($output[2],7,strlen($output[2])-7))[2];
+                });
+                $c->run(["free -k"], function($line) use (&$memory) {
+                    $output = explode("\n" ,$line);
+                    $memorys =  preg_split("/[ ]+/" ,$output[1]);
+                    $memory = number_format($memorys[2]/ $memorys[1] * 100,2)."%";
+                });
+            }
+            catch(Exception $e){
+                $this->confirmingJobDeletion = true;
+                //session()->flash('flash.banner', $e->getMessage());
+                //session()->flash('flash.bannerStyle', 'danger');
+                //return redirect()->route(self::FAIL_ROUTE);
+            }
            array_push( $this->sshservers, array(
                 "sshserver" => $server,
                 "cpu" => $cpu,

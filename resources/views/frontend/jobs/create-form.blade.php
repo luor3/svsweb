@@ -159,4 +159,22 @@
 
 
     @endif
+    <x-jet-confirmation-modal wire:model="confirmingJobDeletion">
+            <x-slot name="title">
+                <span class="font-bold uppercase">
+                    {{ __('Warning') }}
+                </span>
+            </x-slot>
+
+            <x-slot name="content">
+                {{ __('Connection failed ') }}
+            </x-slot>
+
+            <x-slot name="footer">
+
+                <x-jet-danger-button class="ml-2" wire:click="$toggle('confirmingJobDeletion')" wire:loading.attr="disabled">
+                    {{ __('OK') }}
+                </x-jet-danger-button>
+            </x-slot>
+        </x-jet-confirmation-modal>
 </div>

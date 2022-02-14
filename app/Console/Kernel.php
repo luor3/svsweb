@@ -37,7 +37,7 @@ class Kernel extends ConsoleKernel
             $files = Job::where('progress','=','pending')->orderBy('created_at','desc')->get();
            
             foreach($files as $f){
-                foreach($f->sshservers as $server){                
+                foreach($f->sshservers as $server){             
                     $sftp = new SFTP($server->host, $server->port);
                     if (!$sftp->login($server->username, $server->password)) {
                         exit('Login Failed');
@@ -87,11 +87,10 @@ class Kernel extends ConsoleKernel
                     if($filename['input']){
                         
                         $sftp->chdir("..");
-                        
                         $filePath = storage_path('app/'.$filename['input']);
                         $file = fopen($filePath, 'r');
                         $fileName = basename($filePath);
-                        $sftp->put($fileName, $file, 8);
+                        $sftp->put('input.input', $file, 8);
             
                     }
                     $sftp->chdir('..');
@@ -99,6 +98,7 @@ class Kernel extends ConsoleKernel
                     $f->progress = 'In Progress';
                     $command = "qsub";
                     $args = "1"; ##todo
+                
                     $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
                     $c->run([sprintf("%s -v qsub-args=%s %s",$command, $args, Kernel::app)], function($line) use ($f)
                     {
