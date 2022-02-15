@@ -173,12 +173,10 @@ class CreateForm extends Component
      */
     const FAIL_ROUTE = 'userprofile';
 
-    public function updatingConfirmingJobDeletion()
+    public function updateConfirmingJobDeletion()
     {
-        if($this->confirmingJobDeletion == true){
-            $this->confirmingJobDeletion = false;
-            return redirect()->route(self::FAIL_ROUTE);
-        }
+            
+        return redirect()->route(self::FAIL_ROUTE);
     }
 
 

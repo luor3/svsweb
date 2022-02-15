@@ -588,12 +588,13 @@ class ShowForm extends Component
                     exit('Login Failed');
                 } 
 
-                $path = '/home/ruoyuan/_OUTPUT';
+                $path = '/home/ruoyuanluo/_OUTPUT';
                 $sftp->chdir($path);
                 $files = $sftp->nlist(".");
                 $local_path = "public";
 
                 foreach ($files as $file) {
+                    
                     if($file != ".." && $file != ".") {
                         $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
                     }
@@ -612,7 +613,7 @@ class ShowForm extends Component
                 }, $output_name);
             }
         }
-        catch(Exception $e) {
+        catch(\Exception $e) {
             dd($e->getMessage());
         }
         

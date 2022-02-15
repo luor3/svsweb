@@ -76,7 +76,7 @@
                 id="sshserver_id" wire:model="sshserver_id">
                 @foreach($sshservers as $index=>$sshserver)
                 <option value="{{$sshserver['sshserver']['id']}}" @if($index==0 ) selected @endif>
-                    {{$sshserver['sshserver']['server_name']}} cpu: {{$sshserver['cpu']}} memory: {{$sshserver['memory']}}</option>
+                    {{$sshserver['sshserver']['server_name']}} [CPU usage: {{$sshserver['cpu']}}] [Memory usage: {{$sshserver['memory']}}]</option>
                 @endforeach
                 <option value="custom">custom server</option>
             </select>
@@ -172,7 +172,7 @@
 
             <x-slot name="footer">
 
-                <x-jet-danger-button class="ml-2" wire:click="$toggle('confirmingJobDeletion')" wire:loading.attr="disabled">
+                <x-jet-danger-button class="ml-2" wire:click="updateConfirmingJobDeletion()" wire:loading.attr="disabled">
                     {{ __('OK') }}
                 </x-jet-danger-button>
             </x-slot>

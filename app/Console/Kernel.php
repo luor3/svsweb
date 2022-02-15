@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    public const app = "b.sh";
+    public const app = "run.pbs";
 
     protected $commands = [
         //
