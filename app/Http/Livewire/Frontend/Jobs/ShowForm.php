@@ -532,8 +532,8 @@ class ShowForm extends Component
                 if ($this->job->remotejob && $this->job->remotejob->remote_job_id) {
                 $remote_id =  $this->job->remotejob->remote_job_id;
                 $pid_shell = sprintf("qsig -s SIGKILL %s" ,$remote_id );
-                // $id);
                 $server = sshservers::find($this->server_id);
+                
                 $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
                 $c->run([
                     $pid_shell
@@ -588,7 +588,8 @@ class ShowForm extends Component
                     exit('Login Failed');
                 } 
 
-                $path = '/home/ruoyuanluo/_OUTPUT';
+                $path = '/home/ruoyuanluo/_OUTPUT/'.$jobID;
+                //dd($path);
                 $sftp->chdir($path);
                 $files = $sftp->nlist(".");
                 $local_path = "public";

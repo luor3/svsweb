@@ -19,6 +19,8 @@ class Kernel extends ConsoleKernel
      */
     public const app = "run.pbs";
 
+    public const out = "out.txt";
+
     protected $commands = [
         //
     ];
@@ -97,10 +99,15 @@ class Kernel extends ConsoleKernel
                     
                     $f->progress = 'In Progress';
                     $command = "qsub";
-                    $args = "1"; ##todo
-                
+                    //$args = "1"; ##todo
+                    
                     $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-                    $c->run([sprintf("%s -v qsub-args=%s %s",$command, $args, Kernel::app)], function($line) use ($f)
+                    $c->run([sprintf("mkdir _OUTPUT/".$f->id)], function($l2) use($f){
+                        //echo($f->id);
+                    });
+                    $path = "/home/ruoyuanluo/_OUTPUT/".$f->id.'/'.Kernel::out;
+                    //$c->run([sprintf("%s -v qsub-args=%s %s",$command, $args, Kernel::app)], function($line) use ($f)
+                    $c->run([sprintf("%s -o %s %s",$command, $path, Kernel::app)], function($line) use ($f)// qsub 
                     {
                         echo($line);
                         $new_job = new remotejob();
@@ -121,7 +128,7 @@ class Kernel extends ConsoleKernel
             
             foreach($remote_jobs as $rj) {
                 $command = sprintf($command_template, str_replace(array("\n", "\r"), '',$rj->remote_job_id ));
-                foreach($rj->job->sshservers as $serverj) {
+                foreach($rj->job->sshservers as $server) {
                     $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
                     $c->run([$command], function($line) use ($server, $rj,$pattern)
                     {
@@ -135,27 +142,37 @@ class Kernel extends ConsoleKernel
                                 $filename = Kernel::app.".o".strval($real_remote_id[0]);
                                 $cc = "ls ".$filename;
                                 $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-
-                                $c->run( [$cc], function($l) use($rj,$filename) {
-                                    if(strcmp($l.PHP_EOL,$filename)) {
-                                        
+                                
+                                $c1 = "ls _OUTPUT";
+                                // $c->run([sprintf("mkdir _OUTPUT/".$rj->job_id)], function($l2) use($rj){
+                                //     echo($rj->job_id);
+                                // });
+                                $c->run( [$c1], function($l) use($rj) {
+                                    if(strcmp($l.PHP_EOL, Kernel::out)) {
+                                        //echo($l.PHP_EOL);
+  
                                         $j = job::find($rj->job_id);
-                                    
+                                        
                                         $j->previous_progress = $j->progress;
                                         $j->progress = "Completed";
                                         
                                         $j->save();
                                         $rj->job_state = "E";
                                         $rj->save();
-                                    } else {
-                                        $j = job::find($rj->job_id);
-                                        $j->previos_progress = $j->progress;
-                                        $j->progress = "Canceled";
-                                        $j->save();
-                                        $rj->job_state = "S";
-                                        $rj->save();
                                     }
+                                    //  else {
+                                    //     $j = job::find($rj->job_id);
+                                    //     $j->previos_progress = $j->progress;
+                                    //     $j->progress = "Cancelled";
+                                    //     $j->save();
+                                    //     $rj->job_state = "S";
+                                    //     $rj->save();
+                                    // }
                                 });
+                                //$c->run([sprintf("rm /home/ruoyuanluo/_OUTPUT/out.txt")], function($rm) use($c){
+                                    
+                                //});
+
                             }
                         } else {
                             # found job id with qstat means job is not complete or delete;
