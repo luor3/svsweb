@@ -15,7 +15,7 @@ class CreateJobsSshserversTable extends Migration
     {
         Schema::create('jobs_sshservers', function (Blueprint $table) {
             $table->id()->unique();
-            $table->foreignId('job_id')->constrained('jobs');
+            $table->foreignId('job_id')->constrained('jobs')->onDelete('cascade');
             $table->foreignId('sshserver_id')->constrained('sshservers');
             $table->timestamps();
         });

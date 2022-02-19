@@ -15,7 +15,6 @@ use App\Models\sshservers;
 use phpseclib\Net\SFTP;
 use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
-use SSH;
 use Collective\Remote\Connection;
 class ShowForm extends Component
 {
@@ -530,24 +529,30 @@ class ShowForm extends Component
         $this->job-> progress = 'Cancelled';
         try {
                 if ($this->job->remotejob && $this->job->remotejob->remote_job_id) {
-                $remote_id =  $this->job->remotejob->remote_job_id;
-                $pid_shell = sprintf("qsig -s SIGKILL %s" ,$remote_id );
-                $server = sshservers::find($this->server_id);
-                
-                $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-                $c->run([
-                    $pid_shell
-                ], function($line) use($c)
-                {
-                    $c->run([
-                        sprintf('kill %s', $line)
-                    ], function($line2) {
-                    });
-                }
-                );
+                    $remotejob =  $this->job->remotejob;
+                    $remote_id =  $remotejob->remote_job_id;
+                    $pid_shell = "qsig -s SIGKILL %s".$remote_id;
+                    $server = sshservers::find($this->server_id);
+                foreach($this->job->sshservers as $server) {
+                    if($server) {
+                        $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+                        $c->run([
+                            $pid_shell
+                        ], function($line) use($server, $remotejob)
+                        {
+                            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+                            $c->run([
+                                sprintf('kill %s', $line)
+                            ], function($line2) use($remotejob) {
+                                $remotejob->delete();
+                            });
+                        }
+                        );
+                    }
+                 }
             }
-        } catch(Exception $e) {
-            dd($e->getMessage());
+        } catch(\Exception $e) {
+            dd($e);
         }
         $this->job->save();
         return redirect()->route($this->pathName);
@@ -580,7 +585,7 @@ class ShowForm extends Component
     {
         try {
             $this->job = job::find($jobID);
-            if($this->job->progress == 'Completed') {
+            if($this->job->progress == 'Completed' || $this->job->progress == 'Cancelled') {
                 $output_name = sprintf("%d_output.zip", $jobID);
                 $server = sshservers::find($server_id);
                 $sftp = new SFTP($server->host, $server->port);

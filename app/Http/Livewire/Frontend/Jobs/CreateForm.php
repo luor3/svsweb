@@ -22,7 +22,7 @@ class CreateForm extends Component
 
     use WithFileUploads;
 
-
+    protected $listeners = ['click-out' => 'updateConfirmingJobDeletion'];
     /**
      * 
      * @var string
@@ -197,7 +197,7 @@ class CreateForm extends Component
             $this->category_id = $categories[0]->id; 
         $servers = sshservers::where("active", "=","1")->get();
         foreach($servers as $server) {
-            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password], null, 2);
             $commands =[ "top -b -n 1 | head -n 4"];
             $cpu= '';
             $memory = "";
@@ -468,5 +468,6 @@ class CreateForm extends Component
             }
         }
     }
+
 
 }

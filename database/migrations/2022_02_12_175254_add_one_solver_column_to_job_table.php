@@ -26,7 +26,7 @@ class AddOneSolverColumnToJobTable extends Migration
     public function down()
     {
         Schema::table('jobs', function (Blueprint $table) {
-            $table->dropForeignId('jobs_solvers');
+            $table->dropConstrainedForeignId('jobs_solvers');
         });
     }
 }
