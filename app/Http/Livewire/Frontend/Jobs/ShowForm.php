@@ -16,6 +16,8 @@ use phpseclib\Net\SFTP;
 use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
 use Collective\Remote\Connection;
+use Illuminate\Support\Facades\File;
+
 class ShowForm extends Component
 {
 
@@ -587,32 +589,36 @@ class ShowForm extends Component
             $this->job = job::find($jobID);
             if($this->job->progress == 'Completed' || $this->job->progress == 'Cancelled') {
                 $output_name = sprintf("%d_output.zip", $jobID);
-                $server = sshservers::find($server_id);
-                $sftp = new SFTP($server->host, $server->port);
-                if (!$sftp->login($server->username, $server->password)) {
-                    exit('Login Failed');
-                } 
+                // // $server = sshservers::find($server_id);
+                // // $sftp = new SFTP($server->host, $server->port);
+                // // if (!$sftp->login($server->username, $server->password)) {
+                // //     exit('Login Failed');
+                // // } 
 
-                $path = '/home/ruoyuanluo/_OUTPUT/'.$jobID;
-                //dd($path);
-                $sftp->chdir($path);
-                $files = $sftp->nlist(".");
-                $local_path = "public";
+                // // $path = '/home/ruoyuanluo/_OUTPUT/'.$jobID;
+                // // //dd($path);
+                // // $sftp->chdir($path);
+                // // $files = $sftp->nlist(".");
+                $local_path = public_path()."\storage\jobs\\".$jobID."\output\\";
 
-                foreach ($files as $file) {
+                $files = File::files($local_path);
+                // // foreach ($files as $file) {
                     
-                    if($file != ".." && $file != ".") {
-                        $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
-                    }
-                }
+                // //     if($file != ".." && $file != ".") {
+                // //         $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
+                // //     }
+                // // }
                 return response()->streamDownload(function () use($output_name, $local_path, $files)
                 {
                     $options = new Archive();
                     $options->setSendHttpHeaders(false);
                     $zip = new ZipStream( $output_name, $options);
                     foreach ($files as $file) {
-                        if($file != ".." && $file != ".") {
-                            $zip->addFileFromPath($file,$local_path);
+                    //dd($file);
+                       //dd(file_get_contents($file->getPathname()));
+                        $f = $file->getFilename();
+                        if($f != ".." && $f != ".") {
+                            $zip->addFileFromPath($f,$file->getPathname());
                         }
                     }
                     $zip->finish();
