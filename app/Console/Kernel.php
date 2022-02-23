@@ -64,8 +64,6 @@ class Kernel extends ConsoleKernel
                         $file = fopen($filePath, 'r');
                         $fileName = basename($filePath);
                         $sftp->put($fileName, $file, 8);
-                        
-                        
                     }
                     if ($filename['meshes']) {
                         $dir = '/home/ruoyuanluo/'.$f->id.'/_INPUT/meshes/';
@@ -104,26 +102,22 @@ class Kernel extends ConsoleKernel
                         $sftp->put($fileName, $file, 8);
                     }
                     if ($filename['input']) {
-
                         $sftp->chdir("..");
-                        $sftp->chdir("..");
-                        $sftp->chdir("..");
+                        $sftp->chdir("..");                       
                         $filePath = storage_path('app/' . $filename['input']);
                         $file = fopen($filePath, 'r');
                         $fileName = basename($filePath);
                         $sftp->put('input.input', $file, 8);
                     }
-                    //$sftp->chdir(' ~');
-
+                
                     $f->progress = 'In Progress';
                     $command = "qsub";
                     
                     $c = new Connection($server->server_name, $server->host . ":" . $server->port, $server->username, ["password" => $server->password]);
                     $dir = '/home/ruoyuanluo/_OUTPUT';
                     $sftp->mkdir("$dir");
-                   
                     //$c->run([sprintf("%s -v qsub-args=%s %s",$command, $args, Kernel::app)], function($line) use ($f)
-                    $c->run([sprintf("%s  %s", $command,  Kernel::app)], function ($line) use ($f) // qsub 
+                    $c->run([sprintf("%s  %s -o %s -e %s", $command,  Kernel::app, $dir."/OutputStream.txt", $dir."/ErrorStream.txt")], function ($line) use ($f) // qsub 
                     {
                         echo ($line);
                         $new_job = new remotejob();
@@ -131,7 +125,9 @@ class Kernel extends ConsoleKernel
                         $new_job->remote_job_id = str_replace(array("\n", "\r"), '', $line . PHP_EOL);
                         $new_job->save();
                         $f->save();
+                        
                     });
+                    
                 }
             }
         })->everyMinute();
@@ -151,16 +147,17 @@ class Kernel extends ConsoleKernel
 
                         # not found job id with qstat means job is  complete or delete;
                         if (str_contains($result, 'Unknown')) {
-                            //dd($rj->job->);
+                            
                             $j = $rj->job;
-                            //dd($j);
+                            
                             $this->download($j->id,$server);
                             $j->previous_progress = $j->progress;
                             $j->progress = "Completed";
                             $j->save();
                             $rj->job_state = "E";
                             $rj->save();
-                
+                            
+                                            
                         } else {
                             # found job id with qstat means job is not complete or delete;
                             $rj->job_state = str_replace(array("\n", "\r"), '', $result);
