@@ -17,7 +17,7 @@ use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
 use Collective\Remote\Connection;
 use Illuminate\Support\Facades\File;
-
+use App\Http\Livewire\Frontend\Jobs\Kernel;
 class ShowForm extends Component
 {
 
@@ -543,11 +543,11 @@ class ShowForm extends Component
                         ], function($line) use($server, $remotejob)
                         {
                             $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-                            $c->run([
-                                sprintf('kill %s', $line)
-                            ], function($line2) use($remotejob) {
+                            $c->run([sprintf('kill %s', $line)], function($line2) use($remotejob) {
                                 $remotejob->delete();
                             });
+                            # If job cancalled, remove previous out.txt, users can only download  o file and e file
+                            $c->run([sprintf('rm %s', '/home/ruoyuanluo/_OUTPUT/out.txt')], function($line3) {});
                         }
                         );
                     }
