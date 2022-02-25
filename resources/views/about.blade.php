@@ -8,13 +8,13 @@
 
         <section>
             <!-- Supervisors-->
-            <h2 class="mt-5 text-center font-bold text-2xl sm:text-3xl ">Supervisors</h2>
+            <h1 class="mt-16 text-center font-bold text-2xl sm:text-3xl ">Supervisors</h1>
             <div class="flex flex-wrap m-auto items-center justify-center"> 
                 @foreach ($supervisors as $supervisor)
-                <div class="flex flex-col w-64 m-5">
+                <div class="flex flex-col w-60 m-5">
                     <a href="/about/{{Str::slug($supervisor->name)}}/{{$supervisor->id}}">
                         @if($supervisor->profile_photo_path)
-                        <img class="w-full h-64 object-cover rounded-2xl"
+                        <img class="w-full h-60 object-cover rounded-2xl"
                              src="{{ asset(Storage::disk('local')->url($supervisor->profile_photo_path)) }}"
                              alt=""
                              >
@@ -27,20 +27,20 @@
                     
                     </a>
                     <a href="/about/{{Str::slug($supervisor->name)}}/{{$supervisor->id}}">
-                        <p class="mt-1 text-center font-bold sm:text-base ">{{$supervisor->name}}</p>
+                        <p class="mt-2 text-center font-bold text-lg">{{$supervisor->name}}</p>
                     </a>
                 </div>
                 @endforeach
             </div>
 
             <!-- Students-->
-            <h2 class="mt-16 text-center font-bold text-2xl sm:text-3xl">Students</h2>
+            <h1 class="mt-16 text-center font-bold text-2xl sm:text-3xl">Students</h1>
             <div class="flex flex-wrap m-auto items-center justify-center"> 
                 @foreach ($students as $student)
-                <div class="flex flex-col w-64 m-5">
+                <div class="flex flex-col w-60 m-5">
                     <a href="/about/{{Str::slug($student->name)}}/{{$student->id}}">
                         @if($student->profile_photo_path)
-                        <img class="w-full h-64 object-cover rounded-2xl"
+                        <img class="w-full h-60 object-cover rounded-2xl"
                              src="{{ asset(Storage::disk('local')->url($student->profile_photo_path)) }}"
                              alt=""
                              >
@@ -52,7 +52,7 @@
                         @endif 
                     </a>
                     <a href="/about/{{Str::slug($student->name)}}/{{$student->id}}">
-                        <p class="mt-1 text-center font-bold text-lg">{{$student->name}}</p>  
+                        <p class="mt-2 text-center font-bold text-lg">{{$student->name}}</p>  
                     </a>
                 </div>
                 @endforeach

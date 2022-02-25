@@ -84,13 +84,6 @@
             <x-jet-input id="linkedin" type="text" class="mt-1 block w-full" wire:model.defer="state.linkedin" />
             <x-jet-input-error for="linkedin" class="mt-2" />
         </div>
-
-        <!-- Indeed -->
-        <div class="col-span-6 sm:col-span-4">
-            <x-jet-label for="indeed" value="{{ __('Indeed') }}" />
-            <x-jet-input id="indeed" type="text" class="mt-1 block w-full" wire:model.defer="state.indeed" />
-            <x-jet-input-error for="indeed" class="mt-2" />
-        </div>
         
         <!-- Github -->
         <div class="col-span-6 sm:col-span-4">

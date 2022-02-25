@@ -23,7 +23,6 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'bio' => ['nullable', 'string', 'max:255'],
             'linkedin' => ['nullable', 'string', 'max:255'],
-            'indeed' => ['nullable', 'string', 'max:255'],
             'github' => ['nullable', 'string', 'max:255'],
             'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ])->validateWithBag('updateProfileInformation');
@@ -41,7 +40,6 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'email' => $input['email'],
                 'bio' => $input['bio'],
                 'linkedin' => $input['linkedin'],
-                'indeed' => $input['indeed'],
                 'github' => $input['github'],
                 
             ])->save();
@@ -62,7 +60,6 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'email' => $input['email'],
             'bio' => $input['bio'],
             'linkedin' => $input['linkedin'],
-            'indeed' => $input['indeed'],
             'github' => $input['github'],
             'email_verified_at' => null,
         ])->save();
