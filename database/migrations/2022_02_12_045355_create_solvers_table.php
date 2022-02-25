@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateJobsSshserversTable extends Migration
+class CreateSolversTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateJobsSshserversTable extends Migration
      */
     public function up()
     {
-        Schema::create('jobs_sshservers', function (Blueprint $table) {
-            $table->id()->unique();
-            $table->foreignId('job_id')->constrained('jobs')->onDelete('cascade');
-            $table->foreignId('sshserver_id')->constrained('sshservers');
+        Schema::create('solvers', function (Blueprint $table) {
+            $table->id();
+            $table->string("name")->unique();
+            $table->string("args");
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateJobsSshserversTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('jobs_sshservers');
+        Schema::dropIfExists('solvers');
     }
 }

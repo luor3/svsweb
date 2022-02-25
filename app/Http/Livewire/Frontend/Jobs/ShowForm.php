@@ -15,8 +15,9 @@ use App\Models\sshservers;
 use phpseclib\Net\SFTP;
 use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
-use SSH;
 use Collective\Remote\Connection;
+use Illuminate\Support\Facades\File;
+
 class ShowForm extends Component
 {
 
@@ -530,24 +531,30 @@ class ShowForm extends Component
         $this->job-> progress = 'Cancelled';
         try {
                 if ($this->job->remotejob && $this->job->remotejob->remote_job_id) {
-                $remote_id =  $this->job->remotejob->remote_job_id;
-                $pid_shell = sprintf("qsig -s SIGKILL %s" ,$remote_id );
-                // $id);
-                $server = sshservers::find($this->server_id);
-                $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-                $c->run([
-                    $pid_shell
-                ], function($line) use($c)
-                {
-                    $c->run([
-                        sprintf('kill %s', $line)
-                    ], function($line2) {
-                    });
-                }
-                );
+                    $remotejob =  $this->job->remotejob;
+                    $remote_id =  $remotejob->remote_job_id;
+                    $pid_shell = "qsig -s SIGKILL %s".$remote_id;
+                    $server = sshservers::find($this->server_id);
+                foreach($this->job->sshservers as $server) {
+                    if($server) {
+                        $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+                        $c->run([
+                            $pid_shell
+                        ], function($line) use($server, $remotejob)
+                        {
+                            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
+                            $c->run([
+                                sprintf('kill %s', $line)
+                            ], function($line2) use($remotejob) {
+                                $remotejob->delete();
+                            });
+                        }
+                        );
+                    }
+                 }
             }
-        } catch(Exception $e) {
-            dd($e->getMessage());
+        } catch(\Exception $e) {
+            dd($e);
         }
         $this->job->save();
         return redirect()->route($this->pathName);
@@ -580,39 +587,45 @@ class ShowForm extends Component
     {
         try {
             $this->job = job::find($jobID);
-            if($this->job->progress == 'Completed') {
+            if($this->job->progress == 'Completed' || $this->job->progress == 'Cancelled') {
                 $output_name = sprintf("%d_output.zip", $jobID);
-                $server = sshservers::find($server_id);
-                $sftp = new SFTP($server->host, $server->port);
-                if (!$sftp->login($server->username, $server->password)) {
-                    exit('Login Failed');
-                } 
+                // // $server = sshservers::find($server_id);
+                // // $sftp = new SFTP($server->host, $server->port);
+                // // if (!$sftp->login($server->username, $server->password)) {
+                // //     exit('Login Failed');
+                // // } 
 
-                $path = '/home/ruoyuan/_OUTPUT';
-                $sftp->chdir($path);
-                $files = $sftp->nlist(".");
-                $local_path = "public";
+                // // $path = '/home/ruoyuanluo/_OUTPUT/'.$jobID;
+                // // //dd($path);
+                // // $sftp->chdir($path);
+                // // $files = $sftp->nlist(".");
+                $local_path = public_path()."\storage\jobs\\".$jobID."\output\\";
 
-                foreach ($files as $file) {
-                    if($file != ".." && $file != ".") {
-                        $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
-                    }
-                }
+                $files = File::files($local_path);
+                // // foreach ($files as $file) {
+                    
+                // //     if($file != ".." && $file != ".") {
+                // //         $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
+                // //     }
+                // // }
                 return response()->streamDownload(function () use($output_name, $local_path, $files)
                 {
                     $options = new Archive();
                     $options->setSendHttpHeaders(false);
                     $zip = new ZipStream( $output_name, $options);
                     foreach ($files as $file) {
-                        if($file != ".." && $file != ".") {
-                            $zip->addFileFromPath($file,$local_path);
+                    //dd($file);
+                       //dd(file_get_contents($file->getPathname()));
+                        $f = $file->getFilename();
+                        if($f != ".." && $f != ".") {
+                            $zip->addFileFromPath($f,$file->getPathname());
                         }
                     }
                     $zip->finish();
                 }, $output_name);
             }
         }
-        catch(Exception $e) {
+        catch(\Exception $e) {
             dd($e->getMessage());
         }
         
