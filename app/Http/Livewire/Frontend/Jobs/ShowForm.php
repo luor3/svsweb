@@ -623,4 +623,10 @@ class ShowForm extends Component
         //     $zip->finish();
         // }, $isInput ? "input.zip" : "output.zip");
     }
+
+
+    public function showVTKmodel($vtkPath) 
+    {
+        redirect()->route('vtk-visualizer', ['vtkPath'=> $vtkPath]);
+    }
 }

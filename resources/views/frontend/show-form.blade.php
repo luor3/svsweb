@@ -74,13 +74,28 @@
                                         Output
                                     </span>
                                 </button> 
+
+                                @if(isset($demo->vtk_path))
+                                <button class="w-2/5 lg:w-1/4 mb-5 py-3 bg-green-500 text-center text-white font-semibold rounded-xl shadow-md hover:bg-red-500 focus:outline-none" wire:click="showVTKmodel('{{ $demo->vtk_path }}')" wire:loading.attr="disabled">
+                                    <span class="align-middle inline-block">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg> 
+                                    </span>
+                                    
+                                    <span class="align-middle inline-block">
+                                        View
+                                    </span>
+                                </button>
+                                @endif
+
                             </div>
                         </div>
                     </div>   
                 @endforeach
             </div>
 
-            <div class="flex flex-wrap justify-center item-center" x-show="!gridView">
+            <div :class="{ 'hidden': gridView }" class="hidden flex flex-wrap justify-center item-center">
                 <div class="mx-auto p-5 antialiased">
                     <div x-data="{count : 0}">
                         @foreach($demos as $demo) 
@@ -115,6 +130,16 @@
                                         </svg>    
                                         Output                   
                                     </button> 
+
+                                    @if(isset($demo->vtk_path))
+                                    <button class="mt-1 p-1 bg-green-500 text-white font-semibold shadow-md hover:bg-red-500 rounded focus:outline-none" wire:click="showVTKmodel('{{ $demo->vtk_path }}')" wire:loading.attr="disabled">                                   
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>   
+                                        View                   
+                                    </button> 
+                                    @endif
+                                    
                                 </div>
 
                             </div>

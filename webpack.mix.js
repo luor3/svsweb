@@ -1,6 +1,6 @@
 const mix = require('laravel-mix');
 var path = require('path');
-var vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core.rules;
+var vtkRules = require('@kitware/vtk.js/Utilities/config/dependency.js').webpack.core.rules;
 var entry = path.join(__dirname, './resources/js/app.js');
 
 /*
