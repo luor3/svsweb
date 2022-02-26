@@ -6,11 +6,11 @@
 
             <div class="grid grid-cols-12 gap-x-4">        
                 @foreach($propertyWindow as $key => $property)
-                <div class="col-span-12 {{ isset($property['children']) ? '' : 'md:col-span-6'}}">
+                <div class="col-span-12 {{ isset($property['children']) ? 'md:place-self-stretch' : 'md:col-span-6'}}">
                     @if( (isset($enableSeq[$key]['main']) && $enableSeq[$key]['main']) || (!isset($enableSeq[$key]['main'])) ) 
                     <div x-data="{ open: false }">
                         <x-jet-label class="md:h-16 lg:h-10 inline-block mt-5 text-gray-700 font-bold" for="{{ $key }}" value="{{ $property['title'] }}" />
-                        
+
                         @if(isset($property['hint']))
                         <button type="button" @click="open = ! open">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -33,7 +33,7 @@
                             class='w-full bg-white text-gray-700 disabled:opacity-20 shadow-md rounded-lg appearance-none mb-5 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent'
                             type="{{ $property['htmlType'] }}" step="any" wire:model="inputValue.{{$key}}.main" id="{{ $key }}" {{ (isset($property['required']) && $property['required'])? "required" : "" }}>                      
                             @endif
-                            
+
                             @if(isset($property['hint']))
                             <p :class="{ 'hidden': !open }" class="hidden text-sm text-red-500" x-transition>
                                 {{ $property['hint'] }}
@@ -42,60 +42,57 @@
                     </div>
 
 
-                    <div class = "h-4">
-                        <x-jet-input-error for="inputValue.{{$key}}.main" class="mt-2" />
-                    </div>
+
+                    <x-jet-input-error for="inputValue.{{$key}}.main" class="mt-2" />
+
 
 
                     @for ($i = 0; $i < ((isset($property['children'])) ? ( (isset($repeatNum[$key]['main'])) ? $repeatNum[$key]['main'] : 1) : 0); $i++)
-                    <div class="mb-5 shadow-md rounded-lg bg-yellow-50 bg-opacity-25">
+                    <div class="grid grid-cols-3 gap-x-4">
                         @foreach($property['children'] as $cKey => $cProperty)
                         @if( $cProperty['type'] === "linebreak")
-                        <div></div>
+
                         @continue
                         @endif 
                         @if( (isset($enableSeq[$key][$cKey]) && $enableSeq[$key][$cKey]) || (!isset($enableSeq[$key][$cKey])) )
-                        <div class="p-2 text-center {{ (isset($cProperty['display'])) ? $cProperty['display'] : '' }}">
+                        <div class="{{ (isset($cProperty['display'])) ? $cProperty['display'] : '' }}">
                             @for ($j = 0 ; $j < ((isset($cProperty['_repeat'])) ? $repeatNum[$key]['children'][$i][$cKey] : 1 ) ; $j++)
 
                             <div x-data="{ open: false }">
-                                <x-jet-label class="inline-block mt-5 text-gray-700" for="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" value="{{ $cProperty['title'] }}" />
+                                <x-jet-label class="inline-block mt-5 text-gray-700 font-bold" for="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" value="{{ $cProperty['title'] }}" />
                                 @if(isset($cProperty['hint']))
-                                <button type="button" class="inline-block" @click="open = ! open">
+                                <button type="button" @click="open = ! open">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </button>
-                                <div class="mb-2 h-5 leading-5">
-                                    <div :class="{ 'hidden': !open }" class="hidden" x-transition>
-                                        <span class="text-red-500">
-                                            {{ $cProperty['hint'] }}
-                                        </span> 
-                                    </div>
-                                </div>
-
                                 @endif
+
+                                @if($cProperty['type'] === "select")
+                                <select
+                                    class="w-full border border-transparent disabled:opacity-20 focus:outline-none focus:ring-2 shadow-md focus:ring-indigo-300 focus:border-transparent form-select block w-full mt-1 mb-5 rounded-lg"
+                                    wire:model="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" id="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}">
+                                    <option value={{null}}>Select the Value</option>
+                                    @foreach($cProperty['options'] as $option)
+                                    <option value="{{ $option['value'] }}">{{ $option['title'] }}</option>
+                                    @endforeach
+                                </select> 
+                                @else
+                                <input
+                                    class='w-full bg-white text-gray-700 disabled:opacity-20 shadow-md rounded-lg appearance-none mb-5 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent'
+                                    type="{{ $cProperty['htmlType'] }}" step="any" wire:model="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" id="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" {{ (isset($cProperty['required']) && $cProperty['required'])? "required" : "" }}>
+                                @endif
+                                    @if(isset($cProperty['hint']))
+                                    <p :class="{ 'hidden': !open }" class="inline-block hidden text-sm text-red-500" x-transition>
+                                        {{ $cProperty['hint'] }}
+                                    </p> 
+                                    @endif
                             </div>
 
-                            @if($cProperty['type'] === "select")
-                            <select
-                                class="w-1/2 border border-transparent disabled:opacity-20 focus:outline-none focus:ring-2 shadow-md focus:ring-indigo-300 focus:border-transparent form-select block w-full mt-1 mb-5 rounded-lg"
-                                wire:model="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" id="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}">
-                                <option value={{null}}>Select the Value</option>
-                                @foreach($cProperty['options'] as $option)
-                                <option value="{{ $option['value'] }}">{{ $option['title'] }}</option>
-                                @endforeach
-                            </select> 
-                            @else
-                            <input
-                                class='w-1/2 bg-white text-gray-700 disabled:opacity-20 shadow-md rounded-lg appearance-none mb-5 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent'
-                                type="{{ $cProperty['htmlType'] }}" step="any" wire:model="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" id="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" {{ (isset($cProperty['required']) && $cProperty['required'])? "required" : "" }}>
-                                @endif
-                                <div class="h-4">
-                                    <x-jet-input-error for="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" class="mt-2" />
-                                </div>
+                            <x-jet-input-error for="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" class="mt-2" />
 
-                                @endfor 
+
+                            @endfor 
                         </div>
                         @endif                                   
                         @endforeach
