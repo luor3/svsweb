@@ -6,17 +6,23 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Http\Request;
 use App\Models\Job;
+use App\Models\sshservers;
+
+use App\Models\jobs_sshservers;
+use Collective\Remote\Connection;
+
 use Illuminate\Support\Str;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\solvers;
+use Exception;
 
 class CreateForm extends Component
 {
 
     use WithFileUploads;
 
-
+    protected $listeners = ['click-out' => 'updateConfirmingJobDeletion'];
     /**
      * 
      * @var string
@@ -47,6 +53,20 @@ class CreateForm extends Component
      */
     public $category_id;
 
+     /**
+     * 
+     * @var integer
+     */
+    public $jobs_solvers;
+
+    public $confirmingJobDeletion = false;
+
+
+     /**
+     * 
+     * @var integer
+     */
+    public $sshserver_id = '';
 
     /**
      * 
@@ -84,6 +104,19 @@ class CreateForm extends Component
 
 
     /**
+     * for displying only
+     * @var Category array
+     */
+    public $solvers = [];
+
+     /**
+     * for displying only
+     * @var sshservers array
+     */
+    public $sshservers;
+
+
+    /**
      * 
      * @var boolean
      * default is 1
@@ -97,6 +130,13 @@ class CreateForm extends Component
      */
     public $next = false;
     
+    public $server_name = '';
+    public $host = '';
+    public $port = '';
+    public $username = '';
+    public $password = '';
+
+    
 
     public $uploadFields = [];
 
@@ -106,7 +146,9 @@ class CreateForm extends Component
      * @var Job
      */
     public $job;
+    
 
+    
     /**
      * 
      * @var boolean
@@ -131,6 +173,13 @@ class CreateForm extends Component
      */
     const FAIL_ROUTE = 'userprofile';
 
+    public function updateConfirmingJobDeletion()
+    {
+            
+        return redirect()->route(self::FAIL_ROUTE);
+    }
+
+
     /**
      * initilize properties
      * 
@@ -139,12 +188,53 @@ class CreateForm extends Component
     public function mount()
     {
         $categories = Category::all();
+        $this->sshservers = [];
         foreach ($categories as $category)
         {
             $this->categories[$category->id] =  $category->name;
         }
         if(count($categories) != 0)
             $this->category_id = $categories[0]->id; 
+        $servers = sshservers::where("active", "=","1")->get();
+        foreach($servers as $server) {
+            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password], null, 2);
+            $commands =[ "top -b -n 1 | head -n 4"];
+            $cpu= '';
+            $memory = "";
+            try{
+                $c->run($commands, function($line) use (&$cpu) {
+                    $output = explode("\n" ,$line);
+                    $cpu =  explode(" " ,substr($output[2],7,strlen($output[2])-7))[2];
+                });
+                $c->run(["free -k"], function($line) use (&$memory) {
+                    $output = explode("\n" ,$line);
+                    $memorys =  preg_split("/[ ]+/" ,$output[1]);
+                    $memory = number_format($memorys[2]/ $memorys[1] * 100,2)."%";
+                });
+            }
+            catch(Exception $e){
+                $this->confirmingJobDeletion = true;
+                //session()->flash('flash.banner', $e->getMessage());
+                //session()->flash('flash.bannerStyle', 'danger');
+                //return redirect()->route(self::FAIL_ROUTE);
+            }
+           array_push( $this->sshservers, array(
+                "sshserver" => $server,
+                "cpu" => $cpu,
+                "memory" => $memory,
+           ));
+        }
+        if(!count($servers)){
+            $this->sshserver_id = "custom";
+        }       
+        if(count( $this->sshservers)>0)
+        {
+            $this->sshserver_id = $this->sshservers[0]['sshserver']['id'];
+        }
+
+        $this->solvers = solvers::all();
+        if(count( $this->solvers) > 0)
+            $this->jobs_solvers = $this->solvers[0]->id; 
     }
 
 
@@ -167,10 +257,11 @@ class CreateForm extends Component
      */
     public function add(Request $request)
     {
+        
         $this->validate([
             'output_files.*' => 'file',
             'input_files.*' => 'required|file',
-            'status' => 'required|boolean'
+            'status' => 'required|boolean',
         ]);
 
         $input_json = [
@@ -185,8 +276,6 @@ class CreateForm extends Component
             $input_json['input_file_json']['fileName'][$type] = $file->getClientOriginalName();
             //$path = $file->storeAs('public/jobs/'.$this->job->id, $file->getClientOriginalName());
             $input_json['input_file_json'][$type] = $file->storeAs('public/jobs/'.$this->job->id,$file->getClientOriginalName());
-
-            
         }
         //dd($input_json);
         $input_json = json_encode($input_json);
@@ -196,19 +285,64 @@ class CreateForm extends Component
         ];
 
         $this->job->configuration = $input_json;
-        $this->job->status = $this->status; 
+        $this->job->status = $this->status;
 
-        $status = $this->job->save();   
+        $server_id = $this->sshserver_id;
+        if(!strcmp($server_id,"custom")) {
+            try {
+                $c = new Connection($this->server_name, $this->host.":".$this->port, $this->username,["password"=>$this->password]);
+                $command = "vmstat";
+                $that = $this;
+                $c->run([$command], function($line) use ($that) {
+                    $ssh_server = new sshservers();
+                    $ssh_server->server_name = $that->server_name;
+                    $ssh_server->host = $that->host;
+                    $ssh_server->port = $that->port;
+                    $ssh_server->username = $that->username;
+                    $ssh_server->password = $that->password;
+                    $ssh_server->save();
+                    $server_id = $ssh_server->id;
+                    $jobs_ssh_server = new jobs_sshservers();
+                    $jobs_ssh_server->job_id = $that->job->id;
+                    $jobs_ssh_server->sshserver_id = $server_id;
+                    $status = $jobs_ssh_server->save();
+                    $status = $that->job->save();
 
-        $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
-        $flag = $status ? 'success' : 'danger';
-
-        session()->flash('flash.banner', $msg);
-        session()->flash('flash.bannerStyle', $flag);
+                    $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
+                    $flag = $status ? 'success' : 'danger';
         
-        if ($status) 
-        {    
-            return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
+                    session()->flash('flash.banner', $msg);
+                    session()->flash('flash.bannerStyle', $flag);
+                    
+                    if ($status) 
+                    {    
+                        return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
+                    }
+                });
+            } catch(\Exception $e) {
+                session()->flash('flash.banner', $e->getMessage());
+                session()->flash('flash.bannerStyle', 'danger');
+                return redirect()->route(self::FAIL_ROUTE);
+            }
+        
+        } else {
+            $jobs_ssh_server = new jobs_sshservers();
+            $jobs_ssh_server->job_id = $this->job->id;
+            $jobs_ssh_server->sshserver_id = $server_id;
+            $status = $jobs_ssh_server->save();
+            $status = $this->job->save();
+
+
+            $msg =  $status ? 'job successfully created!' : 'Ooops! Something went wrong.';
+            $flag = $status ? 'success' : 'danger';
+
+            session()->flash('flash.banner', $msg);
+            session()->flash('flash.bannerStyle', $flag);
+            
+            if ($status) 
+            {    
+                return redirect()->route(self::REDIRECT_ROUTE, ['currentModule' => "jobs"]);
+            }
         }
 
     }
@@ -222,17 +356,16 @@ class CreateForm extends Component
      */
     public function registerJob(Request $request)
     {    
-        
         $data = $this->validate([
             'name'=>'required|max:255',  
             'description' => 'required|max:255',
             'category_id' => 'required|integer',
+            'jobs_solvers' => 'required|integer',
             'input_file' => 'file',
             'description' => 'required|max:255',
         ]);
         $user = auth()->user();
         $data['user'] = $user->id;
-
         try 
         {   
             $this->readFileFrom($this->input_file->getRealPath());
@@ -244,7 +377,7 @@ class CreateForm extends Component
             'input_property_json'=>$this->uploadFields,
            ];
            $data['configuration'] = json_encode($map);
-                      
+
         } 
         catch (\Exception $e) 
         {
@@ -255,10 +388,9 @@ class CreateForm extends Component
         unset($data['input_file']);
 
         $this->job = job::create($data);
-        
         $msg =  $this->job ? 'Job successfully created!' : 'Ooops! Something went wrong.';
         $flag = $this->job ? 'success' : 'danger';
-
+    
         session()->flash('flash.banner', $msg);
         session()->flash('flash.bannerStyle', $flag);
         
@@ -270,7 +402,7 @@ class CreateForm extends Component
         $this->next = true; 
 
         $originalname = $this->input_file->getClientOriginalName();
-        //dd($originalname);
+        
         Storage::disk('public')->makeDirectory('jobs/'.$this->job->id);
         //Storage::disk('public')->put($originalname, $this->input_file,'jobs/'.$this->job->id);
         $input_file_path = $this->input_file->storeAs('public/jobs/'.$this->job->id, $originalname);
@@ -336,6 +468,6 @@ class CreateForm extends Component
             }
         }
     }
-   
+
 
 }
