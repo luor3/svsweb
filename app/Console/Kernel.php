@@ -66,8 +66,11 @@ class Kernel extends ConsoleKernel
                     $sftp->mkdir("$remote_dir"."/INPUT");
                     $sftp->chdir("$remote_dir"."/INPUT");
                     //echo("$remote_dir"."/INPUT");
+                    $filePath = storage_path('app/'.$filename['input']);
+                    $file = fopen($filePath, 'r');
+                    $inputfile_name = basename($filePath);
                     foreach($solver_files as $sf){
-                        if($sf->getFilename() != "input.input") {
+                        if($sf->getFilename() != $inputfile_name) {
                             //echo($sf->getFilename());
                             $sf_file = fopen($sf->getPathname(), 'r');
                             $sftp->put($sf->getFilename(), $sf_file, 8);
