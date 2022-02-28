@@ -10,11 +10,12 @@ use App\Models\sshservers;
 
 use App\Models\jobs_sshservers;
 use Collective\Remote\Connection;
-
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use App\Models\solvers;
+
 use Exception;
 
 class CreateForm extends Component
@@ -80,6 +81,27 @@ class CreateForm extends Component
      * @var file
      */
     public $input_file;
+
+      /**
+     * 
+     * @var file
+     */
+    public $configuration_file;
+      /**
+     * 
+     * @var file
+     */
+    public $excitation_file;
+      /**
+     * 
+     * @var file
+     */
+    public $mesh_file;
+      /**
+     * 
+     * @var file
+     */
+    public $material_file;
 
 
     /**
@@ -274,8 +296,9 @@ class CreateForm extends Component
         foreach ($this->input_files as $type => $file)
         {
             $input_json['input_file_json']['fileName'][$type] = $file->getClientOriginalName();
-            //$path = $file->storeAs('public/jobs/'.$this->job->id, $file->getClientOriginalName());
-            $input_json['input_file_json'][$type] = $file->storeAs('public/jobs/'.$this->job->id,$file->getClientOriginalName());
+            $dir =  'public/jobs/'.$this->job->id.'/converted_meshes';
+            File::makeDirectory($dir,0755,true,true);
+            $input_json['input_file_json'][$type] = $file->storeAs($dir, $file->getClientOriginalName());
         }
         //dd($input_json);
         $input_json = json_encode($input_json);
@@ -361,8 +384,12 @@ class CreateForm extends Component
             'description' => 'required|max:255',
             'category_id' => 'required|integer',
             'jobs_solvers' => 'required|integer',
-            'input_file' => 'file',
+            'configuration_file' => 'required|file',
+            'excitation_file' => 'required|file',
+            'mesh_file' => 'required|file',
+            'material_file' => 'required|file',
             'description' => 'required|max:255',
+            'input_file' =>'required|file'  
         ]);
         $user = auth()->user();
         $data['user'] = $user->id;
@@ -400,12 +427,24 @@ class CreateForm extends Component
         }
         $this->initInputFiles();
         $this->next = true; 
+        $store_path = 'public/jobs/'.$this->job->id;
+        Storage::disk('public')->makeDirectory($store_path);
 
         $originalname = $this->input_file->getClientOriginalName();
+       
+        $input_file_path = $this->input_file->storeAs($store_path, $originalname);
+        $configuration_name = $this->configuration_file->getClientOriginalName();
+        $configuration_file_path = $this->configuration_file->storeAs($store_path, $configuration_name);
+        $excitation_name = $this->excitation_file->getClientOriginalName();
+        $excitation_file_path = $this->excitation_file->storeAs($store_path, $excitation_name);
+        $mesh_name = $this->mesh_file->getClientOriginalName();
+        $mesh_dir = $store_path.'/solver_meshes/';
+        Storage::disk('public')->makeDirectory($mesh_dir);
+        $mesh_file_path = $this->mesh_file->storeAs($mesh_dir, $mesh_name);
+        $materia_name = $this->material_file->getClientOriginalName();
+        $material_file_path = $this->material_file->storeAs($store_path, $materia_name);
+       
         
-        Storage::disk('public')->makeDirectory('jobs/'.$this->job->id);
-        //Storage::disk('public')->put($originalname, $this->input_file,'jobs/'.$this->job->id);
-        $input_file_path = $this->input_file->storeAs('public/jobs/'.$this->job->id, $originalname);
         $input_json = json_decode($this->job->configuration,true);
         $fileName_json = json_decode($input_json['input_file_json'] , true);
         $fileName_json["fileName"]["input"] = $originalname;

@@ -12,6 +12,7 @@ use Collective\Remote\Connection;
 use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class Kernel extends ConsoleKernel
 {
@@ -38,65 +39,96 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('inspire')->everyMinute();
         $schedule->call(function () {
-
+          
             $files = Job::where('progress', '=', 'pending')->orderBy('created_at', 'desc')->get();
 
             foreach ($files as $f) {
+                $file = $f->configuration;
+                $data = json_decode($file, true);
+                $filename = $data['input_file_json'];
+                $local_path = public_path()."/storage/jobs/".$f->id."/";
+                $coverted_mesh_path = $local_path."/converted_meshes/";
+                $solver_mesh_path = $local_path."/solver_meshes/";
+
+
+                $remote_dir = '/home/ruoyuanluo/Executable_CFIEHFMM_serial/'.$f->id;
+
+                $solver_files = File::files($local_path);
+                $solver_mesh_files = File::files($solver_mesh_path);
+
+
                 foreach ($f->sshservers as $server) {
                     $sftp = new SFTP($server->host, $server->port);
                     if (!$sftp->login($server->username, $server->password)) {
                         exit('Login Failed');
                     }
-                    $file = $f->configuration;
-                    $data = json_decode($file, true);
-                    $filename = $data['input_file_json'];
+                    $sftp->mkdir("$remote_dir");
+                    $sftp->mkdir("$remote_dir"."/INPUT");
+                    $sftp->chdir("$remote_dir"."/INPUT");
+                    //echo("$remote_dir"."/INPUT");
+                    foreach($solver_files as $sf){
+                        if($sf->getFilename() != "input.input") {
+                            //echo($sf->getFilename());
+                            $sf_file = fopen($sf->getPathname(), 'r');
+                            $sftp->put($sf->getFilename(), $sf_file, 8);
+                        }
+                    }
+                    
+                    
+                    $sftp->mkdir("$remote_dir"."/INPUT/Meshes");
+                    $sftp->chdir("$remote_dir"."/INPUT/Meshes");
+                    foreach($solver_mesh_files as $sf){
+                        $sf_file = fopen($sf->getPathname(), 'r');
+                        $sftp->put($sf->getFilename(), $sf_file, 8);
+                    }
 
-                    $dir = '/home/ruoyuanluo/'.$f->id;
-                    $sftp->mkdir("$dir");
-                    $dir = '/home/ruoyuanluo/'.$f->id.'/_INPUT/';
-                    $sftp->mkdir("$dir");
-                    $sftp->chdir("$dir");
+
+                    $converted_dir = '/home/ruoyuanluo/'.$f->id;
+                    $sftp->mkdir("$converted_dir");
+                    $input_dir = $converted_dir.'/_INPUT/';
+                    $sftp->mkdir("$input_dir");
+                    $sftp->chdir("$input_dir");
                     if ($filename['materials']) {
-                        $dir = '/home/ruoyuanluo/'.$f->id.'/_INPUT/materials/';
-                        $sftp->mkdir("$dir");
-                        $sftp->chdir("$dir");
-                        $filePath = storage_path('app/' . $filename['materials']);
+                        $material_dir = $input_dir.'/materials/';
+                        $sftp->mkdir("$material_dir");
+                        $sftp->chdir("$material_dir");
+                        $filePath = storage_path('app/'.$filename['materials']);
                         $file = fopen($filePath, 'r');
                         $fileName = basename($filePath);
                         $sftp->put($fileName, $file, 8);
                     }
                     if ($filename['meshes']) {
-                        $dir = '/home/ruoyuanluo/'.$f->id.'/_INPUT/meshes/';
+                        $dir =  $input_dir.'/meshes/';
                         $sftp->mkdir("$dir");
                         $sftp->chdir("$dir");
-                        $filePath = storage_path('app/' . $filename['meshes']);
+                        $filePath = storage_path('app/'. $filename['meshes']);
                         $file = fopen($filePath, 'r');
                         $fileName = basename($filePath);
                         $sftp->put($fileName, $file, 8);
                     }
                     if ($filename['waves']) {
-                        $dir = '/home/ruoyuanluo/'.$f->id.'/_INPUT/waves/';
+                        $dir = $input_dir.'/waves/';
                         $sftp->mkdir("$dir");
                         $sftp->chdir("$dir");
-                        $filePath = storage_path('app/' . $filename['waves']);
+                        $filePath = storage_path('app/'.$filename['waves']);
                         $file = fopen($filePath, 'r');
                         $fileName = basename($filePath);
                         $sftp->put($fileName, $file, 8);
                     }
                     if (isset($filename['mlr'])) {
-                        $dir = '/home/ruoyuanluo/'.$f->id.'/_INPUT/mlr/';
+                        $dir = $input_dir.'/mlr/';
                         $sftp->mkdir("$dir");
                         $sftp->chdir("$dir");
-                        $filePath = storage_path('app/' . $filename['mlr']);
+                        $filePath = storage_path('app/'.$filename['mlr']);
                         $file = fopen($filePath, 'r');
                         $fileName = basename($filePath);
                         $sftp->put($fileName, $file, 8);
                     }
                     if (isset($filename['FieldPoints'])) {
-                        $dir = '/home/ruoyuanluo/'.$f->id.'/_INPUT/FieldPoints/';
+                        $dir = $input_dir.'/FieldPoints/';
                         $sftp->mkdir("$dir");
                         $sftp->chdir("$dir");
-                        $filePath = storage_path('app/' . $filename['FieldPoints']);
+                        $filePath = storage_path('app/'. $filename['FieldPoints']);
                         $file = fopen($filePath, 'r');
                         $fileName = basename($filePath);
                         $sftp->put($fileName, $file, 8);
@@ -104,7 +136,7 @@ class Kernel extends ConsoleKernel
                     if ($filename['input']) {
                         $sftp->chdir("..");
                         $sftp->chdir("..");                       
-                        $filePath = storage_path('app/' . $filename['input']);
+                        $filePath = storage_path('app/'.$filename['input']);
                         $file = fopen($filePath, 'r');
                         $fileName = basename($filePath);
                         $sftp->put('input.input', $file, 8);
