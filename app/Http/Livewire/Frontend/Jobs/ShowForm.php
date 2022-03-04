@@ -397,6 +397,7 @@ class ShowForm extends Component
     {
         if ($this->job && $this->job->id) 
         {
+            
             $deleted = $this->job->delete(); // this will also delete related files through ORM deleting hook function.
             $msg =  $deleted ? 'Job successfully deleted!' : 'Ooops! Something went wrong.';
             $flag = $deleted ? 'success' : 'danger';

@@ -25,6 +25,8 @@ class Kernel extends ConsoleKernel
 
     public const out = "out.txt";
 
+    public const solver = "EFIEHFMMSERIAL";
+
     protected $commands = [
         //
     ];
@@ -151,7 +153,14 @@ class Kernel extends ConsoleKernel
                     $c = new Connection($server->server_name, $server->host . ":" . $server->port, $server->username, ["password" => $server->password]);
                     $dir = '/home/ruoyuanluo/_OUTPUT';
                     $sftp->mkdir("$dir");
-                    //$c->run([sprintf("%s -v qsub-args=%s %s",$command, $args, Kernel::app)], function($line) use ($f)
+
+                    //dd([sprintf("cd /home/ruoyuanluo/Executable_CFIEHFMM_serial&& ./%s --config ./%s/INPUT/input.conf", Kernel::solver, $f->id)]);
+                    $c->run([sprintf("cd /home/ruoyuanluo/Executable_CFIEHFMM_serial; ./%s --config ./%s/INPUT/input.conf", Kernel::solver, $f->id)], function($line2){
+                        
+                        echo($line2);
+                        
+                    },30);
+                    
                     $c->run([sprintf("%s  %s -o %s -e %s", $command,  Kernel::app, $dir."/OutputStream.txt", $dir."/ErrorStream.txt")], function ($line) use ($f) // qsub 
                     {
                         echo ($line);
@@ -166,6 +175,7 @@ class Kernel extends ConsoleKernel
                 }
             }
         })->everyMinute();
+
         $schedule->call(function () {
             $command_template =
                 "qstat -f %s | grep job_state | awk -F ' ' '{print \$NF}'";
@@ -217,13 +227,14 @@ class Kernel extends ConsoleKernel
             $sftp->chdir($path);
             $files = $sftp->nlist(".");
             $local_path = "public/storage/jobs/".$jobID."/output/";
-            File::makeDirectory($local_path,0755,true,true);
+             File::makeDirectory($local_path,0755,true,true);
 
             foreach ($files as $file) {
                 if ($file != ".." && $file != ".") {
                     $sftp->get( $path.$file, $local_path.$file);
                 }
             }
+            
         }
     }
 

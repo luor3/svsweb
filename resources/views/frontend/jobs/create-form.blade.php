@@ -130,28 +130,28 @@
 
 
             <div class="col-span-6 sm:col-span-full">
-                <x-jet-label for="configuration_file" value="{{ __('Configuration File') }}" />
+                <x-jet-label for="configuration_file" value="{{ __('Configuration file for solver') }}" />
                 <x-jet-input id="configuration_file" type="file" class="mt-1 block w-full" wire:model="configuration_file"
                     enctype='multipart/form-data' accept='.conf' required />
                 <div class="text-black-500" wire:loading wire:target="configuration_file">Uploading...</div>
                 <x-jet-input-error for="configuration_file" class="mt-2" />
             </div>
             <div class="col-span-6 sm:col-span-full">
-                <x-jet-label for="excitation_file" value="{{ __('Excitation File') }}" />
+                <x-jet-label for="excitation_file" value="{{ __('Excitation file for solver') }}" />
                 <x-jet-input id="excitation_file" type="file" class="mt-1 block w-full" wire:model="excitation_file"
                     enctype='multipart/form-data' accept='.exc' required />
                 <div class="text-black-500" wire:loading wire:target="excitation_file">Uploading...</div>
                 <x-jet-input-error for="excitation_file" class="mt-2" />
             </div>
             <div class="col-span-6 sm:col-span-full">
-                <x-jet-label for="mesh_file" value="{{ __('Mesh File') }}" />
+                <x-jet-label for="mesh_file" value="{{ __('Mesh file for solver') }}" />
                 <x-jet-input id="mesh_file" type="file" class="mt-1 block w-full" wire:model="mesh_file"
                     enctype='multipart/form-data' accept='.msh' required />
                 <div class="text-black-500" wire:loading wire:target="mesh_file">Uploading...</div>
                 <x-jet-input-error for="mesh_file" class="mt-2" />
             </div>
             <div class="col-span-6 sm:col-span-full">
-                <x-jet-label for="material_file" value="{{ __('Material File') }}" />
+                <x-jet-label for="material_file" value="{{ __('Material file for solver') }}" />
                 <x-jet-input id="material_file" type="file" class="mt-1 block w-full" wire:model="material_file"
                     enctype='multipart/form-data' accept='.mtr' required />
                 <div class="text-black-500" wire:loading wire:target="material_file">Uploading...</div>
