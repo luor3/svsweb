@@ -590,25 +590,11 @@ class ShowForm extends Component
             $this->job = job::find($jobID);
             if($this->job->progress == 'Completed' || $this->job->progress == 'Cancelled') {
                 $output_name = sprintf("%d_output.zip", $jobID);
-                // // $server = sshservers::find($server_id);
-                // // $sftp = new SFTP($server->host, $server->port);
-                // // if (!$sftp->login($server->username, $server->password)) {
-                // //     exit('Login Failed');
-                // // } 
-
-                // // $path = '/home/ruoyuanluo/_OUTPUT/'.$jobID;
-                // // //dd($path);
-                // // $sftp->chdir($path);
-                // // $files = $sftp->nlist(".");
+    
                 $local_path = public_path()."\storage\jobs\\".$jobID."\output\\";
 
                 $files = File::files($local_path);
-                // // foreach ($files as $file) {
-                    
-                // //     if($file != ".." && $file != ".") {
-                // //         $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
-                // //     }
-                // // }
+          
                 return response()->streamDownload(function () use($output_name, $local_path, $files)
                 {
                     $options = new Archive();
