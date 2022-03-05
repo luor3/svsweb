@@ -1,5 +1,14 @@
-<div>
-    
+<div> 
+    <div class="flex justify-around">
+        <x-jet-nav-link href="{{ route('input-generator') }}" :active="request()->routeIs('input-generator')">
+            {{ __('General Input Generator') }}
+        </x-jet-nav-link>
+
+        <x-jet-nav-link href="{{ route('xml-input-generator') }}" :active="request()->routeIs('xml-input-generator')">
+            {{ __('XML Input Generator') }}
+        </x-jet-nav-link>
+    </div>
+
     <form wire:submit.prevent="generateFile">            
             <div class="p-5 mt-10 w-11/12 bg-blue-100 bg-opacity-75 mx-auto rounded-2xl shadow-2xl">
                 <h1 class="font-bold text-2xl mb-4">{{$inputInfo['name']}}</h1>

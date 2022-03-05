@@ -1,0 +1,178 @@
+{
+    "label": "Input",
+    "children": [
+        {
+            "label": "Controls",
+            "children": [
+                {
+                    "label": "IE",
+                    "attributes": {
+                        "ie_flag": 1
+                    }
+                },
+                {
+                    "label": "Type",
+                    "attributes": {
+                        "residual": 0.0001
+                    }
+                },
+                {
+                    "label": "FastSolver",
+                    "attributes": {
+                        "accelerator": "hmat"
+                    }
+                },
+                {
+                    "label": "Precond",
+                    "attributes": {
+                        "kind": "ide", 
+                        "inverter": "lu"
+                    }
+                }
+            ]
+        },
+
+        {  
+            "label": "MshFile",
+            "attributes": {
+                "name": "/Users/okhmatov/Documents/uofm/c++/Solver4/input/TL.msh"
+            }
+        },
+
+        {
+            "label": "Output",
+            "attributes": {
+                "path": "/Users/okhmatov/Documents/uofm/c++/Solver4/output/"
+            }
+        },
+
+        {
+            "label": "ObsPtsFile",
+            "attributes": {
+                "name": "/Users/okhmatov/Documents/uofm/c++/Solver4/input/obsrv.pts"
+            }
+        },
+
+        {
+            "label": "Ports",
+            "count": 1,
+            "children": [
+                {
+                    "label": "Port",
+                    "attributes": {
+                        "id": 2, 
+                        "impedance": "lu",
+                        "polarity": "+",
+                        "type": "internal_v"
+                    }
+                }
+            ]
+        },
+
+        {
+            "label": "Freq",
+            "value": 75e6
+        },
+
+        {
+            "label": "Mats",
+            "count": 1,
+            "children": [
+                {
+                    "label": "Mat",
+                    "attributes": {
+                        "cond": 0e+0, 
+                        "mu": 1.0000e+000,
+                        "epsilon": 2.0000e+000,
+                        "label": 1
+                    }
+                }
+            ]
+        },
+
+        {
+            "label": "Sources",
+            "children": [
+                {
+                    "label": "Set",
+                    "children": [
+                        {
+                            "label": "de",
+                            "attributes": {
+                                "iel": "[(0,0),(0,0),(1,0)]", 
+                                "rp": "[0.0,0.0,1.0]"
+                            },
+                            "children": [
+                                {
+                                    "label": "Hellowdsfs",
+                                    "attributes": {
+                                        "iel": "[(0,334),(0,0),(1,0)]", 
+                                        "rp": "[0.0,0.0,1.0]"
+                                    },
+                                    "children": [
+                                        {
+                                            "label": "Hellowfdsfsf",
+                                            "attributes": {
+                                                "iel": "[(22,0),(0,0),(1,0)]", 
+                                                "rp": "[0.0,0.0,1.0]"
+                                            },
+                                            "children": [
+                                                {
+                                                    "label": "Hellowdsg",
+                                                    "attributes": {
+                                                        "iel": "[(4375),(0,0),(1,0)]", 
+                                                        "rp": "[0.0,0.0,1.0]"
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "label": "inner",
+                                                            "attributes": {
+                                                                "iel": "[(4375),(0,0),(1,0)]", 
+                                                                "rp": "[0.0,0.0,1.0]"
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "label": "inner",
+                                                                    "attributes": {
+                                                                        "iel": "[(4375),(0,0),(1,0)]", 
+                                                                        "rp": "[0.0,0.0,1.0]"
+                                                                    },
+                                                                    "children": [
+                                                                        {
+                                                                            "label": "inner",
+                                                                            "attributes": {
+                                                                                "iel": "[(4375),(0,0),(1,0)]", 
+                                                                                "rp": "[0.0,0.0,1.0]"
+                                                                            }
+                                                                        
+                                                                        }
+                                                                    ]
+                                                                
+                                                                }
+                                                            ]
+                                                        
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                            
+                        },
+                    
+                        {
+                            "label": "pw",
+                            "attributes": {
+                                "ehat": "[1.0,0.0,0.0]", 
+                                "khat": "[0.0,0.0,-1.0]"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+    ]
+}
