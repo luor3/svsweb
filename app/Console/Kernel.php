@@ -13,7 +13,7 @@ use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\App;
 class Kernel extends ConsoleKernel
 {
     /**
@@ -39,9 +39,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        
         $schedule->command('inspire')->everyMinute();
         $schedule->call(function () {
-          
+            $app = new App();
             $files = Job::where('progress', '=', 'pending')->orderBy('created_at', 'desc')->get();
 
             foreach ($files as $f) {
@@ -52,8 +53,8 @@ class Kernel extends ConsoleKernel
                 $coverted_mesh_path = $local_path."/converted_meshes/";
                 $solver_mesh_path = $local_path."/solver_meshes/";
 
-
-                $remote_dir = '/home/ruoyuanluo/Executable_CFIEHFMM_serial/'.$f->id;
+                //$remote_dir = '/home/ruoyuanluo/Executable_CFIEHFMM_serial/'.$f->id;
+                $remote_dir = str_replace('{JOB_ID}', $f->id, $app->getAttribute("remote_dir"));
 
                 $solver_files = File::files($local_path);
                 $solver_mesh_files = File::files($solver_mesh_path);
@@ -78,8 +79,7 @@ class Kernel extends ConsoleKernel
                             $sftp->put($sf->getFilename(), $sf_file, 8);
                         }
                     }
-                    
-                    
+                         
                     $sftp->mkdir("$remote_dir"."/INPUT/Meshes");
                     $sftp->chdir("$remote_dir"."/INPUT/Meshes");
                     foreach($solver_mesh_files as $sf){
@@ -88,7 +88,8 @@ class Kernel extends ConsoleKernel
                     }
 
 
-                    $converted_dir = '/home/ruoyuanluo/'.$f->id;
+                    //$converted_dir = '/home/ruoyuanluo/'.$f->id;
+                    $converted_dir = str_replace('{JOB_ID}', $f->id, $app->getAttribute('converter_dir'));
                     $sftp->mkdir("$converted_dir");
                     $input_dir = $converted_dir.'/_INPUT/';
                     $sftp->mkdir("$input_dir");
@@ -151,11 +152,12 @@ class Kernel extends ConsoleKernel
                     $command = "qsub";
                     
                     $c = new Connection($server->server_name, $server->host . ":" . $server->port, $server->username, ["password" => $server->password]);
-                    $dir = '/home/ruoyuanluo/_OUTPUT';
+                    //$dir = '/home/ruoyuanluo/_OUTPUT';
+                    $dir = $app->getAttribute('converter_remote_dir');
                     $sftp->mkdir("$dir");
 
                     //dd([sprintf("cd /home/ruoyuanluo/Executable_CFIEHFMM_serial&& ./%s --config ./%s/INPUT/input.conf", Kernel::solver, $f->id)]);
-                    $c->run([sprintf("cd /home/ruoyuanluo/Executable_CFIEHFMM_serial; ./%s --config ./%s/INPUT/input.conf", Kernel::solver, $f->id)], function($line2){
+                    $c->run([sprintf("cd %s; ./%s --config ./%s/INPUT/input.conf", str_replace('{JOB_ID}','',$app->getAttribute("remote_dir")),Kernel::solver, $f->id)], function($line2){
 
                         echo($line2);
                     },30);
@@ -208,19 +210,26 @@ class Kernel extends ConsoleKernel
     }
 
     private function download($jobID, $server)
-    {
+    {   
+        $app = new App();
+
         if($jobID && $server){
             $this->sftp = new SFTP($server->host, $server->port);
             if (!$this->sftp->login($server->username, $server->password)) {
                 exit('Login Failed');
             }
-
-            $remote_path = '/home/ruoyuanluo/Executable_CFIEHFMM_serial/OUTPUT/';
-            $local_path = "public/storage/jobs/".$jobID."/solver_output/";
+ 
+            //$remote_path= '/home/ruoyuanluo/Executable_CFIEHFMM_serial/OUTPUT/';
+            $remote_path = $app->getAttribute("remote_path");
+            //"public/storage/jobs/".$jobID."/output/solver_output/";
+            $local_path = str_replace('{JOB_ID}', $jobID,$app->getAttribute("local_path"));
+          
             $this->get($remote_path,$local_path);
+            // $remote_path= 'home/ruoyuanluo/_OUTPUT/'
+            $remote_path = $app->getAttribute("converter_remote_path");
 
-            $remote_path = '/home/ruoyuanluo/_OUTPUT/';
-            $local_path = "public/storage/jobs/".$jobID."/output/";
+            //$local_path= "public/storage/jobs/".$jobID."/output/"
+            $local_path = str_replace('{JOB_ID}',$jobID, $app->getAttribute("converter_local_path"));
             $this->get($remote_path,$local_path);
         }
     }
@@ -229,7 +238,7 @@ class Kernel extends ConsoleKernel
         $this->sftp->chdir($remote_path);
         $files =  $this->sftp->nlist(".", true);
         File::makeDirectory($local_path,0755,true,true);
-        
+
         foreach ($files as $file) {
             if ($file != ".." && $file != ".") {
                 $a = dirname($file);

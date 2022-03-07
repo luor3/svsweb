@@ -491,10 +491,7 @@ class ShowForm extends Component
      */
     public function redirecToJob($jobID)
     {   
-        // $this->job = job::find($jobID);
-        // $this->jobID = $jobID;
-        // $this->mount();
-    
+ 
 
         $parameter = [
             'currentModule' => "jobs",
@@ -547,8 +544,7 @@ class ShowForm extends Component
                             $c->run([sprintf('kill %s', $line)], function($line2) use($remotejob) {
                                 $remotejob->delete();
                             });
-                            # If job cancalled, remove previous out.txt, users can only download  o file and e file
-                            $c->run([sprintf('rm %s', '/home/ruoyuanluo/_OUTPUT/out.txt')], function($line3) {});
+                            
                         }
                         );
                     }
@@ -593,16 +589,15 @@ class ShowForm extends Component
     
                 $local_path = public_path()."\storage\jobs\\".$jobID."\output\\";
 
-                $files = File::files($local_path);
+                $files = File::allFiles($local_path);
           
                 return response()->streamDownload(function () use($output_name, $local_path, $files)
                 {
                     $options = new Archive();
                     $options->setSendHttpHeaders(false);
-                    $zip = new ZipStream( $output_name, $options);
+                    $zip = new ZipStream($output_name, $options);
+                    
                     foreach ($files as $file) {
-                    //dd($file);
-                       //dd(file_get_contents($file->getPathname()));
                         $f = $file->getFilename();
                         if($f != ".." && $f != ".") {
                             $zip->addFileFromPath($f,$file->getPathname());
