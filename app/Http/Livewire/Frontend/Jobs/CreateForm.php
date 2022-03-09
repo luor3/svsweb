@@ -150,7 +150,7 @@ class CreateForm extends Component
      * 
      * @var boolean
      */
-    public $next = false;
+    public $next = 0;
     
     public $server_name = '';
     public $host = '';
@@ -270,7 +270,32 @@ class CreateForm extends Component
         return view(self::COMPONENT_TEMPLATE);
     }
 
+    public function configuration_solver1(Request $request)
+    {
+        $data = $this->validate([
+            'configuration_file' => 'required|file',
+            'excitation_file' => 'required|file',
+            'mesh_file' => 'required|file',
+            'material_file' => 'required|file'
+        ]);
 
+
+        $originalname = $this->input_file->getClientOriginalName();
+       
+        $input_file_path = $this->input_file->storeAs($store_path, $originalname);
+        $configuration_name = $this->configuration_file->getClientOriginalName();
+        $configuration_file_path = $this->configuration_file->storeAs($store_path, $configuration_name);
+        $excitation_name = $this->excitation_file->getClientOriginalName();
+        $excitation_file_path = $this->excitation_file->storeAs($store_path, $excitation_name);
+        $mesh_name = $this->mesh_file->getClientOriginalName();
+        $mesh_dir = $store_path.'/solver_meshes/';
+        Storage::disk('public')->makeDirectory($mesh_dir);
+        $mesh_file_path = $this->mesh_file->storeAs($mesh_dir, $mesh_name);
+        $materia_name = $this->material_file->getClientOriginalName();
+        $material_file_path = $this->material_file->storeAs($store_path, $materia_name);
+       
+        $this->next = 2;
+    }
 
     /**
      * add job page
@@ -384,10 +409,6 @@ class CreateForm extends Component
             'description' => 'required|max:255',
             'category_id' => 'required|integer',
             'jobs_solvers' => 'required|integer',
-            'configuration_file' => 'required|file',
-            'excitation_file' => 'required|file',
-            'mesh_file' => 'required|file',
-            'material_file' => 'required|file',
             'description' => 'required|max:255',
             'input_file' =>'required|file'  
         ]);
@@ -426,24 +447,18 @@ class CreateForm extends Component
             return redirect()->route(self::FAIL_ROUTE);
         }
         $this->initInputFiles();
-        $this->next = true; 
+
+        if($this->jobs_solvers==0) {
+            $this->next = 1; 
+        }
+        else {
+            $this->next = 2;
+        }
+
         $store_path = 'public/jobs/'.$this->job->id;
         Storage::disk('public')->makeDirectory($store_path);
 
         $originalname = $this->input_file->getClientOriginalName();
-       
-        $input_file_path = $this->input_file->storeAs($store_path, $originalname);
-        $configuration_name = $this->configuration_file->getClientOriginalName();
-        $configuration_file_path = $this->configuration_file->storeAs($store_path, $configuration_name);
-        $excitation_name = $this->excitation_file->getClientOriginalName();
-        $excitation_file_path = $this->excitation_file->storeAs($store_path, $excitation_name);
-        $mesh_name = $this->mesh_file->getClientOriginalName();
-        $mesh_dir = $store_path.'/solver_meshes/';
-        Storage::disk('public')->makeDirectory($mesh_dir);
-        $mesh_file_path = $this->mesh_file->storeAs($mesh_dir, $mesh_name);
-        $materia_name = $this->material_file->getClientOriginalName();
-        $material_file_path = $this->material_file->storeAs($store_path, $materia_name);
-       
         
         $input_json = json_decode($this->job->configuration,true);
         $fileName_json = json_decode($input_json['input_file_json'] , true);
