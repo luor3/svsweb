@@ -1,14 +1,15 @@
 <div>
-    @if($next == 0)
+
+    <x-slot name="title">
+        {{ __('New Job') }}
+    </x-slot>
+
+    <x-slot name="description">
+        {{ __('Add a new job for submission. You can generate the .input file with our input generator') }}
+    </x-slot>
+    @if(!$next)
     <x-form-section submit="registerJob">
 
-        <x-slot name="title">
-            {{ __('New Job') }}
-        </x-slot>
-
-        <x-slot name="description">
-            {{ __('Add a new job for submission. You can generate the .input file with our input generator') }}
-        </x-slot>
 
         <x-slot name="form">
             <div class="col-span-6">
@@ -85,7 +86,7 @@
                     <x-jet-input-error for="password" class="mt-2" />
                 </div>
             </div>
-
+            @endif
             <div class="col-span-6">
                 <x-jet-label for="description" value="{{ __('Description') }}" />
 
@@ -97,7 +98,7 @@
 
             <div class="col-span-6 sm:col-span-full">
                 <x-jet-label for="input_file" value="{{ __('Input File') }}" />
-                @if($jobs_solvers == 0)
+                @if($jobs_solvers == 1)
                 <x-jet-input id="input_file" type="file" class="mt-1 block w-full" wire:model="input_file" enctype='multipart/form-data' accept='.conf' required />
                 @else
                 <x-jet-input id="input_file" type="file" class="mt-1 block w-full" wire:model="input_file" enctype='multipart/form-data' accept='.input' required />
@@ -116,36 +117,7 @@
 
 
     </x-form-section>
-    @elseif($next = 1)
-
-    <x-form-section submit="configuration_solver1">
-        <div class="col-span-6 sm:col-span-full">
-            <x-jet-label for="configuration_file" value="{{ __('Configuration file for solver') }}" />
-            <x-jet-input id="configuration_file" type="file" class="mt-1 block w-full" wire:model="configuration_file" enctype='multipart/form-data' accept='.conf' required />
-            <div class="text-black-500" wire:loading wire:target="configuration_file">Uploading...</div>
-            <x-jet-input-error for="configuration_file" class="mt-2" />
-        </div>
-        <div class="col-span-6 sm:col-span-full">
-            <x-jet-label for="excitation_file" value="{{ __('Excitation file for solver') }}" />
-            <x-jet-input id="excitation_file" type="file" class="mt-1 block w-full" wire:model="excitation_file" enctype='multipart/form-data' accept='.exc' required />
-            <div class="text-black-500" wire:loading wire:target="excitation_file">Uploading...</div>
-            <x-jet-input-error for="excitation_file" class="mt-2" />
-        </div>
-        <div class="col-span-6 sm:col-span-full">
-            <x-jet-label for="mesh_file" value="{{ __('Mesh file for solver') }}" />
-            <x-jet-input id="mesh_file" type="file" class="mt-1 block w-full" wire:model="mesh_file" enctype='multipart/form-data' accept='.msh' required />
-            <div class="text-black-500" wire:loading wire:target="mesh_file">Uploading...</div>
-            <x-jet-input-error for="mesh_file" class="mt-2" />
-        </div>
-        <div class="col-span-6 sm:col-span-full">
-            <x-jet-label for="material_file" value="{{ __('Material file for solver') }}" />
-            <x-jet-input id="material_file" type="file" class="mt-1 block w-full" wire:model="material_file" enctype='multipart/form-data' accept='.mtr' required />
-            <div class="text-black-500" wire:loading wire:target="material_file">Uploading...</div>
-            <x-jet-input-error for="material_file" class="mt-2" />
-        </div>
-    </x-form-section>
-
-    @elseif($next = 2)
+    @else($next)
     <x-jet-form-section submit="add">
         <x-slot name="title">
             {{ __('Continued Job: ').(isset($job)?$job->name:'Null') }}
@@ -157,14 +129,15 @@
 
         <x-slot name="form">
             @if(isset($input_files))
-            @foreach($uploadFields as $fileType => $extension)
-            <div class="col-span-6 sm:col-span-full">
-                <x-jet-label class="mt-5" for="{{'input_files.'.$fileType}}" value="{{  'Input '.$fileType.' File'  }}" />
-                <x-jet-input id="{{'input_files.'.$fileType}}" type="file" class="mt-1 block w-full" wire:model="input_files.{{$fileType}}" enctype='multipart/form-data' accept="{{'.'.$extension}}" />
-                <div class="text-black-500" wire:loading wire:target="input_files.{{$fileType}}">Uploading...</div>
-                <x-jet-input-error for="input_files.{{$fileType}}" class="mt-2" />
-            </div>
-            @endforeach
+
+                @foreach($uploadFields as $fileType => $extension)
+                <div class="col-span-6 sm:col-span-full">
+                    <x-jet-label class="mt-5" for="{{'input_files.'.$fileType}}" value="{{  'Input '.$fileType.' File'  }}" />
+                    <x-jet-input id="{{'input_files.'.$fileType}}" type="file" class="mt-1 block w-full" wire:model="input_files.{{$fileType}}" enctype='multipart/form-data' accept="{{'.'.$extension}}" />
+                    <div class="text-black-500" wire:loading wire:target="input_files.{{$fileType}}">Uploading...</div>
+                    <x-jet-input-error for="input_files.{{$fileType}}" class="mt-2" />
+                </div>
+                @endforeach
             @endif
         </x-slot>
 
@@ -177,12 +150,6 @@
 
     @endif
 
-
-
-
-
-
-    @endif
     <x-jet-confirmation-modal wire:model="confirmingJobDeletion">
         <x-slot name="title">
             <span class="font-bold uppercase">
@@ -202,3 +169,16 @@
         </x-slot>
     </x-jet-confirmation-modal>
 </div>
+
+<script>
+    var input_file = document.getElementById("input_file");
+    var jobs_solvers = document.getElementById("jobs_solvers");
+    jobs_solvers.addEventListener("change", function(event) {
+        if (jobs_solvers.value == 1) {
+            input_file.setAttribute("accept", ".conf");
+        } else {
+            input_file.setAttribute("accept", ".input");
+        }
+
+    })
+</script>
