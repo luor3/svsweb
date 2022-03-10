@@ -586,8 +586,13 @@ class ShowForm extends Component
             $this->job = job::find($jobID);
             if($this->job->progress == 'Completed' || $this->job->progress == 'Cancelled') {
                 $output_name = sprintf("%d_output.zip", $jobID);
-    
-                $local_path = public_path()."\storage\jobs\\".$jobID."\output\\";
+                if($this->job->jobs_solvers==1){
+                    $local_path = public_path()."\storage\jobs\\".$jobID."\output\solver_output\\";
+                }
+                else{
+                    $local_path = public_path()."\storage\jobs\\".$jobID."\output\converter_output\\";
+                }
+                
 
                 $files = File::allFiles($local_path);
           
