@@ -94,6 +94,11 @@ class ShowForm extends Component
     }
 
 
+    public function showVTKmodel($vtkPath) 
+    {
+        redirect()->route('vtk-visualizer', ['vtkPath'=> $vtkPath]);
+    }
+
     /**
      * generate input and output files on fly for given demo
      * 

@@ -16,8 +16,11 @@
             <x-site-link href="{{ url('/demos') }}" :active="request()->routeIs('demos') || request()->getPathInfo() == '/demos'">
                 Demos
             </x-site-link>
-            <x-site-link href="{{ url('/input-generator') }}" :active="request()->routeIs('input-generator')|| request()->getPathInfo() == '/input-generator'">
+            <x-site-link href="{{ url('/input-generator') }}" :active="request()->routeIs('input-generator')|| request()->getPathInfo() == '/input-generator' || request()->routeIs('xml-input-generator')">
                 Input Generator
+            </x-site-link>
+            <x-site-link href="{{ url('/vtk-visualizer') }}" :active="request()->routeIs('vtk-visualizer')|| request()->getPathInfo() == '/vtk-visualizer'">
+                VTK Visualizer
             </x-site-link>
             <x-site-link href="{{ url('/about') }}" :active="request()->getPathInfo() == '/about'">
                 About

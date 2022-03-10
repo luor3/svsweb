@@ -132,8 +132,8 @@
 
                                     </button>
 
-
-                                    <button class="ml-2 inline-flex items-center px-1 py-1 rounded-md bg-purple-400 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-red-300 focus:outline-none focus:ring disabled:opacity-25 transition" title="Delete This Job" wire:click="registerJob({{$myJob->id }},true)"
+                                    @if(isset($myJob->vtk_path))
+                                    <button class="ml-2 inline-flex items-center px-1 py-1 rounded-md bg-purple-400 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-red-300 focus:outline-none focus:ring disabled:opacity-25 transition" title="View the VTK" wire:click="showVTKmodel('{{ $myJob->vtk_path }}')"
                                         wire:loading.attr="disabled">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -141,6 +141,7 @@
                                         </svg>
 
                                     </button>
+                                    @endif
 
                                     @if($myJob->progress === 'Completed' || $myJob->progress === 'Cancelled')
                                     <button class="ml-2 inline-flex items-center px-1 py-1 border border-green-200 rounded-md bg-green-500 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-green-300 focus:outline-none focus:ring transition" wire:click="downloadFile({{$myJob->id}}, {{$server->id}}, false)" wire:loading.attr="disabled">

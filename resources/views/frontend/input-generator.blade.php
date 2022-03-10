@@ -1,7 +1,21 @@
-<div>
+<div> 
+    <div class="px-5 w-5/6 m-auto flex">
+        <ul>
+            <li class="inline">
+                <x-jet-nav-link href="{{ route('input-generator') }}" :active="request()->routeIs('input-generator')">
+                    {{ __('General Input Generator') }}
+                </x-jet-nav-link>
+            </li>
+            <li class="inline">
+                <x-jet-nav-link href="{{ route('xml-input-generator') }}" :active="request()->routeIs('xml-input-generator')">
+                    {{ __('XML Input Generator') }}
+                </x-jet-nav-link>
+            </li>
+        </ul>
+    </div>
 
     <form wire:submit.prevent="generateFile">            
-        <div class="mt-10 w-10/12 mx-auto">
+        <div class="p-5 mt-10 w-10/12 mx-auto">
             <h1 class="font-bold text-gray-700 y-500 text-2xl mb-4">{{$inputInfo['name']}}</h1>
 
             <div class="grid grid-cols-12 gap-x-4">        
@@ -81,9 +95,9 @@
                                 <input
                                     class='w-full bg-white text-gray-700 disabled:opacity-20 shadow-md rounded-lg appearance-none mb-5 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent'
                                     type="{{ $cProperty['htmlType'] }}" step="any" wire:model="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" id="inputValue.{{ $key }}.children.{{$i}}.{{$cKey}}{{ (isset($cProperty['_repeat']))? '.'.$j : '' }}" {{ (isset($cProperty['required']) && $cProperty['required'])? "required" : "" }}>
-                                @endif
+                                    @endif
                                     @if(isset($cProperty['hint']))
-                                    <p :class="{ 'hidden': !open }" class="inline-block hidden text-sm text-red-500" x-transition>
+                                    <p :class="{ 'hidden': !open }" class="inline-block hidden  text-sm text-red-500" x-transition>
                                         {{ $cProperty['hint'] }}
                                     </p> 
                                     @endif
