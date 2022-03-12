@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Frontend\Jobs;
 use Livewire\Component;
 use Illuminate\Http\Request;
 use App\Models\Job;
+use App\Models\solvers;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -18,6 +19,7 @@ use \ZipStream\ZipStream;
 use Collective\Remote\Connection;
 use Illuminate\Support\Facades\File;
 use App\Http\Livewire\Frontend\Jobs\Kernel;
+
 class ShowForm extends Component
 {
 
@@ -628,7 +630,7 @@ class ShowForm extends Component
     }
 
 
-    public function showVTKmodel($job_id, $vtk_path) 
+    public function showVTKmodel($job_id, $jobs_solvers, $vtk_path) 
     {
         if($vtk_path) {
             redirect()->route('vtk-visualizer', ['vtkPath'=> $vtk_path]);
@@ -636,8 +638,10 @@ class ShowForm extends Component
         else {
             $this->errorLog = [];
             $result_code;
+            $solverArg = json_decode(solvers::find($jobs_solvers)->args, true);
+
             $workDirectory = str_replace('\\', '/', storage_path().'/app/public/jobs/'.$job_id.'/');
-            $exe_path = str_replace('\\', '/', app_path().'/SolverCore.exe');
+            $exe_path = str_replace('\\', '/', app_path().'/'.$solverArg['converter']);
             //dd($exe_path.' '.$workDirectory);
             exec($exe_path.' '.$workDirectory, $this->errorLog, $result_code);
             if($result_code == 0) {
@@ -648,9 +652,6 @@ class ShowForm extends Component
             }
             else {
                 $this->confirmingErrorLog = true;
-                // session()->flash('flash.banner', 'Something Wrong with your input files, cannot generate Polydata to view');
-                // session()->flash('flash.bannerStyle', 'danger');
-                // return redirect()->route(self::REDIRECT_ROUTE);
             }
         }
     }
