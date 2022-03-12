@@ -98,7 +98,7 @@ function cus_vtkloader() {
 
 
   if(jobContent) {
-    const vtpReader = vtkXMLPolyDataReader.newInstance();
+    const vtpReader = vtkPolyDataReader.newInstance();
     try {
       vtpReader.setUrl(fileName, { loadData: true }).then(() => {
         pipelineCore(vtpReader.getOutputData(0));

@@ -10,11 +10,12 @@ use App\Models\sshservers;
 
 use App\Models\jobs_sshservers;
 use Collective\Remote\Connection;
-
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use App\Models\solvers;
+
 use Exception;
 
 class CreateForm extends Component
@@ -61,6 +62,8 @@ class CreateForm extends Component
 
     public $confirmingJobDeletion = false;
 
+    public $input_conf_require = [];
+    public $input_conf_inputs = [];
 
      /**
      * 
@@ -81,12 +84,26 @@ class CreateForm extends Component
      */
     public $input_file;
 
-
-    /**
+      /**
      * 
-     * @var file array
+     * @var file
      */
-    public $output_files = [];
+    public $configuration_file;
+      /**
+     * 
+     * @var file
+     */
+    public $excitation_file;
+      /**
+     * 
+     * @var file
+     */
+    public $mesh_file;
+      /**
+     * 
+     * @var file
+     */
+    public $material_file;
 
 
     /**
@@ -115,6 +132,8 @@ class CreateForm extends Component
      */
     public $sshservers;
 
+
+    public $inputfilename = [];
 
     /**
      * 
@@ -248,7 +267,40 @@ class CreateForm extends Component
         return view(self::COMPONENT_TEMPLATE);
     }
 
+    // public function configuration_solver1(Request $request)
+    // {
+    //     $store_path = 'public/jobs/'.$this->job->id;
 
+    //     foreach($this->input_conf_inputs as $k=>$v) {
+    //         if($v != null ){
+    //             if(str_contains(strtolower($k),"mesh")) {
+    //                 $store_path = $store_path.'/meshes/';
+    //                 Storage::disk('public')->makeDirectory($store_path);
+    //             }
+
+    //             $file_name = $v->getClientOriginalName();
+    //             $file_path = $v->storeAs($store_path, $file_name);
+                
+               
+    //         }
+    //     }
+     
+        // $excitation_name = $this->excitation_file->getClientOriginalName();
+        // $excitation_file_path = $this->excitation_file->storeAs($store_path, $excitation_name);
+        // $mesh_name = $this->mesh_file->getClientOriginalName();
+        //
+        // $mesh_file_path = $this->mesh_file->storeAs($mesh_dir, $mesh_name);
+        // $materia_name = $this->material_file->getClientOriginalName();
+        // $material_file_path = $this->material_file->storeAs($store_path, $materia_name);
+        //}
+        // $data = $this->validate([
+        //     'configuration_file' => 'required|file',
+        //     'excitation_file' => 'required|file',
+        //     'mesh_file' => 'required|file',
+        //     'material_file' => 'required|file'
+        // ]);
+       
+    //}
 
     /**
      * add job page
@@ -259,7 +311,6 @@ class CreateForm extends Component
     {
         
         $this->validate([
-            'output_files.*' => 'file',
             'input_files.*' => 'required|file',
             'status' => 'required|boolean',
         ]);
@@ -273,16 +324,20 @@ class CreateForm extends Component
 
         foreach ($this->input_files as $type => $file)
         {
-            $input_json['input_file_json']['fileName'][$type] = $file->getClientOriginalName();
-            //$path = $file->storeAs('public/jobs/'.$this->job->id, $file->getClientOriginalName());
-            $input_json['input_file_json'][$type] = $file->storeAs('public/jobs/'.$this->job->id,$file->getClientOriginalName());
+            $fake_path = explode("/",$this->inputfilename[$type]);
+            $input_json['input_file_json']['fileName'][$type] = end($fake_path);
+            $dir =  'public/jobs/' . $this->job->id. '/';
+            $outDir = $dir. '/_OUTPUT';
+            for ($i = 0; $i < count($fake_path) - 1 ; $i++) {
+                $dir .= $fake_path[$i]. '/';
+            }
+              
+            File::makeDirectory($dir,0755,true,true);
+            Storage::disk('local')->makeDirectory($outDir);
+            $input_json['input_file_json'][$type] = $file->storeAs($dir, end($fake_path));
         }
         //dd($input_json);
         $input_json = json_encode($input_json);
-
-        $output_json = [
-            'fileName' => [],
-        ];
 
         $this->job->configuration = $input_json;
         $this->job->status = $this->status;
@@ -348,7 +403,7 @@ class CreateForm extends Component
     }
 
 
-
+    public $input_file_data = "";
     /**
      * register new job
      * 
@@ -361,19 +416,26 @@ class CreateForm extends Component
             'description' => 'required|max:255',
             'category_id' => 'required|integer',
             'jobs_solvers' => 'required|integer',
-            'input_file' => 'file',
             'description' => 'required|max:255',
+            'input_file' =>'required|file'  
         ]);
         $user = auth()->user();
         $data['user'] = $user->id;
+       
+           
+
         try 
-        {   
-            $this->readFileFrom($this->input_file->getRealPath());
+        {  
+            if($this->jobs_solvers==1) {
+                $this->readFileFromInputConf($this->input_file->getRealPath());
+            }
+            else {
+                $this->readFileFromInputInput($this->input_file->getRealPath());
+            } 
+            $this->next = true;
             $input_file_json = '{ "fileName" : [] }';
-            $output_file_json = '{ "fileName" : [] }';
             $map = [
             'input_file_json'=>$input_file_json,
-            'output_file_json'=>$output_file_json,
             'input_property_json'=>$this->uploadFields,
            ];
            $data['configuration'] = json_encode($map);
@@ -399,13 +461,15 @@ class CreateForm extends Component
             return redirect()->route(self::FAIL_ROUTE);
         }
         $this->initInputFiles();
-        $this->next = true; 
+
+
+        $store_path = 'public/jobs/'.$this->job->id;
+        Storage::disk('public')->makeDirectory($store_path);
 
         $originalname = $this->input_file->getClientOriginalName();
+        $input_file_path = $this->input_file->storeAs($store_path, $originalname);
         
-        Storage::disk('public')->makeDirectory('jobs/'.$this->job->id);
-        //Storage::disk('public')->put($originalname, $this->input_file,'jobs/'.$this->job->id);
-        $input_file_path = $this->input_file->storeAs('public/jobs/'.$this->job->id, $originalname);
+       
         $input_json = json_decode($this->job->configuration,true);
         $fileName_json = json_decode($input_json['input_file_json'] , true);
         $fileName_json["fileName"]["input"] = $originalname;
@@ -414,6 +478,7 @@ class CreateForm extends Component
         $input_json['input_file_json']['input'] = $input_file_path;
         $this->job->configuration = json_encode($input_json);
         $this->job->save();
+
     }
 
 
@@ -423,7 +488,7 @@ class CreateForm extends Component
      * 
      * @return void
      */
-    private function readFileFrom($path)
+    private function readFileFromInputInput($path)
     {
         $myfile = fopen($path, "r") or die("Unable to open file!");
         $pattern = "/^(_INPUT)/i";
@@ -447,9 +512,51 @@ class CreateForm extends Component
                 }
                 $fileExtension = end($inputProperties);
                 $this->uploadFields[$fileType] = $fileExtension;
+                $this->inputfilename[$fileType] = trim($line);
             }
             $lineNum++;
         }
+        fclose($myfile);
+    } 
+
+
+    /**
+     * read and parse input file
+     * 
+     * @return void
+     */
+    private function readFileFromInputConf($path)
+    {
+        $myfile = fopen($path,'r') or die("Unable to open file!");
+        $remove_comment_pattern = "/^\@/i";
+        $input_pattern2 = "/File/i";
+        
+        $lineNum = 1;
+        while(! feof($myfile))
+        {
+            $line = fgets($myfile);
+            if(preg_match($remove_comment_pattern, $line))
+            {
+               
+            }else{
+                if(preg_match($input_pattern2, $line))
+                {
+                    $inputProperties = explode(":",$line);
+                    if(count($inputProperties) != 2)
+                    {
+                        throw new \Exception('Cannot parse input parameter at line '.$lineNum); 
+                    }
+
+                    $extensions = explode('.', $inputProperties[1]);
+                    $extension = end($extensions); 
+                    $files = explode(" ", $inputProperties[0]);
+                    $file = trim(reset($files));
+                    $this->uploadFields[$file] = $extension;
+   
+                }
+            }
+            $lineNum++;
+        }    
         fclose($myfile);
     } 
 

@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use phpseclib\Net\SFTP;
 use Collective\Remote\RemoteFacade as SSH;
 use Collective\Remote\Connection;
-
+use App\Models\App;
+use App\Console\Kernel;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -29,128 +30,104 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::get('/users', function (Request $request) {
 
+        $app = new App();
+        $jobs = Job::where('progress', '=', 'pending')->orderBy('created_at', 'desc')->get();
 
-    // SSH::put($request->profile_photo_path, 'test');
-    // SSH::run([
-    //     'cd test', 'ls'
-    // ], function($line)
-    // {
-    //     echo $line.PHP_EOL;
-    // }
-
-    // );
-    //  dd($process);
-    // $file = Job::find(1)->configuration;
-    // $data = json_decode($file, true);
-    // $filename = $data['input_file_json'];
-    // $jason = json_decode($filename, true);
-    // return $jason['materials'];
-    // dd($jason);
-    // dd(file_exists(__DIR__.'/../r4v6Oeboldn8Ggsr3SuU2VhtVnkBvtWgQXXu6fC9.txt'));
-    // try{
-    //     $file = fopen(__DIR__.'/../r4v6Oeboldn8Ggsr3SuU2VhtVnkBvtWgQXXu6fC9.txt', 'r');
-    //     //dd(is_resource($file));
-    // SSH::put($file, 'test');
-    // }
-    // catch(Exception $e)
-    // {
-    //     dd($e->getMessage());
-    // }
-    //$sftp = new SFTP('ece-e3-516-f.eng.umanitoba.ca');
-    //$sftp = new SFTP('130.179.128.26');
-    //if (!$sftp->login('mohamm60', '1ldg4DC2p5')) {
-        //if (!$sftp->login('ruoyuanluo', 'ruoyuanluo123')) {
-        //exit('Login Failed');
-    //}  
-    //DB::enableQueryLog();
-    //$files = Job::where('progress','=','pending')->orderBy('created_at')->get();
-    $files = Job::where('progress','=','pending')->orderBy('created_at','desc')->get();
-    //$files = Job::all();
-    //dd($files);
-    foreach($files as $f){
-        foreach($f->sshservers as $server){ 
-        
-            $sftp = new SFTP($server->host, $server->port);
-            if (!$sftp->login($server->username, $server->password)) {
-                exit('Login Failed');
-            } 
-            $file = $f->configuration;
+        foreach ($jobs as $j) {
+            $file = $j->configuration;
             $data = json_decode($file, true);
-            $filename = $data['input_file_json'];
-            //$dir = $f->id;
-            //$dir = 'solver/__INPUT';
-            $dir = '/home/ruoyuanluo/_INPUT';
-            $sftp->mkdir("$dir");
-            $sftp->chdir("$dir");
+            $filename = $data['input_file_json']['fileName'];
+            $local_path = public_path() . "/storage/jobs/" . $j->id . "/";
 
-
-            if($filename['materials']){
-                $filePath = storage_path('app/'.$filename['materials']);
-                $file = fopen($filePath, 'r');
-                $fileName = basename($filePath);
-                $sftp->put($fileName, $file, 8);
-
-            }if($filename['meshes']){
-                $filePath = storage_path('app/'.$filename['meshes']);
-                $file = fopen($filePath, 'r');
-                $fileName = basename($filePath);
-                $sftp->put($fileName, $file, 8);
-
-            }if($filename['waves']){
-                $filePath = storage_path('app/'.$filename['waves']);
-                $file = fopen($filePath, 'r');
-                $fileName = basename($filePath);
-                $sftp->put($fileName, $file, 8);
-
-
+            if ($j->jobs_solvers == "1") {
+                //$job_di= /home/ruoyuanluo/Executable_CFIEHFMM_serial/{JOB_ID}
+                $job_dir = str_replace('{JOB_ID}', $j->id, $app->getAttribute("remote_dir"));
+                $input_dir = $job_dir . "/INPUT/";
+                $cmd = "";
+            } else {
+                $job_dir = str_replace('{JOB_ID}', $j->id, $app->getAttribute('converter_dir'));
+                $input_dir = $job_dir . "/_INPUT/";
+                $cmd = "";
             }
-            //dd($filename);
-            if(isset($filename['mlr'])){
-                $filePath = storage_path('app/'.$filename['mlr']);
-                $file = fopen($filePath, 'r');
-                $fileName = basename($filePath);
-                $sftp->put($fileName, $file, 8);
 
+            foreach ($j->sshservers as $server) {
+                $sftp = new SFTP($server->host, $server->port);
+                if (!$sftp->login($server->username, $server->password)) {
+                    exit('Login Failed');
+                }
+                $sftp->mkdir("$job_dir");
+                $sftp->mkdir("$input_dir");
+                $sftp->chdir("$input_dir");
+                foreach($filename as $key => $value)
+                {
+                    if ($j->jobs_solvers == "1") {
+                        if(strtolower($key) == 'mesh') {
+                            $dir = $input_dir."/Meshes";
+                            $sftp->mkdir("$dir");
+                            $sftp->chdir("$dir");
+                            $filePath =  $local_path.$value;
+                            $file = fopen($filePath, 'r');
+                            $fileName = basename($filePath);
+                            $sftp->put($fileName, $file, 8);
+                        } else {
+                            $sftp->mkdir("$job_dir.'/INPUT'");
+                            $sftp->chdir("$job_dir.'/INPUT");
+                            $filePath =  $local_path.$value;
+                            $file = fopen($filePath, 'r');
+                            $fileName = basename($filePath);
+                            $sftp->put($fileName, $file, 8);
+                        }
+                     }
+                     else {                                  
+                        if (strtolower($key) == 'input') {
+                            $sftp->mkdir("$job_dir");
+                            $sftp->chdir("$job_dir");
+                            $filePath =  $local_path .$value;
+                            $file = fopen($filePath, 'r');
+                            $fileName = basename($filePath);
+                            $sftp->put('input.input', $file, 8);
+                        } else {
+                            $dir = $input_dir."/".$key;
+                            $sftp->mkdir("$dir");
+                            $sftp->chdir("$dir");
+                            $filePath = $local_path. $value;
+                            $file = fopen($filePath, 'r');
+                            $fileName = basename($filePath);
+                            $sftp->put($fileName, $file, 8);
+                        }
+                     }
+                }
                 
+                $j->progress = 'In Progress';
+                $command = "qsub";
+                $c = new Connection($server->server_name, $server->host . ":" . $server->port, $server->username, ["password" => $server->password]);
+                if($j->jobs_solvers == "1"){
+                    
+                    //$dir = '/home/ruoyuanluo/_OUTPUT';
+                    $dir = $app->getAttribute('converter_remote_dir');
+                    $sftp->mkdir("$dir");
+                    if($j->jobs_solvers == "1")
+                    //dd([sprintf("cd /home/ruoyuanluo/Executable_CFIEHFMM_serial&& ./%s --config ./%s/INPUT/input.conf", Kernel::solver, $f->id)]);
+                    $c->run([sprintf("%s -v FOO=%s solver.pbs", $command, $j->id)], function ($line2) {
 
-            }if(isset($filename['FieldPoints'])){
-                $filePath = storage_path('app/'.$filename['FieldPoints']);
-                $file = fopen($filePath, 'r');
-                $fileName = basename($filePath);
-                $sftp->put($fileName, $file, 8);
-
-
+                        echo ($line2);
+                    }, 30);
+                }
+                else if($j->jobs_solvers == "2"){
+                    $c->run([sprintf("%s  %s -o %s -e %s", $command,  Kernel::app, $dir . "/OutputStream.txt", $dir . "/ErrorStream.txt")], function ($line) use ($j) // qsub 
+                    {
+                        echo ($line);
+                        $new_job = new remotejob();
+                        $new_job->job_id  = $j->id;
+                        $new_job->remote_job_id = str_replace(array("\n", "\r"), '', $line . PHP_EOL);
+                        $new_job->save();
+                        $j->save();
+                    });
+                }
             }
-            if($filename['input']){
-                
-                $sftp->chdir("..");
-                
-                $filePath = storage_path('app/'.$filename['input']);
-                $file = fopen($filePath, 'r');
-                $fileName = basename($filePath);
-                $sftp->put($fileName, $file, 8);
-
-            }
-            $sftp->chdir('..');
-            
-            $f->progress = 'In Progress';
-            $app = "a.sh";
-            $command = "qsub";
-            $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-            $c->run([$command." ".$app], function($line) use ($f)
-            {
-                echo $line.PHP_EOL;
-                $new_job = new remotejob();
-                $new_job->job_id  = $f->id;
-                $new_job->remote_job_id = str_replace(array("\n", "\r"), '', $line.PHP_EOL);
-                $new_job->save();
-                $f->save();
-    
-            });
         }
-        //dd($f->progress);
-    }
-});
+}
+);
 Route::get('/users1', function (Request $request) {
         $command_template =
         "qstat -f %s | grep job_state | awk -F ' ' '{print \$NF}'";

@@ -17,7 +17,7 @@ use \ZipStream\Option\Archive;
 use \ZipStream\ZipStream;
 use Collective\Remote\Connection;
 use Illuminate\Support\Facades\File;
-
+use App\Http\Livewire\Frontend\Jobs\Kernel;
 class ShowForm extends Component
 {
 
@@ -34,7 +34,7 @@ class ShowForm extends Component
     /**
      * @var string Redirect parent route name
      */
-    const REDIRECT_ROUTE = 'jobs';
+    const REDIRECT_ROUTE = 'userprofile';
     
 
     /**
@@ -112,6 +112,14 @@ class ShowForm extends Component
      */
     public $confirmingJobRecover = false;
 
+
+    /**
+     * 
+     * @var boolean
+     */
+    public $confirmingErrorLog = false;
+
+
     /**
      * 
      * @var boolean
@@ -119,6 +127,7 @@ class ShowForm extends Component
     public $displayEditable = false;
 
 
+    public $errorLog = [];
 
     /**
      * 
@@ -358,7 +367,7 @@ class ShowForm extends Component
             {
                 session()->flash('flash.banner', 'Something Wrong while Updating Job');
                 session()->flash('flash.bannerStyle', 'danger');
-                return redirect()->route(self::REDIRECT_ROUTE);;
+                return redirect()->route(self::REDIRECT_ROUTE);
             }
             $data = job::find($this->job->id)->toArray();
             $data['configuration'] = json_decode($data['configuration'],true);
@@ -397,6 +406,7 @@ class ShowForm extends Component
     {
         if ($this->job && $this->job->id) 
         {
+            
             $deleted = $this->job->delete(); // this will also delete related files through ORM deleting hook function.
             $msg =  $deleted ? 'Job successfully deleted!' : 'Ooops! Something went wrong.';
             $flag = $deleted ? 'success' : 'danger';
@@ -490,10 +500,7 @@ class ShowForm extends Component
      */
     public function redirecToJob($jobID)
     {   
-        // $this->job = job::find($jobID);
-        // $this->jobID = $jobID;
-        // $this->mount();
-    
+ 
 
         $parameter = [
             'currentModule' => "jobs",
@@ -543,11 +550,10 @@ class ShowForm extends Component
                         ], function($line) use($server, $remotejob)
                         {
                             $c = new Connection($server->server_name, $server->host.":".$server->port, $server->username,["password"=>$server->password]);
-                            $c->run([
-                                sprintf('kill %s', $line)
-                            ], function($line2) use($remotejob) {
+                            $c->run([sprintf('kill %s', $line)], function($line2) use($remotejob) {
                                 $remotejob->delete();
                             });
+                            
                         }
                         );
                     }
@@ -589,33 +595,23 @@ class ShowForm extends Component
             $this->job = job::find($jobID);
             if($this->job->progress == 'Completed' || $this->job->progress == 'Cancelled') {
                 $output_name = sprintf("%d_output.zip", $jobID);
-                // // $server = sshservers::find($server_id);
-                // // $sftp = new SFTP($server->host, $server->port);
-                // // if (!$sftp->login($server->username, $server->password)) {
-                // //     exit('Login Failed');
-                // // } 
+                if($this->job->jobs_solvers==1){
+                    $local_path = public_path()."\storage\jobs\\".$jobID."\output\solver_output\\";
+                }
+                else{
+                    $local_path = public_path()."\storage\jobs\\".$jobID."\output\converter_output\\";
+                }
+                
 
-                // // $path = '/home/ruoyuanluo/_OUTPUT/'.$jobID;
-                // // //dd($path);
-                // // $sftp->chdir($path);
-                // // $files = $sftp->nlist(".");
-                $local_path = public_path()."\storage\jobs\\".$jobID."\output\\";
-
-                $files = File::files($local_path);
-                // // foreach ($files as $file) {
-                    
-                // //     if($file != ".." && $file != ".") {
-                // //         $sftp->get(sprintf("%s/%s",$path,$file), $local_path);
-                // //     }
-                // // }
+                $files = File::allFiles($local_path);
+          
                 return response()->streamDownload(function () use($output_name, $local_path, $files)
                 {
                     $options = new Archive();
                     $options->setSendHttpHeaders(false);
-                    $zip = new ZipStream( $output_name, $options);
+                    $zip = new ZipStream($output_name, $options);
+                    
                     foreach ($files as $file) {
-                    //dd($file);
-                       //dd(file_get_contents($file->getPathname()));
                         $f = $file->getFilename();
                         if($f != ".." && $f != ".") {
                             $zip->addFileFromPath($f,$file->getPathname());
@@ -632,8 +628,30 @@ class ShowForm extends Component
     }
 
 
-    public function showVTKmodel($vtkPath) 
+    public function showVTKmodel($job_id, $vtk_path) 
     {
-        redirect()->route('vtk-visualizer', ['vtkPath'=> $vtkPath]);
+        if($vtk_path) {
+            redirect()->route('vtk-visualizer', ['vtkPath'=> $vtk_path]);
+        }
+        else {
+            $this->errorLog = [];
+            $result_code;
+            $workDirectory = str_replace('\\', '/', storage_path().'/app/public/jobs/'.$job_id.'/');
+            $exe_path = str_replace('\\', '/', app_path().'/SolverCore.exe');
+            //dd($exe_path.' '.$workDirectory);
+            exec($exe_path.' '.$workDirectory, $this->errorLog, $result_code);
+            if($result_code == 0) {
+                $job = Job::find($job_id);
+                $job->vtk_path = 'storage/jobs/'.$job_id.'/_OUTPUT/PolyMesh.vtk';
+                $job->save();   
+                redirect()->route('vtk-visualizer', ['vtkPath'=> $job->vtk_path]);
+            }
+            else {
+                $this->confirmingErrorLog = true;
+                // session()->flash('flash.banner', 'Something Wrong with your input files, cannot generate Polydata to view');
+                // session()->flash('flash.bannerStyle', 'danger');
+                // return redirect()->route(self::REDIRECT_ROUTE);
+            }
+        }
     }
 }
