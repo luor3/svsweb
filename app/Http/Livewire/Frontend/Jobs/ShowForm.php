@@ -34,7 +34,7 @@ class ShowForm extends Component
     /**
      * @var string Redirect parent route name
      */
-    const REDIRECT_ROUTE = 'jobs';
+    const REDIRECT_ROUTE = 'userprofile';
     
 
     /**
@@ -112,6 +112,14 @@ class ShowForm extends Component
      */
     public $confirmingJobRecover = false;
 
+
+    /**
+     * 
+     * @var boolean
+     */
+    public $confirmingErrorLog = false;
+
+
     /**
      * 
      * @var boolean
@@ -119,6 +127,7 @@ class ShowForm extends Component
     public $displayEditable = false;
 
 
+    public $errorLog = [];
 
     /**
      * 
@@ -358,7 +367,7 @@ class ShowForm extends Component
             {
                 session()->flash('flash.banner', 'Something Wrong while Updating Job');
                 session()->flash('flash.bannerStyle', 'danger');
-                return redirect()->route(self::REDIRECT_ROUTE);;
+                return redirect()->route(self::REDIRECT_ROUTE);
             }
             $data = job::find($this->job->id)->toArray();
             $data['configuration'] = json_decode($data['configuration'],true);
@@ -619,8 +628,30 @@ class ShowForm extends Component
     }
 
 
-    public function showVTKmodel($vtkPath) 
+    public function showVTKmodel($job_id, $vtk_path) 
     {
-        redirect()->route('vtk-visualizer', ['vtkPath'=> $vtkPath]);
+        if($vtk_path) {
+            redirect()->route('vtk-visualizer', ['vtkPath'=> $vtk_path]);
+        }
+        else {
+            $this->errorLog = [];
+            $result_code;
+            $workDirectory = str_replace('\\', '/', storage_path().'/app/public/jobs/'.$job_id.'/');
+            $exe_path = str_replace('\\', '/', app_path().'/SolverCore.exe');
+            //dd($exe_path.' '.$workDirectory);
+            exec($exe_path.' '.$workDirectory, $this->errorLog, $result_code);
+            if($result_code == 0) {
+                $job = Job::find($job_id);
+                $job->vtk_path = 'storage/jobs/'.$job_id.'/_OUTPUT/PolyMesh.vtk';
+                $job->save();   
+                redirect()->route('vtk-visualizer', ['vtkPath'=> $job->vtk_path]);
+            }
+            else {
+                $this->confirmingErrorLog = true;
+                // session()->flash('flash.banner', 'Something Wrong with your input files, cannot generate Polydata to view');
+                // session()->flash('flash.bannerStyle', 'danger');
+                // return redirect()->route(self::REDIRECT_ROUTE);
+            }
+        }
     }
 }
