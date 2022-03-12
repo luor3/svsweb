@@ -651,6 +651,7 @@ class ShowForm extends Component
                 redirect()->route('vtk-visualizer', ['vtkPath'=> $job->vtk_path]);
             }
             else {
+                array_push($this->errorLog, "Return error code: ".$result_code);
                 $this->confirmingErrorLog = true;
             }
         }

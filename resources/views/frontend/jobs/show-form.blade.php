@@ -249,7 +249,7 @@
 
             <x-slot name="content">
                 @foreach($this->errorLog as $key => $log)
-                    <h1>{{ $key }} => {{ $log }}</h1>
+                    <h1><b>{{ $key }}</b> => {{ $log }}</h1>
                 @endforeach
             </x-slot>
 
