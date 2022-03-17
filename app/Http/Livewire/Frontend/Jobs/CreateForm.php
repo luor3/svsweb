@@ -110,13 +110,6 @@ class CreateForm extends Component
      * 
      * @var file array
      */
-    public $output_files = [];
-
-
-    /**
-     * 
-     * @var file array
-     */
     public $input_files = [];
 
 
@@ -139,6 +132,8 @@ class CreateForm extends Component
      */
     public $sshservers;
 
+
+    public $inputfilename = [];
 
     /**
      * 
@@ -279,7 +274,6 @@ class CreateForm extends Component
     {
         
         $this->validate([
-            'output_files.*' => 'file',
             'input_files.*' => 'required|file',
             'status' => 'required|boolean',
         ]);
@@ -293,18 +287,20 @@ class CreateForm extends Component
 
         foreach ($this->input_files as $type => $file)
         {
-            $input_json['input_file_json']['fileName'][$type] = $file->getClientOriginalName();
-            $dir =  'public/jobs/'.$this->job->id;
+            $fake_path = explode("/",$this->inputfilename[$type]);
+            $input_json['input_file_json']['fileName'][$type] = end($fake_path);
+            $dir =  'public/jobs/' . $this->job->id. '/';
+            $outDir = $dir. '/_OUTPUT';
+            for ($i = 0; $i < count($fake_path) - 1 ; $i++) {
+                $dir .= $fake_path[$i]. '/';
+            }
               
             File::makeDirectory($dir,0755,true,true);
-            $input_json['input_file_json'][$type] = $file->storeAs($dir, $file->getClientOriginalName());
+            Storage::disk('local')->makeDirectory($outDir);
+            $input_json['input_file_json'][$type] = $file->storeAs($dir, end($fake_path));
         }
 
         $input_json = json_encode($input_json);
-
-        $output_json = [
-            'fileName' => [],
-        ];
 
         $this->job->configuration = $input_json;
         $this->job->status = $this->status;
@@ -401,10 +397,8 @@ class CreateForm extends Component
             } 
             $this->next = true;
             $input_file_json = '{ "fileName" : [] }';
-            $output_file_json = '{ "fileName" : [] }';
             $map = [
             'input_file_json'=>$input_file_json,
-            'output_file_json'=>$output_file_json,
             'input_property_json'=>$this->uploadFields,
            ];
            $data['configuration'] = json_encode($map);
@@ -481,6 +475,7 @@ class CreateForm extends Component
                 }
                 $fileExtension = end($inputProperties);
                 $this->uploadFields[$fileType] = $fileExtension;
+                $this->inputfilename[$fileType] = trim($line);
             }
             $lineNum++;
         }

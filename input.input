@@ -1,0 +1,146 @@
+IE-Solver:
+SVS-EFIE
+
+Name of the material file:
+_INPUT/materials/ice_layer_Mlr.txt
+
+Name of *.mesh file:
+_INPUT/meshes/SeaIce_2layers_4skin0p028_Ice2lays.msh
+1 1 1
+0 0 0
+
+Name of file with incident field information:
+_INPUT/waves/k_1pt_5.2GHz_phi0_theta90.txt
+
+Integration Type:
+Galerkin
+
+Preconditioner Type:
+No
+
+Matrix Solver:
+LU
+
+LossModel Type:
+NOLOSS
+
+Excitation:
+Dipole
+
+Plane wave polarization:
+1
+
+Dipole Location:
+1 0 0 0.4
+
+Dipole orientation:
+0 0 1
+
+Number of surface ports:
+0
+points
+
+Surface port polylines:
+
+Kernel:
+MultiLayer
+0.000
+
+Name of file with Multilayer description:
+_INPUT/mlr/SVS_ice_3layer.mlr
+
+Cubature order to calculate interactions (-1 means orders will be chosen according to distance between src & obs):
+3
+
+Singularity extraction limit (centre-to-centre distance of src-obs triangle pair is larger than N*largest_edge):
+4
+
+Is computation of scattered field required:
+No
+
+Is computation of current at surface points required:
+No
+
+Name of file with observation points (Name || None):
+None
+
+Name of file with observation points for current at the surface (Name || None):
+None
+
+Name of file with RWG definitions (RWG_info || None):
+None
+
+Name of file with MoM matrix(MoM_matrix,matrix_mcd || None):
+None
+
+Name of file with RHS(RHS_mcd,RHS, || None):
+None
+
+GMRES tolerance:
+1E-15
+
+Max # of GMRES Iterations:
+1000
+
+GMRES restart:
+20
+
+ACA or SVD tolerance:
+1E-2
+
+H-arithm tolerance:
+RELATIVE
+1E-3
+
+Number of levels in H-Matrix Cluster Tree:
+20
+
+Minimum number of elements per leaf node:
+5
+
+Eta admissibility condition:
+2
+
+Compression type:
+ACA
+
+Grid type (Fixed, Wavelength (dictated by Next parameter. min=3)):
+Fixed
+
+Number of grid points:
+4
+4
+4
+
+Want one additional grid point outside the bounding box?:
+No
+
+Interpolation type:
+Lagrange
+
+Stencil size (X,Y,Z or (-1 -1 -1) - means the same as Num grid points):
+-1
+-1
+-1
+
+Output Matrices:
+No
+
+Clustering Strategy:
+1
+
+Block Admissibility Criteria:
+0
+
+Block Homogeneity:
+0
+
+MinRank SVD or ACA:
+40
+
+Hmatrix element bounding box:
+TRI
+
+OutputCurrent format:
+VTK
+
