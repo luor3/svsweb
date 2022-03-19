@@ -5,7 +5,7 @@
 
             <div class="grid grid-cols-12 gap-x-4">        
                 @foreach($propertyWindow as $key => $property)
-                <div class="col-span-12 {{ isset($property['children']) ? 'md:place-self-stretch' : 'md:col-span-6'}}">
+                <div class="{{ (isset($property['display'])) ? $property['display'] : '' }} col-span-12 {{ isset($property['children']) ? 'md:place-self-stretch' : 'md:col-span-6'}}">
                     @if( (isset($enableSeq[$key]['main']) && $enableSeq[$key]['main']) || (!isset($enableSeq[$key]['main'])) ) 
                     <div x-data="{ open: false }">
                         <x-jet-label class="md:h-16 lg:h-10 inline-block mt-5 text-gray-700 font-bold" for="{{ $key }}" value="{{ $property['title'] }}" />

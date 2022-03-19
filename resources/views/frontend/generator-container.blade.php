@@ -23,7 +23,7 @@
     @if($currentModule == 'input')
         @livewire('frontend.generators.input-generator', ['templateFilename' => 'input-template.json'])
     @elseif($currentModule == 'conf')
-        @livewire('frontend.generators.input-generator', ['templateFilename' => 'input-template.json'])
+        @livewire('frontend.generators.input-generator', ['templateFilename' => 'input-conf-template.json'])
     @elseif($currentModule == 'xml')
         @livewire('frontend.generators.x-m-l-input-generator')
     @endif
