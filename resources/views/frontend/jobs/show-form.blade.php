@@ -1,5 +1,7 @@
 <div>
+
     @if( $jobID === -1)
+
         <div class="mx-auto overflow-auto">
             @include('frontend.jobs.filterBar')
             <table class="text-center min-w-full leading-normal border-4">
@@ -169,6 +171,9 @@
             </div>
         </div> 
             
+        <!-- Loading Animation -->
+        <x-loading-indicator/>
+
         <!-- Delete Page Confirmation Modal -->
         <x-jet-confirmation-modal wire:model="confirmingJobDeletion">
             <x-slot name="title">
@@ -263,9 +268,9 @@
 
         </div>
     </div>
-    @else
 
-        <x-jet-form-section submit="update">
+    @else
+    <x-jet-form-section submit="update">
         <x-slot name="title">
             {{'Job Unique ID: '.$job->id}}
         </x-slot>
