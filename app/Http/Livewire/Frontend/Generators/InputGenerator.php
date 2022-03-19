@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Frontend;
+namespace App\Http\Livewire\Frontend\Generators;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
@@ -67,6 +67,8 @@ class InputGenerator extends Component
 
 
 
+    public $templateFilename;
+
     /**
      * 
      * @return array
@@ -97,7 +99,7 @@ class InputGenerator extends Component
     public function render()
     {
         //dd($this->propertyWindow);
-        return view('frontend.input-generator');
+        return view('frontend.generators.input-generator');
     }
 
 
@@ -126,7 +128,7 @@ class InputGenerator extends Component
     private function loadInputInfo()
     {
         $content = '';
-        if($stream = fopen(base_path('input-template.json'), "r"))
+        if($stream = fopen(base_path($this->templateFilename), "r"))
         {
             while(($line=fgets($stream))!==false){
                 $content .= $line;

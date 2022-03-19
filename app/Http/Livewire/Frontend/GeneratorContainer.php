@@ -4,10 +4,11 @@ namespace App\Http\Livewire\Frontend;
 
 use Livewire\Component;
 
-class UserProfile extends Component
+class GeneratorContainer extends Component
 {
 
-    public $currentModule = "userprofile";
+
+    public $currentModule = "input";
 
 
     /**
@@ -15,7 +16,7 @@ class UserProfile extends Component
      * @var array
      */
     protected $queryString = [
-        'currentModule' => ['except' => 'userprofile'],
+        'currentModule' => ['except' => 'input'],
     ];
 
     public function setPath($route)
@@ -23,9 +24,9 @@ class UserProfile extends Component
         $this->currentModule = $route;
     }
 
+
     public function render()
     {
-        return view('frontend.user-profile');
+        return view('frontend.generator-container');
     }
-
 }

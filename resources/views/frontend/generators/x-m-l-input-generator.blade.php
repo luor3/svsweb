@@ -1,19 +1,4 @@
-<div>
-    <div class="px-5 w-5/6 m-auto flex">
-        <ul>
-            <li class="inline">
-                <x-jet-nav-link href="{{ route('input-generator') }}" :active="request()->routeIs('input-generator')">
-                    {{ __('General Input Generator') }}
-                </x-jet-nav-link>
-            </li>
-            <li class="inline">
-                <x-jet-nav-link href="{{ route('xml-input-generator') }}" :active="request()->routeIs('xml-input-generator')">
-                    {{ __('XML Input Generator') }}
-                </x-jet-nav-link>
-            </li>
-        </ul>
-    </div>
-    
+<div>    
     <div class="p-5 mt-10 w-10/12 mx-auto">
         <h1 class="font-bold text-gray-700 y-500 text-2xl mb-4">{{$inputInfo['name']}}</h1>
 
