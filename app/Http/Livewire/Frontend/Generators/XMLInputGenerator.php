@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Frontend;
+namespace App\Http\Livewire\Frontend\Generators;
 
 use Livewire\Component;
 
@@ -28,7 +28,7 @@ class XMLInputGenerator extends Component
     {
         //dd($this->iterator);
         //$this->XMLGenerator();
-        return view('frontend.x-m-l-input-generator');
+        return view('frontend.generators.x-m-l-input-generator');
     }
 
 

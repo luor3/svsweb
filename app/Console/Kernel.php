@@ -53,14 +53,14 @@ class Kernel extends ConsoleKernel
                 $local_path = public_path() . "/storage/jobs/" . $j->id . "/";
 
                 if ($j->jobs_solvers == "1") {
-                    //$job_di= /home/ruoyuanluo/Executable_CFIEHFMM_serial/{JOB_ID}
+                    //$job_dir= /home/ruoyuanluo/Executable_CFIEHFMM_serial/{JOB_ID}
                     $job_dir = str_replace('{JOB_ID}', $j->id, $app->getAttribute("remote_dir"));
                     $input_dir = $job_dir . "/INPUT/";
-                    $cmd = "";
+            
                 } else {
                     $job_dir = str_replace('{JOB_ID}', $j->id, $app->getAttribute('converter_dir'));
                     $input_dir = $job_dir . "/_INPUT/";
-                    $cmd = "";
+                    
                 }
 
                 foreach ($j->sshservers as $server) {
@@ -110,13 +110,14 @@ class Kernel extends ConsoleKernel
                     }
 
                     $j->progress = 'In Progress';
-                    $j->save();
-                    $command = "qsub";
-
+                    $j->save(); // save the job status
+                    $command = "qsub";// commend for submit a bash job
+                    
+                    #Establish the connection between web application and server
                     $c = new Connection($server->server_name, $server->host . ":" . $server->port, $server->username, ["password" => $server->password]);
+                    
                     $callback = function ($line) use($j) {
-
-                        echo ($line);
+                        echo ($line);// print the remote job id
                         $new_job = new remotejob();
                         $new_job->job_id  = $j->id;
                         $new_job->remote_job_id = str_replace(array("\n", "\r"), '', $line . PHP_EOL);
@@ -128,8 +129,9 @@ class Kernel extends ConsoleKernel
                         //$dir = '/home/ruoyuanluo/_OUTPUT';
                         $dir = $app->getAttribute('converter_remote_dir');
                         $sftp->mkdir("$dir");
+                        $sftp->mkdir($app->getAttribute("remote_path").$j->id."/");
                         //dd([sprintf("cd /home/ruoyuanluo/Executable_CFIEHFMM_serial&& ./%s --config ./%s/INPUT/input.conf", Kernel::solver, $f->id)]);
-                        $c->run([sprintf("%s -v FOO=%s solver.pbs", $command, $j->id)],$callback , 30);
+                        $c->run([sprintf("%s solver.pbs -v var=%s", $command, $j->id)],$callback,30);
                     } else if ($j->jobs_solvers == "2") {
                         $c->run([sprintf("%s  %s -o %s -e %s", $command,  Kernel::app, $dir . "/OutputStream.txt", $dir . "/ErrorStream.txt")], function ($line) use ($j) // qsub 
                         {
@@ -190,7 +192,7 @@ class Kernel extends ConsoleKernel
             }
 
             //$remote_path= '/home/ruoyuanluo/Executable_CFIEHFMM_serial/OUTPUT/';
-            $remote_path = $app->getAttribute("remote_path");
+            $remote_path = $app->getAttribute("remote_path").$jobID."/";
             //"public/storage/jobs/".$jobID."/output/solver_output/";
             $local_path = str_replace('{JOB_ID}', $jobID, $app->getAttribute("local_path"));
 
