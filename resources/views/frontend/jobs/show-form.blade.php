@@ -1,5 +1,7 @@
 <div>
+
     @if( $jobID === -1)
+
         <div class="mx-auto overflow-auto">
             @include('frontend.jobs.filterBar')
             <table class="text-center min-w-full leading-normal border-4">
@@ -132,7 +134,7 @@
 
                                     </button>
             
-                                    <button class="ml-2 inline-flex items-center px-1 py-1 rounded-md bg-purple-400 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-red-300 focus:outline-none focus:ring disabled:opacity-25 transition" title="View the VTK" wire:click="showVTKmodel({{ $myJob->id }} , '{{ $myJob->vtk_path }}')"
+                                    <button class="ml-2 inline-flex items-center px-1 py-1 rounded-md bg-purple-400 font-semibold text-xs text-white uppercase tracking-widest shadow-sm hover:bg-red-300 focus:outline-none focus:ring disabled:opacity-25 transition" title="View the VTK" wire:click="showVTKmodel({{ $myJob->id }} , {{ $myJob->jobs_solvers }} , '{{ $myJob->vtk_path }}')"
                                         wire:loading.attr="disabled">
 
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -169,6 +171,9 @@
             </div>
         </div> 
             
+        <!-- Loading Animation -->
+        <x-loading-indicator/>
+
         <!-- Delete Page Confirmation Modal -->
         <x-jet-confirmation-modal wire:model="confirmingJobDeletion">
             <x-slot name="title">
@@ -249,7 +254,7 @@
 
             <x-slot name="content">
                 @foreach($this->errorLog as $key => $log)
-                    <h1>{{ $key }} => {{ $log }}</h1>
+                    <h1><b>{{ $key }}</b> => {{ $log }}</h1>
                 @endforeach
             </x-slot>
 
@@ -263,9 +268,9 @@
 
         </div>
     </div>
-    @else
 
-        <x-jet-form-section submit="update">
+    @else
+    <x-jet-form-section submit="update">
         <x-slot name="title">
             {{'Job Unique ID: '.$job->id}}
         </x-slot>

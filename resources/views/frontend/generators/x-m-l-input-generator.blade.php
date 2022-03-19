@@ -1,20 +1,6 @@
-<div>
-    <div class="px-5 md:w-5/6 2xl:2/3 m-auto flex">
-        <ul>
-            <li class="inline">
-                <x-jet-nav-link href="{{ route('input-generator') }}" :active="request()->routeIs('input-generator')">
-                    {{ __('General Input Generator') }}
-                </x-jet-nav-link>
-            </li>
-            <li class="inline">
-                <x-jet-nav-link href="{{ route('xml-input-generator') }}" :active="request()->routeIs('xml-input-generator')">
-                    {{ __('XML Input Generator') }}
-                </x-jet-nav-link>
-            </li>
-        </ul>
-    </div>
-    
-    <div class="p-5 mt-10 md:w-5/6 2xl:2/3 mx-auto">
+
+<div>    
+    <div class="p-5 mt-10 w-10/12 mx-auto">
         <h1 class="font-bold text-gray-700 y-500 text-2xl mb-4">{{$inputInfo['name']}}</h1>
 
         @foreach($this->iterator as $id => $my_value)

@@ -1,0 +1,150 @@
+{
+    "outputFileName": "input.conf",
+    "name": ".Conf Input file configurator",
+    "newline": false,
+    "properties": {
+        
+        "Frequency": {
+            "title": "Frequency :",
+            "type": "number",
+	        "htmlType": "number",
+            "validationRule": "min:0|numeric",
+            "default": 60e6,
+            "required": true
+        },
+
+
+        "ExcitationFile ": {
+            "title": "Excitation File   :",
+            "type": "file",
+            "htmlType": "text",
+            "hint": "Enter the name of your excitation file",
+            "validationRule": "nullable|max:255|string",
+            "default":"_INPUT/excitation/input.exc",
+            "required": true,
+            "display": "hidden"
+        },
+
+        "MaterialFile ": {
+            "title": "Material  File    :",
+            "type": "file",
+            "htmlType": "text",
+            "hint": "Enter the name of your material file",
+            "validationRule": "nullable|max:255|string",
+            "default":"_INPUT/material/input.mtr",
+            "required": true,
+            "display": "hidden"
+        },
+
+        "ObservationFile ": {
+            "title": "Observation File  :",
+            "type": "file",
+            "htmlType": "text",
+            "hint": "Enter the name of your observation file",
+            "validationRule": "nullable|max:255|string",
+            "default":"_INPUT/observation/input.obs",
+            "required": true,
+            "display": "hidden"
+        },
+        
+        "MeshFile ": {
+            "title": "Mesh File :",
+            "type": "file",
+            "htmlType": "text",
+            "hint": "Enter the name of your mesh file",
+            "validationRule": "nullable|max:255|string",
+            "default":"_INPUT/mesh/input.msh",
+            "required": true,
+            "display": "hidden"
+        },
+
+        "InputDirectory": {
+            "title": "Input Directory   :",
+            "type": "file",
+            "htmlType": "text",
+            "hint": "Enter the input directory",
+            "validationRule": "nullable|max:255|string",
+            "default":"_INPUT/",
+            "required": true,
+            "display": "hidden"
+        },
+
+        "OutputDirectory": {
+            "title": "Output Directory  :",
+            "type": "file",
+            "htmlType": "text",
+            "hint": "Enter the output directory",
+            "validationRule": "nullable|max:255|string",
+            "default":"_OUTPUT/",
+            "required": true,
+            "display": "hidden"
+        },
+
+        "AccelerateWithMLFMA": {
+            "title": "Accelerate with MLFMA (YES/NO)    :",
+            "type": "select",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "NO",
+            "options": [
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
+            ]
+        },
+
+        "SolverType": {
+            "title": "Solver Type   :",
+            "type": "select",
+            "validationRule": "nullable|in:1,0",
+            "default": "1",
+            "options": [
+                {"title": "1 + Direct = LUD", "value": "1"},
+                {"title": "0 + Iterative = GMRES", "value": "0"}
+            ]
+        },
+
+        "CFLEParameter": {
+            "title": "CFIE Parameter    :",
+            "type": "select",
+            "validationRule": "nullable|in:0.0,1.0",
+            "default": "0.0",
+            "options": [
+                {"title": "MFIE", "value": "0.0"},
+                {"title": "EFIE", "value": "1.0"}
+            ]
+        },
+
+        "SolutionOrder": {
+            "title": "Solution Order    :",
+            "type": "number",
+	        "htmlType": "number",
+            "validationRule": "min:0|numeric",
+            "default": 1,
+            "required": true
+        },
+
+        "PreconditionerType": {
+            "title": "Preconditioner Type   :",
+            "type": "select",
+            "validationRule": "nullable|in:0,1",
+            "default": "0",
+            "options": [
+                {"title": "None", "value": "0"},
+                {"title": "LFT_STD", "value": "1"}
+            ]
+        },
+
+        "PreconditionerSolverType": {
+            "title": "Preconditioner Solver Type    :",
+            "type": "select",
+            "validationRule": "nullable|in:0,1,2,3",
+            "default": "1",
+            "options": [
+                {"title": "None", "value": "0"},
+                {"title": "LU", "value": "1"},
+                {"title": "ILU", "value": "2"},
+                {"title": "BLK", "value": "3"}
+            ]
+        }
+
+    }
+}

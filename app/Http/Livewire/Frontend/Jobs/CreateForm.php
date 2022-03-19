@@ -233,9 +233,6 @@ class CreateForm extends Component
             }
             catch(Exception $e){
                 $this->confirmingJobDeletion = true;
-                //session()->flash('flash.banner', $e->getMessage());
-                //session()->flash('flash.bannerStyle', 'danger');
-                //return redirect()->route(self::FAIL_ROUTE);
             }
            array_push( $this->sshservers, array(
                 "sshserver" => $server,
@@ -267,40 +264,6 @@ class CreateForm extends Component
         return view(self::COMPONENT_TEMPLATE);
     }
 
-    // public function configuration_solver1(Request $request)
-    // {
-    //     $store_path = 'public/jobs/'.$this->job->id;
-
-    //     foreach($this->input_conf_inputs as $k=>$v) {
-    //         if($v != null ){
-    //             if(str_contains(strtolower($k),"mesh")) {
-    //                 $store_path = $store_path.'/meshes/';
-    //                 Storage::disk('public')->makeDirectory($store_path);
-    //             }
-
-    //             $file_name = $v->getClientOriginalName();
-    //             $file_path = $v->storeAs($store_path, $file_name);
-                
-               
-    //         }
-    //     }
-     
-        // $excitation_name = $this->excitation_file->getClientOriginalName();
-        // $excitation_file_path = $this->excitation_file->storeAs($store_path, $excitation_name);
-        // $mesh_name = $this->mesh_file->getClientOriginalName();
-        //
-        // $mesh_file_path = $this->mesh_file->storeAs($mesh_dir, $mesh_name);
-        // $materia_name = $this->material_file->getClientOriginalName();
-        // $material_file_path = $this->material_file->storeAs($store_path, $materia_name);
-        //}
-        // $data = $this->validate([
-        //     'configuration_file' => 'required|file',
-        //     'excitation_file' => 'required|file',
-        //     'mesh_file' => 'required|file',
-        //     'material_file' => 'required|file'
-        // ]);
-       
-    //}
 
     /**
      * add job page
@@ -336,7 +299,7 @@ class CreateForm extends Component
             Storage::disk('local')->makeDirectory($outDir);
             $input_json['input_file_json'][$type] = $file->storeAs($dir, end($fake_path));
         }
-        //dd($input_json);
+
         $input_json = json_encode($input_json);
 
         $this->job->configuration = $input_json;
@@ -456,6 +419,7 @@ class CreateForm extends Component
         session()->flash('flash.banner', $msg);
         session()->flash('flash.bannerStyle', $flag);
         
+        //$this->EditDir($this->input_file->getRealPath(), $this->job->id);
         if (!$this->job) 
         {    
             return redirect()->route(self::FAIL_ROUTE);
@@ -466,9 +430,11 @@ class CreateForm extends Component
         $store_path = 'public/jobs/'.$this->job->id;
         Storage::disk('public')->makeDirectory($store_path);
 
-        $originalname = $this->input_file->getClientOriginalName();
-        $input_file_path = $this->input_file->storeAs($store_path, $originalname);
+        $originalname = explode('.',$this->input_file->getClientOriginalName());
+        $originalname[0] = 'input';
+        $originalname = implode('.', $originalname);
         
+        $input_file_path = $this->input_file->storeAs($store_path, $originalname);
        
         $input_json = json_decode($this->job->configuration,true);
         $fileName_json = json_decode($input_json['input_file_json'] , true);
@@ -498,7 +464,6 @@ class CreateForm extends Component
             $line = fgets($myfile);
             if(preg_match($pattern, $line))
             {
-               
                 $inputProperties = explode("/",$line);
                 if(count($inputProperties) != 3)
                 {
@@ -519,7 +484,28 @@ class CreateForm extends Component
         fclose($myfile);
     } 
 
-
+    private function EditDir($path, $id)
+    {
+        $myfile = fopen($path,'r') or die("Unable to open file!");
+        $remove_comment_pattern = "/^\@/i";
+        $remove_comment_pattern2 = "/Output Directory/";
+        while(! feof($myfile))
+        {
+            $line = fgets($myfile);
+            if(preg_match($remove_comment_pattern, $line)){
+                $lines[] = $line;
+            }
+            else{
+                if(preg_match($remove_comment_pattern2, $line)){
+                    //$inputProperties = explode(":",$line);
+                    $line = str_replace("\n","",$line).$id."/\n";                  
+                }
+                $lines[] = $line;
+            }
+        }
+        $new_content = implode('',$lines);
+        file_put_contents($path, $new_content);
+    }
     /**
      * read and parse input file
      * 
@@ -530,14 +516,12 @@ class CreateForm extends Component
         $myfile = fopen($path,'r') or die("Unable to open file!");
         $remove_comment_pattern = "/^\@/i";
         $input_pattern2 = "/File/i";
-        
         $lineNum = 1;
         while(! feof($myfile))
         {
             $line = fgets($myfile);
             if(preg_match($remove_comment_pattern, $line))
             {
-               
             }else{
                 if(preg_match($input_pattern2, $line))
                 {
@@ -552,7 +536,7 @@ class CreateForm extends Component
                     $files = explode(" ", $inputProperties[0]);
                     $file = trim(reset($files));
                     $this->uploadFields[$file] = $extension;
-   
+                    $this->inputfilename[$file] = trim($inputProperties[1]);
                 }
             }
             $lineNum++;
