@@ -1,5 +1,5 @@
 <div> 
-    <div class="px-5 w-5/6 m-auto flex">
+    <div class="px-5 md:w-5/6 2xl:2/3 m-auto flex">
         <ul>
             <li class="inline">
                 <x-jet-nav-link href="{{ route('input-generator') }}" :active="request()->routeIs('input-generator')">
@@ -15,7 +15,7 @@
     </div>
 
     <form wire:submit.prevent="generateFile">            
-        <div class="p-5 mt-10 w-10/12 mx-auto">
+        <div class="p-5 mt-10 md:w-5/6 2xl:2/3 mx-auto">
             <h1 class="font-bold text-gray-700 y-500 text-2xl mb-4">{{$inputInfo['name']}}</h1>
 
             <div class="grid grid-cols-12 gap-x-4">        
