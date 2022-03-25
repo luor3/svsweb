@@ -1,5 +1,7 @@
 {
-   "name": "Input file configurator",
+    "name": "Input file configurator",
+    "outputFileName": "input.input",
+    "newline": true,
     "properties": {
         
         "solverType": {
@@ -20,17 +22,19 @@
             "htmlType": "text",
             "hint": "Enter the name of your material file",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/materials/",
-            "required": true
+            "default":"_INPUT/materials/input.txt",
+            "required": true,
+            "display": "hidden"
         },
         
         "meshFile": {
             "title": "Name of *.mesh file:",
             "type": "file",
             "required": true,
-            "default":"_INPUT/meshes/",
+            "default":"_INPUT/meshes/input.msh",
             "validationRule": "nullable|max:255|string",
             "htmlType": "text",
+            "display": "hidden",
             "children": {
                 "X-scale": {
                     "title": "scale X",
@@ -112,8 +116,9 @@
             "type": "file",
             "htmlType": "text",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/waves/",
-            "required": true
+            "default":"_INPUT/waves/input.txt",
+            "required": true,
+            "display": "hidden"
         },
         
         "integrationType": {
@@ -209,7 +214,7 @@
                     "required": true,
                     "fileDisplay": "NOEOL",
                     "validationRule": "nullable|min:0|numeric",
-                    "displayOnEnable": "true",
+                    "displayOnEnable": true,
                     "display": "inline-block",
                     "_enabled": {"property": "dipoleLocation", "value": "1"},
                     "default": 0
@@ -221,7 +226,7 @@
                     "required": true,
                     "fileDisplay": "NOEOL",
                     "validationRule": "nullable|min:0|numeric",
-                    "displayOnEnable": "true",
+                    "displayOnEnable": true,
                     "display": "inline-block",
                     "_enabled": {"property": "dipoleLocation", "value": "1"},
                     "default": 0
@@ -230,7 +235,7 @@
                     "title": "Z value",
                     "type": "number",
 	                "htmlType": "number",
-                    "displayOnEnable": "true",
+                    "displayOnEnable": true,
                     "validationRule": "nullable|min:0|numeric",
                     "display": "inline-block",
                     "_enabled": {"property": "dipoleLocation", "value": "1"},
@@ -244,7 +249,7 @@
 	                "htmlType": "number",
                     "required": true,
                     "fileDisplay": "NOEOL",
-                    "displayOnEnable": "true",
+                    "displayOnEnable": true,
                     "validationRule": "nullable|numeric",
                     "display": "inline-block",
                     "_enabled": {"property": "dipoleLocation", "value": "2"},
@@ -258,7 +263,7 @@
                     "fileDisplay": "NOEOL",
                     "display": "inline-block",
                     "validationRule": "nullable|numeric",
-                    "displayOnEnable": "true",
+                    "displayOnEnable": true,
                     "_enabled": {"property": "dipoleLocation", "value": "2"},
                     "default": 180
                 },
@@ -267,7 +272,7 @@
                     "type": "number",
 	                "htmlType": "number",
                     "display": "inline-block",
-                    "displayOnEnable": "true",
+                    "displayOnEnable": true,
                     "validationRule": "nullable|numeric",
                     "_enabled": {"property": "dipoleLocation", "value": "2"},
                     "required": true,
@@ -380,6 +385,7 @@
             "type": "file",
             "htmlType": "text",
             "validationRule": "nullable|max:255|string",
+            "displayOnEnable": true,
             "_enabled": {
                 "property": "excitation", 
                 "value": ["KnownJ", "DipoleViaRWG"]

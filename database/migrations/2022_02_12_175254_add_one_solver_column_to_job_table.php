@@ -14,7 +14,7 @@ class AddOneSolverColumnToJobTable extends Migration
     public function up()
     {
         Schema::table('jobs', function (Blueprint $table) {
-            $table->foreignId('jobs_solvers')->references('id')->on('solvers')->onDelete('cascade');
+            //$table->foreignId('jobs_solvers')->references('id')->on('solvers')->onDelete('cascade');
         });
     }
 
@@ -26,7 +26,7 @@ class AddOneSolverColumnToJobTable extends Migration
     public function down()
     {
         Schema::table('jobs', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('jobs_solvers');
+            //$table->dropConstrainedForeignId('jobs_solvers');
         });
     }
 }

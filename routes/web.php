@@ -12,7 +12,6 @@ use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\GetstartedController;
 use App\Http\Controllers\Frontend\DynamicPagesController;
 use App\Http\Controllers\Frontend\InputGeneratorController;
-use App\Http\Controllers\Frontend\XmlGeneratorController;
 use App\Http\Controllers\Frontend\VtkController;
 use App\Http\Controllers\Frontend\UsersProfileController;
 use App\Http\Controllers\Frontend\JobsController;
@@ -37,8 +36,6 @@ Route::get('/', HomeController::class)->name('homepage');
 Route::get('/demos', GetstartedController::class)->name('demopage');
 
 Route::get('/input-generator', InputGeneratorController::class)->name('input-generator');
-
-Route::get('/xml-input-generator', XmlGeneratorController::class)->name('xml-input-generator');
 
 Route::get('/vtk-visualizer', VtkController::class)->name('vtk-visualizer');
 

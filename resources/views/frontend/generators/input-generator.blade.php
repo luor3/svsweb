@@ -1,26 +1,12 @@
 <div> 
-    <div class="px-5 w-5/6 m-auto flex">
-        <ul>
-            <li class="inline">
-                <x-jet-nav-link href="{{ route('input-generator') }}" :active="request()->routeIs('input-generator')">
-                    {{ __('General Input Generator') }}
-                </x-jet-nav-link>
-            </li>
-            <li class="inline">
-                <x-jet-nav-link href="{{ route('xml-input-generator') }}" :active="request()->routeIs('xml-input-generator')">
-                    {{ __('XML Input Generator') }}
-                </x-jet-nav-link>
-            </li>
-        </ul>
-    </div>
 
     <form wire:submit.prevent="generateFile">            
-        <div class="p-5 mt-10 w-10/12 mx-auto">
+        <div class="p-5 mt-10 md:w-5/6 2xl:2/3 mx-auto">
             <h1 class="font-bold text-gray-700 y-500 text-2xl mb-4">{{$inputInfo['name']}}</h1>
 
             <div class="grid grid-cols-12 gap-x-4">        
                 @foreach($propertyWindow as $key => $property)
-                <div class="col-span-12 {{ isset($property['children']) ? 'md:place-self-stretch' : 'md:col-span-6'}}">
+                <div class="{{ (isset($property['display'])) ? $property['display'] : '' }} col-span-12 {{ isset($property['children']) ? 'md:place-self-stretch' : 'md:col-span-6'}}">
                     @if( (isset($enableSeq[$key]['main']) && $enableSeq[$key]['main']) || (!isset($enableSeq[$key]['main'])) ) 
                     <div x-data="{ open: false }">
                         <x-jet-label class="md:h-16 lg:h-10 inline-block mt-5 text-gray-700 font-bold" for="{{ $key }}" value="{{ $property['title'] }}" />

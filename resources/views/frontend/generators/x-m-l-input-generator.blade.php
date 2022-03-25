@@ -1,19 +1,5 @@
-<div>
-    <div class="px-5 w-5/6 m-auto flex">
-        <ul>
-            <li class="inline">
-                <x-jet-nav-link href="{{ route('input-generator') }}" :active="request()->routeIs('input-generator')">
-                    {{ __('General Input Generator') }}
-                </x-jet-nav-link>
-            </li>
-            <li class="inline">
-                <x-jet-nav-link href="{{ route('xml-input-generator') }}" :active="request()->routeIs('xml-input-generator')">
-                    {{ __('XML Input Generator') }}
-                </x-jet-nav-link>
-            </li>
-        </ul>
-    </div>
-    
+
+<div>    
     <div class="p-5 mt-10 w-10/12 mx-auto">
         <h1 class="font-bold text-gray-700 y-500 text-2xl mb-4">{{$inputInfo['name']}}</h1>
 
@@ -22,10 +8,10 @@
         @continue
         @endif
 
-        <div class="grid grid-cols-12 gap-x-4 mt-5">
+        <div class="md:grid md:grid-cols-12 md:gap-x-4 mt-5">
             <x-jet-label class="block text-base font-bold mt-5 text-gray-700" for="{{ $id }}" value="{{ $my_value['label'] }}" />
 
-            <div class="col-end-13 col-span-10">
+            <div class="md:col-end-13 md:col-span-10">
                 @if(isset($my_value['value']))
                 <x-jet-label class="inline-block mt-5 text-gray-700" for="{{ $id }}" value="{{ $my_value['label'] }}" />
                 <input

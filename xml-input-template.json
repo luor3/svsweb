@@ -36,7 +36,7 @@
         {  
             "label": "MshFile",
             "attributes": {
-                "Name": "/Users/okhmatov/Documents/uofm/c++/Solver4/input/TL.msh"
+                "Name": "_INPUT/mesh/input.msh"
             }
         },
 

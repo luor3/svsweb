@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Frontend;
+namespace App\Http\Livewire\Frontend\Generators;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
@@ -15,6 +15,12 @@ class InputGenerator extends Component
      */
     public $inputInfo;
 
+
+    /**
+     * 
+     * @return array
+     */
+    public $inputInfo_filter = [];
 
     /**
      * 
@@ -67,6 +73,8 @@ class InputGenerator extends Component
 
 
 
+    public $templateFilename;
+
     /**
      * 
      * @return array
@@ -85,7 +93,7 @@ class InputGenerator extends Component
     {
         $this->loadInputInfo();
         $this->initSys();
-        $this->totalSize = count($this->inputInfo['properties']);
+        $this->totalSize = count($this->inputInfo_filter);
         $this->windowUpdate();
     }
 
@@ -97,18 +105,18 @@ class InputGenerator extends Component
     public function render()
     {
         //dd($this->propertyWindow);
-        return view('frontend.input-generator');
+        return view('frontend.generators.input-generator');
     }
 
 
 
-    public function windowUpdate(){
+    private function windowUpdate(){
         //dd($this->inputInfo);
 
         $offset = $this->currentWindow * $this->windowSize;
-        $keys = array_keys( $this->inputInfo['properties'] );
+        $keys = array_keys( $this->inputInfo_filter );
         for($i = $offset;  $i < $this->totalSize && $i < $this->windowSize + $offset; $i++){
-            $this->propertyWindow[$keys[$i]] = $this->inputInfo['properties'][$keys[$i]];
+            $this->propertyWindow[$keys[$i]] = $this->inputInfo_filter[$keys[$i]];
         }
 
     }
@@ -126,7 +134,7 @@ class InputGenerator extends Component
     private function loadInputInfo()
     {
         $content = '';
-        if($stream = fopen(base_path('input-template.json'), "r"))
+        if($stream = fopen(base_path($this->templateFilename), "r"))
         {
             while(($line=fgets($stream))!==false){
                 $content .= $line;
@@ -148,7 +156,13 @@ class InputGenerator extends Component
         if(isset($this->inputInfo['properties']))
         {
             foreach($this->inputInfo['properties'] as $key => $property)
-            {                        
+            {           
+                
+                if( !isset($property['display']) || $property['display'] !== 'hidden') 
+                {
+                    $this->inputInfo_filter[$key] = $property;
+                }
+
                 $this->inputValue[$key]['main'] = (isset($property['default'])) ? $property['default'] : null;
                 if(isset($property['validationRule']))
                 {
@@ -376,7 +390,18 @@ class InputGenerator extends Component
         $writeStr = '';
         foreach ($this->inputInfo['properties'] as $key => $property)
         {
-            $writeStr .= $property['title'].PHP_EOL;
+            if(isset($property['displayOnEnable'])) 
+            {  
+                if($property['displayOnEnable'] && !$this->enableSeq[$key]['main']) 
+                {
+                    continue;
+                }    
+            }
+            $writeStr .= $property['title'];
+            if($this->inputInfo['newline']) 
+            {
+                $writeStr .= PHP_EOL;
+            }
             foreach ($this->inputValue[$key] as $vKey => $value)
             {
                 if($vKey === "main")
@@ -420,12 +445,12 @@ class InputGenerator extends Component
                     }
                 }    
             }
-            $writeStr .= "\r\n";
+            $writeStr .= PHP_EOL;
         }
         return response()->streamDownload(function () use($writeStr)
         {
             echo $writeStr;
-        }, 'input.input');
+        }, $this->inputInfo['outputFileName']);
     }
 
 
@@ -447,13 +472,13 @@ class InputGenerator extends Component
                 $fileDisplayType = $property['fileDisplay'];
             }     
             
-            if(isset($property['displayOnEnable']))
-            {
-                if($property['displayOnEnable'])
-                {
-                    $display = $this->enableSeq[$pName];
-                }
-            }
+            // if(isset($property['displayOnEnable']))
+            // {
+            //     if($property['displayOnEnable'])
+            //     {
+            //         $display = $this->enableSeq[$pName];
+            //     }
+            // }
         }
         else
         {

@@ -425,7 +425,7 @@ class CreateForm extends Component
         session()->flash('flash.banner', $msg);
         session()->flash('flash.bannerStyle', $flag);
         
-        $this->EditDir($this->input_file->getRealPath(), $this->job->id);
+        //$this->EditDir($this->input_file->getRealPath(), $this->job->id);
         if (!$this->job) 
         {    
             return redirect()->route(self::FAIL_ROUTE);
@@ -436,9 +436,11 @@ class CreateForm extends Component
         $store_path = 'public/jobs/'.$this->job->id;
         Storage::disk('public')->makeDirectory($store_path);
 
-        $originalname = $this->input_file->getClientOriginalName();
-        $input_file_path = $this->input_file->storeAs($store_path, $originalname);
+        $originalname = explode('.',$this->input_file->getClientOriginalName());
+        $originalname[0] = 'input';
+        $originalname = implode('.', $originalname);
         
+        $input_file_path = $this->input_file->storeAs($store_path, $originalname);
        
         $input_json = json_decode($this->job->configuration,true);
         $fileName_json = json_decode($input_json['input_file_json'] , true);
@@ -539,7 +541,7 @@ class CreateForm extends Component
                     $files = explode(" ", $inputProperties[0]);
                     $file = trim(reset($files));
                     $this->uploadFields[$file] = $extension;
-   
+                    $this->inputfilename[$file] = trim($inputProperties[1]);
                 }
             }
             $lineNum++;

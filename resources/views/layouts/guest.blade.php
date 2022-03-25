@@ -14,6 +14,8 @@
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
         
         @livewireStyles
+        
+        @stack('styles')
 
         <!-- Scripts -->
         <script src="{{ mix('js/app.js') }}" defer></script>
