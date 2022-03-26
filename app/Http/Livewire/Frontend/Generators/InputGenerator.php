@@ -111,8 +111,6 @@ class InputGenerator extends Component
 
 
     private function windowUpdate(){
-        //dd($this->inputInfo);
-
         $offset = $this->currentWindow * $this->windowSize;
         $keys = array_keys( $this->inputInfo_filter );
         for($i = $offset;  $i < $this->totalSize && $i < $this->windowSize + $offset; $i++){
@@ -230,12 +228,18 @@ class InputGenerator extends Component
      */
     public function updatedInputValue()
     {
-        if(!(isset($this->enableSeq) && isset($this->inputValue) && isset($this->repeatNum)))
+
+        if( isset($this->inputValue) ) 
         {
-            return;
+            if(isset($this->repeatNum)) 
+            {
+                $this->refreshRepeatNum();
+            }
+            if(isset($this->enableSeq))
+            {
+                $this->refreshESeq();
+            }
         }
-        $this->refreshRepeatNum();
-        $this->refreshESeq();
     }
 
 
@@ -386,7 +390,6 @@ class InputGenerator extends Component
     public function generateFile()
     {
         $this->validate();
-        
         $writeStr = '';
         foreach ($this->inputInfo['properties'] as $key => $property)
         {
@@ -397,6 +400,14 @@ class InputGenerator extends Component
                     continue;
                 }    
             }
+            else if(isset($property['fileDisplay'])) 
+            {
+                if($property['fileDisplay'] == 'NONE')
+                {
+                    continue;
+                }
+            }
+
             $writeStr .= $property['title'];
             if($this->inputInfo['newline']) 
             {
@@ -472,13 +483,6 @@ class InputGenerator extends Component
                 $fileDisplayType = $property['fileDisplay'];
             }     
             
-            // if(isset($property['displayOnEnable']))
-            // {
-            //     if($property['displayOnEnable'])
-            //     {
-            //         $display = $this->enableSeq[$pName];
-            //     }
-            // }
         }
         else
         {
@@ -509,12 +513,6 @@ class InputGenerator extends Component
                         $writeStr .= $v.PHP_EOL;
                     }
                     break;    
-                case "ENABLED":
-                    if($cName && $pName && $this->enableSeq[$pName][$cName])
-                    {
-                        $writeStr .= sprintf("%s".PHP_EOL, implode(' ', $val));
-                    }
-                    break;   
                 default:
                     $writeStr .= sprintf("%s".PHP_EOL, implode(' ', $val));
             }

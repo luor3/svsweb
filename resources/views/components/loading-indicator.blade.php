@@ -1,4 +1,4 @@
-<div wire:loading.delay.shortest>
+<div wire:loading>
     <div class="flex justify-center items-center bg-black fixed top-0 left-0 w-full h-full z-50 opacity-75">
         <div style="color: #63c5ab" class="la-ball-spin la-3x">
             <div></div>

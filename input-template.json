@@ -420,6 +420,7 @@
             "type": "file",
             "htmlType": "text",
             "validationRule": "nullable|max:255|string",
+            "_enabled": {"property": "kernel", "value": "MultiLayer"},
             "default":"None"
         },
 

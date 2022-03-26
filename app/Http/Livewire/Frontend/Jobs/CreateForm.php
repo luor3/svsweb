@@ -62,9 +62,6 @@ class CreateForm extends Component
 
     public $confirmingJobDeletion = false;
 
-    public $input_conf_require = [];
-    public $input_conf_inputs = [];
-
      /**
      * 
      * @var integer
@@ -284,15 +281,16 @@ class CreateForm extends Component
         
         $input_json = json_decode($this->job->configuration,true);
 
-
+        
         foreach ($this->input_files as $type => $file)
         {
             $fake_path = explode("/",$this->inputfilename[$type]);
             $input_json['input_file_json']['fileName'][$type] = end($fake_path);
-            $dir =  'public/jobs/' . $this->job->id. '/';
+            $dir =  'public/jobs/' . $this->job->id;
             $outDir = $dir. '/_OUTPUT';
+
             for ($i = 0; $i < count($fake_path) - 1 ; $i++) {
-                $dir .= $fake_path[$i]. '/';
+                $dir .= '/' . $fake_path[$i];
             }
               
             File::makeDirectory($dir,0755,true,true);
@@ -428,7 +426,7 @@ class CreateForm extends Component
 
 
         $store_path = 'public/jobs/'.$this->job->id;
-        Storage::disk('public')->makeDirectory($store_path);
+        Storage::disk('local')->makeDirectory($store_path);
 
         $originalname = explode('.',$this->input_file->getClientOriginalName());
         $originalname[0] = 'input';
@@ -516,31 +514,43 @@ class CreateForm extends Component
         $myfile = fopen($path,'r') or die("Unable to open file!");
         $remove_comment_pattern = "/^\@/i";
         $input_pattern2 = "/File/i";
+        $input_directory = "/^Input Directory/i";
         $lineNum = 1;
+        $mesh_path = '';
         while(! feof($myfile))
         {
             $line = fgets($myfile);
-            if(preg_match($remove_comment_pattern, $line))
-            {
-            }else{
+            if( !trim($line)=='' && !preg_match($remove_comment_pattern, $line)){
+                $inputProperties = explode(":",$line);
+                if(count($inputProperties) != 2)
+                {
+                    throw new \Exception('Cannot parse input parameter at line '.$lineNum); 
+                }
                 if(preg_match($input_pattern2, $line))
                 {
-                    $inputProperties = explode(":",$line);
-                    if(count($inputProperties) != 2)
-                    {
-                        throw new \Exception('Cannot parse input parameter at line '.$lineNum); 
-                    }
-
                     $extensions = explode('.', $inputProperties[1]);
                     $extension = end($extensions); 
                     $files = explode(" ", $inputProperties[0]);
                     $file = trim(reset($files));
                     $this->uploadFields[$file] = $extension;
-                    $this->inputfilename[$file] = trim($inputProperties[1]);
+                    if($file == "Mesh") {
+                        $mesh_path .= trim($inputProperties[1]);
+                    }
+                    else 
+                    {
+                        $this->inputfilename[$file] = trim($inputProperties[1]);
+                    }
+                }
+                else if(preg_match($input_directory, $line)) 
+                {
+                    $mesh_path = trim($inputProperties[1]) . $mesh_path;
+                    $this->inputfilename[$file] = $mesh_path;
                 }
             }
             $lineNum++;
-        }    
+        }   
+        
+        //dd($this->inputfilename);
         fclose($myfile);
     } 
 

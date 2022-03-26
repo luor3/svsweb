@@ -14,46 +14,61 @@
         },
 
 
-        "ExcitationFile ": {
+        "ExcitationFile": {
             "title": "Excitation File   :",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the name of your excitation file",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/excitation/input.exc",
+            "default":"_INPUT/input.exc",
             "required": true,
             "display": "hidden"
         },
 
-        "MaterialFile ": {
-            "title": "Material  File    :",
+        "MaterialFile": {
+            "title": "Material File    :",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the name of your material file",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/material/input.mtr",
+            "default":"_INPUT/input.mtr",
             "required": true,
             "display": "hidden"
         },
 
-        "ObservationFile ": {
+        "ObservationFileEnable": {
+            "title": "Enable Observation File",
+            "type": "select",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "NO",
+            "fileDisplay": "NONE",
+            "options": [
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
+            ]
+        },
+
+
+        "ObservationFile": {
             "title": "Observation File  :",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the name of your observation file",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/observation/input.obs",
+            "default":"_INPUT/input.obs",
             "required": true,
-            "display": "hidden"
+            "display": "hidden",
+            "displayOnEnable": true,
+            "_enabled": {"property": "ObservationFileEnable", "value": "YES"}
         },
         
-        "MeshFile ": {
-            "title": "Mesh File :",
+        "MeshFile": {
+            "title": "Mesh file :",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the name of your mesh file",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/mesh/input.msh",
+            "default":"input.msh",
             "required": true,
             "display": "hidden"
         },
@@ -64,7 +79,7 @@
             "htmlType": "text",
             "hint": "Enter the input directory",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/",
+            "default":"_INPUT/mesh/",
             "required": true,
             "display": "hidden"
         },
