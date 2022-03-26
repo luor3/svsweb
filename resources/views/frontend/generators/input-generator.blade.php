@@ -104,7 +104,9 @@
             </div>
 
         </div> 
-        <button type="submit" class="block mx-auto bg-red-600 text-white font-semibold mt-5 py-2 px-4 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200">Generate Input File</button>
+        <div wire:loading.remove> 
+            <button type="submit" class="block mx-auto bg-red-600 text-white font-semibold mt-5 py-2 px-4 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200">Generate Input File</button>
+        </div>
     </form>
 
     <div class="flex flex-wrap justify-center">
