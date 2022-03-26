@@ -415,13 +415,26 @@
             }
         },
 
-        "multilayerDescription": {
+        "multilayerDescription_none": {
+            "title": "Name of file with Multilayer description:",
+            "type": "file",
+            "htmlType": "text",
+            "validationRule": "nullable|max:255|string",
+            "_enabled": {"property": "kernel", "value": ["FreeSpace", "HalfSpace"]},
+            "display": "hidden",
+            "displayOnEnable": true,
+            "default":"None"
+        },
+
+        "multilayerDescription_file": {
             "title": "Name of file with Multilayer description:",
             "type": "file",
             "htmlType": "text",
             "validationRule": "nullable|max:255|string",
             "_enabled": {"property": "kernel", "value": "MultiLayer"},
-            "default":"None"
+            "display": "hidden",
+            "displayOnEnable": true,
+            "default":"_INPUT/mlr/input.mlr"
         },
 
         "cubatureOrder": {
