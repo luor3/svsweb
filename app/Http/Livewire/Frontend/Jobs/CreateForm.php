@@ -417,7 +417,7 @@ class CreateForm extends Component
         session()->flash('flash.banner', $msg);
         session()->flash('flash.bannerStyle', $flag);
         
-        //$this->EditDir($this->input_file->getRealPath(), $this->job->id);
+        $this->EditDir($this->input_file->getRealPath(), $this->job->id);
         if (!$this->job) 
         {    
             return redirect()->route(self::FAIL_ROUTE);
@@ -496,7 +496,7 @@ class CreateForm extends Component
             else{
                 if(preg_match($remove_comment_pattern2, $line)){
                     //$inputProperties = explode(":",$line);
-                    $line = str_replace("\n","",$line).$id."/\n";                  
+                    $line = str_replace(PHP_EOL,$id.'/'.PHP_EOL,$line);             
                 }
                 $lines[] = $line;
             }
