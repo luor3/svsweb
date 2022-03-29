@@ -107,13 +107,6 @@ class CreateForm extends Component
      * 
      * @var file array
      */
-    public $output_files = [];
-
-
-    /**
-     * 
-     * @var file array
-     */
     public $input_files = [];
 
 
@@ -136,6 +129,8 @@ class CreateForm extends Component
      */
     public $sshservers;
 
+
+    public $inputfilename = [];
 
     /**
      * 
@@ -276,7 +271,6 @@ class CreateForm extends Component
     {
         
         $this->validate([
-            'output_files.*' => 'file',
             'input_files.*' => 'required|file',
             'status' => 'required|boolean',
         ]);
@@ -300,14 +294,11 @@ class CreateForm extends Component
             }
               
             File::makeDirectory($dir,0755,true,true);
-            $input_json['input_file_json'][$type] = $file->storeAs($dir, $file->getClientOriginalName());
+            Storage::disk('local')->makeDirectory($outDir);
+            $input_json['input_file_json'][$type] = $file->storeAs($dir, end($fake_path));
         }
 
         $input_json = json_encode($input_json);
-
-        $output_json = [
-            'fileName' => [],
-        ];
 
         $this->job->configuration = $input_json;
         $this->job->status = $this->status;
@@ -392,7 +383,6 @@ class CreateForm extends Component
         $user = auth()->user();
         $data['user'] = $user->id;
        
-           
 
         try 
         {  
@@ -404,10 +394,8 @@ class CreateForm extends Component
             } 
             $this->next = true;
             $input_file_json = '{ "fileName" : [] }';
-            $output_file_json = '{ "fileName" : [] }';
             $map = [
             'input_file_json'=>$input_file_json,
-            'output_file_json'=>$output_file_json,
             'input_property_json'=>$this->uploadFields,
            ];
            $data['configuration'] = json_encode($map);
@@ -442,9 +430,16 @@ class CreateForm extends Component
         $originalname = explode('.',$this->input_file->getClientOriginalName());
         $originalname[0] = 'input';
         $originalname = implode('.', $originalname);
-        
-        $input_file_path = $this->input_file->storeAs($store_path, $originalname);
+        //
        
+        if ($j->jobs_solvers == "1") {
+            //$job_dir= /home/ruoyuanluo/Executable_CFIEHFMM_serial/{JOB_ID}
+            $input_file_path = $this->input_file->storeAs($store_path.'/INPUT', $originalname);
+
+        } else {
+            $input_file_path = $this->input_file->storeAs($store_path, $originalname);
+
+        }
         $input_json = json_decode($this->job->configuration,true);
         $fileName_json = json_decode($input_json['input_file_json'] , true);
         $fileName_json["fileName"]["input"] = $originalname;
@@ -486,6 +481,7 @@ class CreateForm extends Component
                 }
                 $fileExtension = end($inputProperties);
                 $this->uploadFields[$fileType] = $fileExtension;
+                $this->inputfilename[$fileType] = trim($line);
             }
             $lineNum++;
         }

@@ -45,22 +45,22 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             $app = new App();
             $jobs = Job::where('progress', '=', 'pending')->orderBy('created_at', 'desc')->get();
-
             foreach ($jobs as $j) {
                 $file = $j->configuration;
                 $data = json_decode($file, true);
-                $filename = $data['input_file_json']['fileName'];
-                $local_path = public_path() . "/storage/jobs/" . $j->id . "/";
+              
 
+                $filename = $data['input_file_json']['fileName'];
+               
+                $local_path = public_path() . "/storage/jobs/" . $j->id . "/";
+                $real_work_path =  "/public/jobs/" . $j->id . "/";
                 if ($j->jobs_solvers == "1") {
                     //$job_dir= /home/ruoyuanluo/Executable_CFIEHFMM_serial/{JOB_ID}
                     $job_dir = str_replace('{JOB_ID}', $j->id, $app->getAttribute("remote_dir"));
                     $input_dir = $job_dir . "/INPUT/";
-            
                 } else {
                     $job_dir = str_replace('{JOB_ID}', $j->id, $app->getAttribute('converter_dir'));
                     $input_dir = $job_dir . "/_INPUT/";
-                    
                 }
 
                 foreach ($j->sshservers as $server) {
@@ -70,54 +70,114 @@ class Kernel extends ConsoleKernel
                     }
                     $sftp->mkdir("$job_dir");
                     $sftp->mkdir("$input_dir");
-                    $sftp->chdir("$input_dir");
-                    foreach ($filename as $key => $value) {
-                        if ($j->jobs_solvers == "1") {
-                            if (strtolower($key) == 'mesh') {
-                                $dir = $input_dir . "/Meshes";
-                                $sftp->mkdir("$dir");
-                                $sftp->chdir("$dir");
-                                $filePath =  $local_path . $value;
-                                $file = fopen($filePath, 'r');
-                                $fileName = basename($filePath);
-                                $sftp->put($fileName, $file, 8);
-                            } else {
-                                $sftp->mkdir("$job_dir.'/INPUT'");
-                                $sftp->chdir("$job_dir.'/INPUT");
-                                $filePath =  $local_path . $value;
-                                $file = fopen($filePath, 'r');
-                                $fileName = basename($filePath);
-                                $sftp->put($fileName, $file, 8);
-                            }
-                        } else {
-                            if (strtolower($key) == 'input') {
-                                $sftp->mkdir("$job_dir");
-                                $sftp->chdir("$job_dir");
-                                $filePath =  $local_path . $value;
-                                $file = fopen($filePath, 'r');
-                                $fileName = basename($filePath);
-                                $sftp->put('input.input', $file, 8);
-                            } else {
-                                $dir = $input_dir . "/" . $key;
-                                $sftp->mkdir("$dir");
-                                $sftp->chdir("$dir");
-                                $filePath = $local_path . $value;
-                                $file = fopen($filePath, 'r');
-                                $fileName = basename($filePath);
-                                $sftp->put($fileName, $file, 8);
-                            }
+                    //$sftp->chdir("$input_dir");
+
+                    // Get real path for our folder
+                    $rootPath = realpath($local_path);
+                    // Initialize archive object
+                    $zip = new \ZipArchive();
+                    $zip->open($rootPath . '.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+                    // Create recursive directory iterator
+                    /** @var SplFileInfo[] $files */
+                    $files = new \RecursiveIteratorIterator(
+                        new \RecursiveDirectoryIterator($rootPath),
+                        \RecursiveIteratorIterator::LEAVES_ONLY
+                    );
+                    foreach ($files as $name => $f) {
+                        // Skip directories (they would be added automatically)---
+                        if (!$f->isDir()) {
+
+                            // Get real and relative path for current file
+                            $filePath = $f->getRealPath();
+
+                            $relativePath = substr($filePath, strlen($rootPath) + 1);
+                            $relativePath = str_replace('\\','/',$relativePath);
+                            // Add current file to archive
+                            $zip->addFile($filePath, $relativePath);
                         }
                     }
+                    // Zip archive will be created only after closing object
+                    $zip->close();
+                    //$file = fopen($rootPath.'.zip', 'r');
+$path = "";
+                    if ($j->jobs_solvers == "1") {
+                     $path ="/home/ruoyuanluo/Executable_CFIEHFMM_serial/". $j->id . '.zip' ;
+                    } else {
+                        $path ='/home/ruoyuanluo/'. $j->id . '.zip' ; ;
+                    }
+                    if($path) {
+                    SSH::put( $rootPath . '.zip', $path); 
+                    $cmd ='find '.$path.' | while read filename; do unzip -o -d `dirname '.$path.'`/'.$j->id.' "$filename"; done;';
+                    SSH::run([$cmd], function ($line) {
+                        echo ($line);
+                    });
+                }
+                    // die;
+                    // function doPush($path, $sftp)
+                    // {
+                    //     $configs = array_diff(scandir($path), array('.', '..'));
+                    //     foreach ($configs as $config) {
+                    //         $file_path = str_split($path);
+                    //         $file_path = in_array(end($file_path), ['/', '\\']) ? $path : $path . '/';
+                    //         if (is_dir($file_path . $config)) {
+                    //             $sftp->mkdir($config);
+                    //             //$sftp->chdir($config);
+                    //             var_dump($file_path . $config);
+                    //             doPush($file_path . $config, $sftp);
+                    //         } else {
+                    //             $file = fopen($file_path . $config, 'r');
+                    //             $sftp->put($config, $file, 8);
+                    //             var_dump($file_path . $config);
+                    //         }
+                    //     }
+                    // };
+                    // doPush($local_path, $sftp);
+                    // die;
+                    // foreach ($filename as $key => $value) {
+                    //     if ($j->jobs_solvers == "1") {
+                    //         if (strtolower($key) == 'mesh') {
+                    //             $dir = $input_dir . "/Meshes";
+                    //             $sftp->mkdir("$dir");
+                    //             $sftp->chdir("$dir");
+
+                    //         } else {
+                    //             $sftp->mkdir("$job_dir.'/INPUT'");
+                    //             $sftp->chdir("$job_dir.'/INPUT");
+                    //             $filePath =  $local_path . $value;
+                    //             $file = fopen($filePath, 'r');
+                    //             $fileName = basename($filePath);
+                    //             $sftp->put($fileName, $file, 8);
+                    //         }
+                    //     } else {
+                    //         if (strtolower($key) == 'input') {
+                    //             $sftp->mkdir("$job_dir");
+                    //             $sftp->chdir("$job_dir");
+                    //             $filePath =  $local_path . $value;
+                    //             $file = fopen($filePath, 'r');
+                    //             $fileName = basename($filePath);
+                    //             $sftp->put('input.input', $file, 8);
+                    //         } else {
+                    //             $dir = $input_dir . "/" . $key;
+                    //             $sftp->mkdir("$dir");
+                    //             $sftp->chdir("$dir");
+                    //             $filePath = $local_path . $value;
+                    //             $file = fopen($filePath, 'r');
+                    //             $fileName = basename($filePath);
+                    //             $sftp->put($fileName, $file, 8);
+                    //         }
+                    //     }
+                    // }
 
                     $j->progress = 'In Progress';
                     $j->save(); // save the job status
-                    $command = "qsub";// commend for submit a bash job
-                    
+                    $command = "qsub"; // commend for submit a bash job
+
                     #Establish the connection between web application and server
                     $c = new Connection($server->server_name, $server->host . ":" . $server->port, $server->username, ["password" => $server->password]);
-                    
-                    $callback = function ($line) use($j) {
-                        echo ($line);// print the remote job id
+
+                    $callback = function ($line) use ($j) {
+                        echo ($line); // print the remote job id
                         $new_job = new remotejob();
                         $new_job->job_id  = $j->id;
                         $new_job->remote_job_id = str_replace(array("\n", "\r"), '', $line . PHP_EOL);
@@ -129,9 +189,9 @@ class Kernel extends ConsoleKernel
                         //$dir = '/home/ruoyuanluo/_OUTPUT';
                         $dir = $app->getAttribute('converter_remote_dir');
                         $sftp->mkdir("$dir");
-                        $sftp->mkdir($app->getAttribute("remote_path").$j->id."/");
+                        $sftp->mkdir($app->getAttribute("remote_path") . $j->id . "/");
                         //dd([sprintf("cd /home/ruoyuanluo/Executable_CFIEHFMM_serial&& ./%s --config ./%s/INPUT/input.conf", Kernel::solver, $f->id)]);
-                        $c->run([sprintf("%s solver.pbs -v var=%s", $command, $j->id)],$callback,30);
+                        $c->run([sprintf("%s solver.pbs -v var=%s", $command, $j->id)], $callback, 30);
                     } else if ($j->jobs_solvers == "2") {
                         $c->run([sprintf("%s  %s -o %s -e %s", $command,  Kernel::app, $dir . "/OutputStream.txt", $dir . "/ErrorStream.txt")], function ($line) use ($j) // qsub 
                         {
@@ -192,7 +252,7 @@ class Kernel extends ConsoleKernel
             }
 
             //$remote_path= '/home/ruoyuanluo/Executable_CFIEHFMM_serial/OUTPUT/';
-            $remote_path = $app->getAttribute("remote_path").$jobID."/";
+            $remote_path = $app->getAttribute("remote_path") . $jobID . "/";
             //"public/storage/jobs/".$jobID."/output/solver_output/";
             $local_path = str_replace('{JOB_ID}', $jobID, $app->getAttribute("local_path"));
 
