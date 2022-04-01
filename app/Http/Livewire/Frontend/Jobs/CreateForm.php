@@ -432,7 +432,7 @@ class CreateForm extends Component
         $originalname = implode('.', $originalname);
         //
        
-        if ($j->jobs_solvers == "1") {
+        if ($this->job->jobs_solvers == "1") {
             //$job_dir= /home/ruoyuanluo/Executable_CFIEHFMM_serial/{JOB_ID}
             $input_file_path = $this->input_file->storeAs($store_path.'/INPUT', $originalname);
 
@@ -501,14 +501,20 @@ class CreateForm extends Component
             }
             else{
                 if(preg_match($remove_comment_pattern2, $line)){
-                    //$inputProperties = explode(":",$line);
-                    $line = str_replace(PHP_EOL,$id.'/'.PHP_EOL,$line);             
+                    $inputProperties = explode(":",$line);
+                    //dd($inputProperties[1]);
+                    $line = str_replace("\n",$id."/\n", $line);
+                    //dd($line);
                 }
                 $lines[] = $line;
+                
             }
         }
         $new_content = implode('',$lines);
+        //dd($new_content);
         file_put_contents($path, $new_content);
+
+        
     }
     /**
      * read and parse input file

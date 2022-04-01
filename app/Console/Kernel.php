@@ -100,7 +100,7 @@ class Kernel extends ConsoleKernel
                     // Zip archive will be created only after closing object
                     $zip->close();
                     //$file = fopen($rootPath.'.zip', 'r');
-$path = "";
+                    $path = "";
                     if ($j->jobs_solvers == "1") {
                      $path ="/home/ruoyuanluo/Executable_CFIEHFMM_serial/". $j->id . '.zip' ;
                     } else {
@@ -113,61 +113,7 @@ $path = "";
                         echo ($line);
                     });
                 }
-                    // die;
-                    // function doPush($path, $sftp)
-                    // {
-                    //     $configs = array_diff(scandir($path), array('.', '..'));
-                    //     foreach ($configs as $config) {
-                    //         $file_path = str_split($path);
-                    //         $file_path = in_array(end($file_path), ['/', '\\']) ? $path : $path . '/';
-                    //         if (is_dir($file_path . $config)) {
-                    //             $sftp->mkdir($config);
-                    //             //$sftp->chdir($config);
-                    //             var_dump($file_path . $config);
-                    //             doPush($file_path . $config, $sftp);
-                    //         } else {
-                    //             $file = fopen($file_path . $config, 'r');
-                    //             $sftp->put($config, $file, 8);
-                    //             var_dump($file_path . $config);
-                    //         }
-                    //     }
-                    // };
-                    // doPush($local_path, $sftp);
-                    // die;
-                    // foreach ($filename as $key => $value) {
-                    //     if ($j->jobs_solvers == "1") {
-                    //         if (strtolower($key) == 'mesh') {
-                    //             $dir = $input_dir . "/Meshes";
-                    //             $sftp->mkdir("$dir");
-                    //             $sftp->chdir("$dir");
 
-                    //         } else {
-                    //             $sftp->mkdir("$job_dir.'/INPUT'");
-                    //             $sftp->chdir("$job_dir.'/INPUT");
-                    //             $filePath =  $local_path . $value;
-                    //             $file = fopen($filePath, 'r');
-                    //             $fileName = basename($filePath);
-                    //             $sftp->put($fileName, $file, 8);
-                    //         }
-                    //     } else {
-                    //         if (strtolower($key) == 'input') {
-                    //             $sftp->mkdir("$job_dir");
-                    //             $sftp->chdir("$job_dir");
-                    //             $filePath =  $local_path . $value;
-                    //             $file = fopen($filePath, 'r');
-                    //             $fileName = basename($filePath);
-                    //             $sftp->put('input.input', $file, 8);
-                    //         } else {
-                    //             $dir = $input_dir . "/" . $key;
-                    //             $sftp->mkdir("$dir");
-                    //             $sftp->chdir("$dir");
-                    //             $filePath = $local_path . $value;
-                    //             $file = fopen($filePath, 'r');
-                    //             $fileName = basename($filePath);
-                    //             $sftp->put($fileName, $file, 8);
-                    //         }
-                    //     }
-                    // }
 
                     $j->progress = 'In Progress';
                     $j->save(); // save the job status
