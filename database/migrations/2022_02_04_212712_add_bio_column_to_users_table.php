@@ -14,7 +14,7 @@ class AddBioColumnToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('bio', 255)->nullable()->default(null);
+            $table->text('bio')->nullable()->default(null);
         });
     }
 

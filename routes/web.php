@@ -43,6 +43,8 @@ Route::get('/about', [AboutController::class,'show'])->name('aboutpage');
 
 Route::get('/about/{name}/{id}', [AboutController::class,'getBio'])->name('biopage');
 
+Route::get('/about/{name}/{id}/vcard', [AboutController::class,'downloadVCard'])->name('vcard');
+
 Route::middleware(['auth', 'verified', 'user.status.check'])->get('/user-profile', UsersProfileController::class)->name('userprofile');
 
 

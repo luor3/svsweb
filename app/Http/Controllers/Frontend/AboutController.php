@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\Team;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
+use JeroenDesloovere\VCard\VCard;
+use Illuminate\Support\Str;
 
 class AboutController extends Controller {
 
@@ -64,6 +66,47 @@ class AboutController extends Controller {
                     'page' => $page
                 ],
         );
+    }
+
+    public function downloadVCard($name, $id) {
+        $vcard = new VCard();
+        $user = User::find($id);
+        // define variables
+        $lastname = '';
+        $firstname = $user->name;
+        $additional = '';
+        $prefix = '';
+        $suffix = '';
+
+        // add personal data
+        $vcard->addName($lastname, $firstname, $additional, $prefix, $suffix);
+
+        // add work data
+        //$vcard->addCompany($user->company);
+        //$vcard->addJobtitle($user-job);
+        //$vcard->addRole('');
+        $vcard->addEmail($user->email);
+        //$vcard->addPhoneNumber(111, 'PREF;WORK');
+        //$vcard->addPhoneNumber(111, 'WORK');
+        //$vcard->addAddress(null, null, 'street', 'worktown', null, 'workpostcode', 'Belgium');
+        //$vcard->addLabel('street, worktown, workpostcode Belgium');
+        $vcard->addURL($user->linkedin);
+        //$vcard->addPhoto(__DIR__ . '/landscape.jpeg');
+        $username = Str::slug($user->name,'-');
+        if (empty($user->profile_photo_path)){
+        $vcard->addPhoto("https://ui-avatars.com/api/?name={$username}&color=7F9CF5&background=EBF4FF");
+        
+        }
+        
+        else{
+        $src = asset('storage/'.$user->profile_photo_path);
+        
+        $vcard->addPhoto($src);
+        }
+        //// return vcard as a string
+        //return $vcard->getOutput();
+        // return vcard as a download
+        return $vcard->download();
     }
 
 }

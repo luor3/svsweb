@@ -71,7 +71,7 @@
             <x-jet-label for="bio" value="{{ __('Bio') }}" />
             <textarea
                 name="bio"
-                class="mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
+                class="tinymce mt-1 block w-full textarea border-gray-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-lg" 
                 rows="4"
                 wire:model.defer="state.bio">
             </textarea>
