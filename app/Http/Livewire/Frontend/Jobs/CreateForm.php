@@ -435,6 +435,9 @@ class CreateForm extends Component
         if ($this->job->jobs_solvers == "1") {
             //$job_dir= /home/ruoyuanluo/Executable_CFIEHFMM_serial/{JOB_ID}
             $input_file_path = $this->input_file->storeAs($store_path.'/INPUT', $originalname);
+            
+            // TODO can be changed in future, put input.conf under jobID folder
+            $this->input_file->storeAs($store_path, $originalname);
 
         } else {
             $input_file_path = $this->input_file->storeAs($store_path, $originalname);
