@@ -20,7 +20,7 @@
             "htmlType": "text",
             "hint": "Enter the name of your excitation file",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/input.exc",
+            "default":"./INPUT/input.exc",
             "required": true,
             "display": "hidden"
         },
@@ -31,7 +31,7 @@
             "htmlType": "text",
             "hint": "Enter the name of your material file",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/input.mtr",
+            "default":"./INPUT/input.mtr",
             "required": true,
             "display": "hidden"
         },
@@ -55,7 +55,7 @@
             "htmlType": "text",
             "hint": "Enter the name of your observation file",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/input.obs",
+            "default":"./INPUT/input.obs",
             "required": true,
             "display": "hidden",
             "displayOnEnable": true,
@@ -68,7 +68,7 @@
             "htmlType": "text",
             "hint": "Enter the name of your mesh file",
             "validationRule": "nullable|max:255|string",
-            "default":"input.msh",
+            "default":"Sphere1kfixed.msh",
             "required": true,
             "display": "hidden"
         },
@@ -79,7 +79,7 @@
             "htmlType": "text",
             "hint": "Enter the input directory",
             "validationRule": "nullable|max:255|string",
-            "default":"_INPUT/mesh/",
+            "default":"./INPUT/Meshes/",
             "required": true,
             "display": "hidden"
         },
@@ -90,16 +90,16 @@
             "htmlType": "text",
             "hint": "Enter the output directory",
             "validationRule": "nullable|max:255|string",
-            "default":"_OUTPUT/",
+            "default":"./OUTPUT/",
             "required": true,
             "display": "hidden"
         },
 
-        "AccelerateWithMLFMA": {
-            "title": "Accelerate with MLFMA (YES/NO)    :",
+        "UseDirectSolver": {
+            "title": "Use Direct Solver   :",
             "type": "select",
-            "validationRule": "nullable|in:YES,NO",
-            "default": "NO",
+            "validationRule": "nullable|in:NO,YES",
+            "default": "YES",
             "options": [
                 {"title": "YES", "value": "YES"},
                 {"title": "NO", "value": "NO"}
@@ -117,19 +117,50 @@
             ]
         },
 
-        "CFLEParameter": {
-            "title": "CFIE Parameter    :",
+        "BasicType": {
+            "title": "Basic Type   :",
             "type": "select",
-            "validationRule": "nullable|in:0.0,1.0",
-            "default": "0.0",
+            "validationRule": "nullable|in:1,0",
+            "default": "1",
             "options": [
-                {"title": "MFIE", "value": "0.0"},
-                {"title": "EFIE", "value": "1.0"}
+                {"title": "RGW", "value": "0"},
+                {"title": "LCN", "value": "1"}
             ]
         },
 
-        "SolutionOrder": {
-            "title": "Solution Order    :",
+        "ForceDenseNearMatrix": {
+            "title": "Force Dense Near Matrix   :",
+            "type": "select",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "YES",
+            "options": [
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
+            ]
+        },
+
+        "ForceSparseNearMatrix": {
+            "title": "Force Sparse Near Matrix   :",
+            "type": "select",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "NO",
+            "options": [
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
+            ]
+        },
+
+        "IterativeSolverTolerance": {
+            "title": "Iterative Solver Tolerance     :",
+            "type": "number",
+	        "htmlType": "number",
+            "validationRule": "min:0|numeric",
+            "default": 1e-8,
+            "required": true
+        },
+
+        "CFIEParameter": {
+            "title": "CFIE Parameter     :",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -137,27 +168,123 @@
             "required": true
         },
 
-        "PreconditionerType": {
-            "title": "Preconditioner Type   :",
+        "Solution Order": {
+            "title": "Solution Order     :",
+            "type": "number",
+	        "htmlType": "number",
+            "validationRule": "min:0|numeric",
+            "default": 1,
+            "required": true
+        },
+
+        "DisableFMM": {
+            "title": "Disable FMM   :",
             "type": "select",
-            "validationRule": "nullable|in:0,1",
-            "default": "0",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "NO",
             "options": [
-                {"title": "None", "value": "0"},
-                {"title": "LFT_STD", "value": "1"}
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
             ]
         },
 
+        "LCNOverride": {
+            "title": "LCN Override     :",
+            "type": "number",
+	        "htmlType": "number",
+            "validationRule": "min:0|numeric",
+            "default": 0.5,
+            "required": true
+        },
+
+        "LCNDigits": {
+            "title": "LCN Digits     :",
+            "type": "number",
+	        "htmlType": "number",
+            "validationRule": "min:0|numeric",
+            "default": 3,
+            "required": true
+        },
+
+        "FMMDigits": {
+            "title": "FMM Digits    :",
+            "type": "number",
+	        "htmlType": "number",
+            "validationRule": "min:0|numeric",
+            "default": 6,
+            "required": true
+        },
+
+        "PreconditionerType": {
+            "title": "LCN Override     :",
+            "type": "number",
+	        "htmlType": "number",
+            "validationRule": "min:0|numeric",
+            "default": 0,
+            "required": true
+        },
+
         "PreconditionerSolverType": {
-            "title": "Preconditioner Solver Type    :",
+            "title": "Preconditioner Solver Type     :",
+            "type": "number",
+	        "htmlType": "number",
+            "validationRule": "min:0|numeric",
+            "default": 0,
+            "required": true
+        },
+
+        "QuietOperations": {
+            "title": "Quiet Operations    :",
             "type": "select",
-            "validationRule": "nullable|in:0,1,2,3",
-            "default": "1",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "NO",
             "options": [
-                {"title": "None", "value": "0"},
-                {"title": "LU", "value": "1"},
-                {"title": "ILU", "value": "2"},
-                {"title": "BLK", "value": "3"}
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
+            ]
+        },
+
+        "VerboseOperations": {
+            "title": "Verbose Operations    :",
+            "type": "select",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "YES",
+            "options": [
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
+            ]
+        },
+
+        "VerifyFMMMode": {
+            "title": "Verify FMM Mode    :",
+            "type": "select",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "NO",
+            "options": [
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
+            ]
+        },
+
+        "Dry Run FMM Mode": {
+            "title": "Dry Run FMM Mode    :",
+            "type": "select",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "NO",
+            "options": [
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
+            ]
+        },
+
+        "Verify MVP": {
+            "title": "Verify MVP    :",
+            "type": "select",
+            "validationRule": "nullable|in:YES,NO",
+            "default": "NO",
+            "options": [
+                {"title": "YES", "value": "YES"},
+                {"title": "NO", "value": "NO"}
             ]
         }
 

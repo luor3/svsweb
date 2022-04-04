@@ -430,7 +430,6 @@ class CreateForm extends Component
         $originalname = explode('.',$this->input_file->getClientOriginalName());
         $originalname[0] = 'input';
         $originalname = implode('.', $originalname);
-        //
        
         if ($this->job->jobs_solvers == "1") {
             //$job_dir= /home/ruoyuanluo/Executable_CFIEHFMM_serial/{JOB_ID}
@@ -506,7 +505,7 @@ class CreateForm extends Component
                 if(preg_match($remove_comment_pattern2, $line)){
                     $inputProperties = explode(":",$line);
                     //dd($inputProperties[1]);
-                    $line = str_replace("\n",$id."/\n", $line);
+                    $line = str_replace(PHP_EOL,$id."/\n", $line);
                     //dd($line);
                 }
                 $lines[] = $line;

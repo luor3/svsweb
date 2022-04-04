@@ -456,7 +456,11 @@ class InputGenerator extends Component
                     }
                 }    
             }
-            $writeStr .= PHP_EOL;
+            if(isset($this->inputInfo['linebreak']))
+            {
+                if($this->inputInfo['linebreak'])
+                    $writeStr .= PHP_EOL;
+            }
         }
         return response()->streamDownload(function () use($writeStr)
         {

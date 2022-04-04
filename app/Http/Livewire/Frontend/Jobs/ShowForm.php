@@ -646,7 +646,7 @@ class ShowForm extends Component
             exec($exe_path.' '.$workDirectory, $this->errorLog, $result_code);
             if($result_code == 0) {
                 $job = Job::find($job_id);
-                $job->vtk_path = 'storage/jobs/'.$job_id.'/_OUTPUT/PolyMesh.vtk';
+                $job->vtk_path = 'storage/jobs/'.$job_id.$solverArg['converter_output'];
                 $job->save();   
                 redirect()->route('vtk-visualizer', ['vtkPath'=> $job->vtk_path]);
             }
