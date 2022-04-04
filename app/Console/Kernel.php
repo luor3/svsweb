@@ -9,8 +9,6 @@ use App\Models\remotejob;
 use App\Models\Job;
 use Collective\Remote\RemoteFacade as SSH;
 use Collective\Remote\Connection;
-use \ZipStream\Option\Archive;
-use \ZipStream\ZipStream;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use App\Models\App;
@@ -71,34 +69,55 @@ class Kernel extends ConsoleKernel
                     $sftp->mkdir("$job_dir");
                     $sftp->mkdir("$input_dir");
                     //$sftp->chdir("$input_dir");
-
+			
                     // Get real path for our folder
                     $rootPath = realpath($local_path);
+                    //var_dump($rootPath);
                     // Initialize archive object
-                    $zip = new \ZipArchive();
-                    $zip->open($rootPath . '.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-
+                    //$zip = new ZipArchive();
+                    //var_dump($zip);
+                    //$zip->open($rootPath . '.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+                    $output_filename = $rootPath . '.zip';
                     // Create recursive directory iterator
                     /** @var SplFileInfo[] $files */
                     $files = new \RecursiveIteratorIterator(
                         new \RecursiveDirectoryIterator($rootPath),
                         \RecursiveIteratorIterator::LEAVES_ONLY
                     );
-                    foreach ($files as $name => $f) {
-                        // Skip directories (they would be added automatically)---
-                        if (!$f->isDir()) {
+                    // foreach ($files as $name => $f) {
+                    //     // Skip directories (they would be added automatically)---
+                    //     if (!$f->isDir()) {
 
-                            // Get real and relative path for current file
-                            $filePath = $f->getRealPath();
+                    //         // Get real and relative path for current file
+                    //         $filePath = $f->getRealPath();
 
-                            $relativePath = substr($filePath, strlen($rootPath) + 1);
-                            $relativePath = str_replace('\\','/',$relativePath);
-                            // Add current file to archive
-                            $zip->addFile($filePath, $relativePath);
-                        }
-                    }
+                    //         $relativePath = substr($filePath, strlen($rootPath) + 1);
+                    //         $relativePath = str_replace('\\','/',$relativePath);
+                    //         // Add current file to archive
+                    //         var_dump($rootPath.$relativePath);
+                    //         $zipFile->addFile($rootPath.$relativePath);
+                    //         //$zip->addFile($filePath, $relativePath);
+                    //     }
+                    //     else {
+                    //         $zip->addDir();
+                    //     }
+                    // }
                     // Zip archive will be created only after closing object
-                    $zip->close();
+                    //$zip->close();
+
+                    $zipFile = new \PhpZip\ZipFile();
+                    try{
+                        //dd($local_path);
+                        //$zipFile->addDirRecursive($local_path)->close();
+                        $zipFile->addFilesFromIterator($files)->saveAsFile($rootPath.".zip");
+                    }
+                    catch(\PhpZip\Exception\ZipException $e){
+                        dd($e->getMessage());
+                    }
+                    finally{
+                        $zipFile->close();
+                    }
+
                     //$file = fopen($rootPath.'.zip', 'r');
                     $path = "";
                     if ($j->jobs_solvers == "1") {
@@ -117,6 +136,7 @@ class Kernel extends ConsoleKernel
 
                     $j->progress = 'In Progress';
                     $j->save(); // save the job status
+
                     $command = "qsub"; // commend for submit a bash job
 
                     #Establish the connection between web application and server
@@ -136,6 +156,7 @@ class Kernel extends ConsoleKernel
                         $dir = $app->getAttribute('converter_remote_dir');
                         $sftp->mkdir("$dir");
                         $sftp->mkdir($app->getAttribute("remote_path") . $j->id . "/");
+                        
                         //dd([sprintf("cd /home/ruoyuanluo/Executable_CFIEHFMM_serial&& ./%s --config ./%s/INPUT/input.conf", Kernel::solver, $f->id)]);
                         $c->run([sprintf("%s solver.pbs -v var=%s", $command, $j->id)], $callback, 30);
                     } else if ($j->jobs_solvers == "2") {
@@ -241,3 +262,4 @@ class Kernel extends ConsoleKernel
         require base_path('routes/console.php');
     }
 }
+
