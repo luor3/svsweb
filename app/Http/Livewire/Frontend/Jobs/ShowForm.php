@@ -606,21 +606,28 @@ class ShowForm extends Component
                 
 
                 $files = File::allFiles($local_path);
-          
-                return response()->streamDownload(function () use($output_name, $local_path, $files)
+                $length = 0;
+                return response()->streamDownload(function () use($output_name, $length, $files)
                 {
-                    $options = new Archive();
-                    $options->setSendHttpHeaders(false);
-                    $zip = new ZipStream($output_name, $options);
                     
-                    foreach ($files as $file) {
-                        $f = $file->getFilename();
-                        if($f != ".." && $f != ".") {
-                            $zip->addFileFromPath($f,$file->getPathname());
-                        }
+                    $zipFile = new \PhpZip\ZipFile();
+                    try{
+                        foreach ($files as $file) {
+                            $zipFile->addSplFile($file);
+                     }
+
+                    echo $zipFile ->outputAsString();
+                    $zipFile->close();
                     }
-                    $zip->finish();
-                }, $output_name);
+                    catch(\PhpZip\Exception\ZipException $e){
+                        // handle exception
+                        dd($e);
+                    }
+                    finally{
+                        $zipFile->close();
+                    }
+      
+                },$output_name);
             }
         }
         catch(\Exception $e) {
