@@ -411,7 +411,7 @@ class InputGenerator extends Component
             $writeStr .= $property['title'];
             if($this->inputInfo['newline']) 
             {
-                $writeStr .= PHP_EOL;
+                $writeStr .= "\n";
             }
             foreach ($this->inputValue[$key] as $vKey => $value)
             {
@@ -459,7 +459,7 @@ class InputGenerator extends Component
             if(isset($this->inputInfo['linebreak']))
             {
                 if($this->inputInfo['linebreak'])
-                    $writeStr .= PHP_EOL;
+                    $writeStr .= "\n";
             }
         }
         return response()->streamDownload(function () use($writeStr)
@@ -514,11 +514,11 @@ class InputGenerator extends Component
                 case "VERTICAL":
                     foreach($val as $v)
                     {
-                        $writeStr .= $v.PHP_EOL;
+                        $writeStr .= $v."\n";
                     }
                     break;    
                 default:
-                    $writeStr .= sprintf("%s".PHP_EOL, implode(' ', $val));
+                    $writeStr .= sprintf("%s"."\n", implode(' ', $val));
             }
         }                           
     }

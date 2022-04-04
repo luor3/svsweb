@@ -505,7 +505,7 @@ class CreateForm extends Component
                 if(preg_match($remove_comment_pattern2, $line)){
                     $inputProperties = explode(":",$line);
                     //dd($inputProperties[1]);
-                    $line = str_replace(PHP_EOL,$id."/\n", $line);
+                    $line = str_replace("\n",$id."/\n", $line);
                     //dd($line);
                 }
                 $lines[] = $line;

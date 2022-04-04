@@ -5,7 +5,7 @@
     "properties": {
         
         "Frequency": {
-            "title": "Frequency :",
+            "title": "Frequency:",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -15,7 +15,7 @@
 
 
         "ExcitationFile": {
-            "title": "Excitation File   :",
+            "title": "Excitation File:",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the name of your excitation file",
@@ -26,7 +26,7 @@
         },
 
         "MaterialFile": {
-            "title": "Material File    :",
+            "title": "Material File:",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the name of your material file",
@@ -50,7 +50,7 @@
 
 
         "ObservationFile": {
-            "title": "Observation File  :",
+            "title": "Observation File:",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the name of your observation file",
@@ -63,7 +63,7 @@
         },
         
         "MeshFile": {
-            "title": "Mesh file :",
+            "title": "Mesh file:",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the name of your mesh file",
@@ -74,7 +74,7 @@
         },
 
         "InputDirectory": {
-            "title": "Input Directory   :",
+            "title": "Input Directory:",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the input directory",
@@ -85,7 +85,7 @@
         },
 
         "OutputDirectory": {
-            "title": "Output Directory  :",
+            "title": "Output Directory:",
             "type": "file",
             "htmlType": "text",
             "hint": "Enter the output directory",
@@ -96,7 +96,7 @@
         },
 
         "UseDirectSolver": {
-            "title": "Use Direct Solver   :",
+            "title": "Use Direct Solver:",
             "type": "select",
             "validationRule": "nullable|in:NO,YES",
             "default": "YES",
@@ -107,7 +107,7 @@
         },
 
         "SolverType": {
-            "title": "Solver Type   :",
+            "title": "Solver Type:",
             "type": "select",
             "validationRule": "nullable|in:1,0",
             "default": "1",
@@ -118,7 +118,7 @@
         },
 
         "BasicType": {
-            "title": "Basic Type   :",
+            "title": "Basic Type:",
             "type": "select",
             "validationRule": "nullable|in:1,0",
             "default": "1",
@@ -129,7 +129,7 @@
         },
 
         "ForceDenseNearMatrix": {
-            "title": "Force Dense Near Matrix   :",
+            "title": "Force Dense Near Matrix:",
             "type": "select",
             "validationRule": "nullable|in:YES,NO",
             "default": "YES",
@@ -140,7 +140,7 @@
         },
 
         "ForceSparseNearMatrix": {
-            "title": "Force Sparse Near Matrix   :",
+            "title": "Force Sparse Near Matrix:",
             "type": "select",
             "validationRule": "nullable|in:YES,NO",
             "default": "NO",
@@ -151,7 +151,7 @@
         },
 
         "IterativeSolverTolerance": {
-            "title": "Iterative Solver Tolerance     :",
+            "title": "Iterative Solver Tolerance:",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -160,7 +160,7 @@
         },
 
         "CFIEParameter": {
-            "title": "CFIE Parameter     :",
+            "title": "CFIE Parameter:",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -169,7 +169,7 @@
         },
 
         "Solution Order": {
-            "title": "Solution Order     :",
+            "title": "Solution Order:",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -178,7 +178,7 @@
         },
 
         "DisableFMM": {
-            "title": "Disable FMM   :",
+            "title": "Disable FMM:",
             "type": "select",
             "validationRule": "nullable|in:YES,NO",
             "default": "NO",
@@ -189,7 +189,7 @@
         },
 
         "LCNOverride": {
-            "title": "LCN Override     :",
+            "title": "LCN Override:",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -198,7 +198,7 @@
         },
 
         "LCNDigits": {
-            "title": "LCN Digits     :",
+            "title": "LCN Digits:",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -207,7 +207,7 @@
         },
 
         "FMMDigits": {
-            "title": "FMM Digits    :",
+            "title": "FMM Digits:",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -216,7 +216,7 @@
         },
 
         "PreconditionerType": {
-            "title": "LCN Override     :",
+            "title": "LCN Override:",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -225,7 +225,7 @@
         },
 
         "PreconditionerSolverType": {
-            "title": "Preconditioner Solver Type     :",
+            "title": "Preconditioner Solver Type:",
             "type": "number",
 	        "htmlType": "number",
             "validationRule": "min:0|numeric",
@@ -234,7 +234,7 @@
         },
 
         "QuietOperations": {
-            "title": "Quiet Operations    :",
+            "title": "Quiet Operations:",
             "type": "select",
             "validationRule": "nullable|in:YES,NO",
             "default": "NO",
@@ -245,7 +245,7 @@
         },
 
         "VerboseOperations": {
-            "title": "Verbose Operations    :",
+            "title": "Verbose Operations:",
             "type": "select",
             "validationRule": "nullable|in:YES,NO",
             "default": "YES",
@@ -256,7 +256,7 @@
         },
 
         "VerifyFMMMode": {
-            "title": "Verify FMM Mode    :",
+            "title": "Verify FMM Mode:",
             "type": "select",
             "validationRule": "nullable|in:YES,NO",
             "default": "NO",
@@ -267,7 +267,7 @@
         },
 
         "Dry Run FMM Mode": {
-            "title": "Dry Run FMM Mode    :",
+            "title": "Dry Run FMM Mode:",
             "type": "select",
             "validationRule": "nullable|in:YES,NO",
             "default": "NO",
@@ -278,7 +278,7 @@
         },
 
         "Verify MVP": {
-            "title": "Verify MVP    :",
+            "title": "Verify MVP:",
             "type": "select",
             "validationRule": "nullable|in:YES,NO",
             "default": "NO",
