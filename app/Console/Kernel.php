@@ -109,6 +109,7 @@ class Kernel extends ConsoleKernel
                     try{
                         //dd($local_path);
                         //$zipFile->addDirRecursive($local_path)->close();
+                       
                         $zipFile->addFilesFromIterator($files)->saveAsFile($rootPath.".zip");
                     }
                     catch(\PhpZip\Exception\ZipException $e){
